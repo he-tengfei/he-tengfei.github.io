@@ -1,0 +1,450 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Flink基础4之处理函数&amp;多流转换&amp;状态编程 | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="七、处理函数之前的函数都是基于DataStream调用的，可以称为DataStream API，更底层的是处理函数process function，在处理函数中，我们直面的就是数据流中最基本的元素：数据事件（event）、状态（state）以及时间（time），理论上可以实现任何需求。   1. 基本处理函数处理函数主要用来做数据流的转换，所以也可以当做转换算子，转换算子都有对应的函数类接口，它所">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flink基础4之处理函数&amp;多流转换&amp;状态编程">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%804%E4%B9%8B%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0&%E5%A4%9A%E6%B5%81%E8%BD%AC%E6%8D%A2&%E7%8A%B6%E6%80%81%E7%BC%96%E7%A8%8B/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="七、处理函数之前的函数都是基于DataStream调用的，可以称为DataStream API，更底层的是处理函数process function，在处理函数中，我们直面的就是数据流中最基本的元素：数据事件（event）、状态（state）以及时间（time），理论上可以实现任何需求。   1. 基本处理函数处理函数主要用来做数据流的转换，所以也可以当做转换算子，转换算子都有对应的函数类接口，它所">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/global-warming.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.753Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/global-warming.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%804%E4%B9%8B%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0&amp;%E5%A4%9A%E6%B5%81%E8%BD%AC%E6%8D%A2&amp;%E7%8A%B6%E6%80%81%E7%BC%96%E7%A8%8B/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Flink基础4之处理函数&多流转换&状态编程',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background: transparent"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Flink基础4之处理函数&amp;多流转换&amp;状态编程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.753Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Flink/">Flink</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">12.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>41分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Flink基础4之处理函数&amp;多流转换&amp;状态编程"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="七、处理函数"><a href="#七、处理函数" class="headerlink" title="七、处理函数"></a>七、处理函数</h1><p>之前的函数都是基于DataStream调用的，可以称为DataStream API，更底层的是处理函数process function，在处理函数中，我们直面的就是数据流中最基本的元素：数据事件（event）、状态（state）以及时间（time），理论上可以实现任何需求。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220804213355993.png" alt="image-20220804213355993" style="zoom:67%;" />
+
+<h2 id="1-基本处理函数"><a href="#1-基本处理函数" class="headerlink" title="1. 基本处理函数"></a>1. 基本处理函数</h2><p>处理函数主要用来做<strong>数据流的转换</strong>，所以也可以当做转换算子，转换算子都有对应的函数类接口，它所对应的函数类是<strong>ProcessFunction</strong>。</p>
+<h3 id="1-1-处理函数的功能和使用"><a href="#1-1-处理函数的功能和使用" class="headerlink" title="1.1 处理函数的功能和使用"></a>1.1 处理函数的功能和使用</h3><p>之前的函数，可以拿到一些累加器形式的状态，或者富函数能拿到部分运行时上下文，但是却都拿不到当前时间的时间戳或当前的水位线。而处理函数可以实现<strong>对时间的精细控制</strong>，能精确定义什么时候做什么事。它提供了一个定时服务<strong>TimerService</strong>，可以通过TimerService访问流中的事件event、时间戳timestamp、水位线watermark，还可以注册定时事件。而且处理函数继承了AbstractRichFunction抽象类，所以拥有富函数类的所有特性，同样可以访问状态state和其他运行时信息。此外它还可以直接将数据输出到侧输出流。所以处理函数是最为灵活的处理方法，可以实现各种自定义的业务逻辑，同时也是整个DataStream API的底层基础。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">stream.process(new MyProcessFunction())  </span><br></pre></td></tr></table></figure>
+
+<p><strong>这里的ProcessFunction不是接口，而是一个抽象类</strong>，继承了Abstract<strong>Rich</strong>Function，MyProcessFunction是它的一个具体实现。所以所有的处理函数，都是富函数，富函数可以调用的东西这里同样都可以调用。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.process(new ProcessFunction&lt;TestEvent, String&gt;() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void processElement(TestEvent value, Context ctx, Collector&lt;String&gt; out) throws Exception &#123;</span><br><span class="line">        if(value.user.equals(&quot;lisi&quot;))&#123;</span><br><span class="line">            out.collect(value.user);</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">            // 只要是out.collect的方法，都很灵活，你可以out.collect任何东西，而且次数不限</span><br><span class="line">            out.collect(&quot;other&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"> 		// 打印当前的水位线，为什么打印的第一条是负无穷呢？</span><br><span class="line">		// 因为最开始，会插入一条long的最小值，结束时，会插入一条long的最大值</span><br><span class="line">		// 但是水位线都是在数据之后插入的</span><br><span class="line">        System.out.println(ctx.timerService().currentWatermark());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>代码见com.study.chapter07.F30_ProcessFunctionTest</p>
+<p>处理函数好像都是通过out.collect输出的，只要是带out.collect的方法，都很灵活，你可以out.collect任何东西，而且次数不限。还可以调用<code>ctx.timerService().currentWatermark()</code>来获取当前的水位线。通过初测就能知道，ProcessFunction函数很灵活很强大，可以实现Map、Filter、FlatMap的所有功能，也可以自定义状态state。接下来我们就深入ProcessFunction内部来进行详细了解。</p>
+<h3 id="1-2-ProcessFunction解析"><a href="#1-2-ProcessFunction解析" class="headerlink" title="1.2 ProcessFunction解析"></a>1.2 ProcessFunction解析</h3><p>在源码中我们可以看到，抽象类 ProcessFunction 继承了 AbstractRichFunction，内部单独定义了两个方法：一个是<strong>必须要实现的抽象方法</strong>processElement()，另一个是非抽象方法onTimer()。</p>
+<h4 id="1-2-1-抽象方法processElement"><a href="#1-2-1-抽象方法processElement" class="headerlink" title="1.2.1 抽象方法processElement()"></a>1.2.1 抽象方法processElement()</h4><p>定义了处理的核心逻辑，每个元素都会调用一次，参数包括三个：输入数据值TestEvent，上下文Context，以及收集器Collector。方法没有返回值，处理之后的输出数据是通过收集器out来定义的。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void processElement(TestEvent value, Context ctx, Collector&lt;String&gt; out) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ctx是ProcessFunction中定义的内部抽象类Context，表示当前运行的上下文，可以获取到当前的时间戳，并提供了用于查询时间和注册定时器的TimerService，以及可以将数据发送到侧输出流的方法output()。里面就这3个方法。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public abstract class Context &#123;</span><br><span class="line">    public abstract Long timestamp();</span><br><span class="line">    public abstract TimerService timerService();</span><br><span class="line">    public abstract &lt;X&gt; void output(OutputTag&lt;X&gt; outputTag, X value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-2-非抽象方法onTimer"><a href="#1-2-2-非抽象方法onTimer" class="headerlink" title="1.2.2 非抽象方法onTimer()"></a>1.2.2 非抽象方法onTimer()</h4><p>TimerService可以注册定时器，时间到了触发什么操作就在onTimer里定义。所以它本质上是一个基于时间的callback回调方法，由时间触发，事件时间的话就是由水位线触发了。定时方法onTimer()也有三个参数：时间戳，上下文，以及收集器。这里的timestamp是指触发时间，事件时间语义下当然就是水位线了。另外这里同样有上下文和收集器，所以也可以调用定时服务TimerService。</p>
+<p>定时器+触发逻辑，就是一个简单的窗口了，代码后面写过，忘记在哪儿了，遇到再补笔记吧。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void onTimer(long timestamp, OnTimerContext ctx, Collector&lt;String&gt; out) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>数据调用的是processElement，定时器调用的是onTimer，并且只有按键分区流KeyedStream才有设置定时器的功能。不同类型的流，它的处理函数在使用上也是有点小差别的。</p>
+<h3 id="1-3-处理函数的分类"><a href="#1-3-处理函数的分类" class="headerlink" title="1.3 处理函数的分类"></a>1.3 处理函数的分类</h3><p>Flink中的处理函数其实是一个大家族，ProcessFunction只是其中一员。不同类型的流都可以直接调用process()方法进行自定义处理，这时传入的参数就都叫作处理函数。</p>
+<p>Flink提供了8个不同的处理函数：</p>
+<ul>
+<li><p>ProcessFunction：最基本的处理函数，基于DataStream调用</p>
+</li>
+<li><p>KeyedProcessFunction：基于KeyedStream调用，要想使用定时器，必须基于KeyedStream</p>
+</li>
+<li><p>ProcessWindowFunction：开窗之后的处理函数，也是全窗口函数的代表，基于WindowedStream调用。全窗口的代表？</p>
+</li>
+<li><p>ProcessAllWindowFunction：基于AllWindowedStream调用</p>
+</li>
+<li><p>CoProcessFunction：connect合并两条流之后的处理函数，基于ConnectedStreams调用，它也能用定时器</p>
+</li>
+<li><p>ProcessJoinFunction：间隔连接两条流之后的处理函数，基于IntervalJoined调用</p>
+</li>
+<li><p>BroadcastProcessFunction：广播连接流处理函数，基于BroadcastConnectedStream调用，这里的广播连接流，是一个未keyBy的普通DataStream与一个广播流BroadcastStream做conncet连接之后的产物</p>
+</li>
+<li><p>KeyedBroadcastProcessFunction：按键分区的广播连接流处理函数，同样是基于BroadcastConnectedStream调用，与上面那个不同的是，这里的广播连接流，是一个KeyedStream与广播流做连接之后的产物</p>
+</li>
+</ul>
+<p>接下来，我们就对KeyedProcessFunction和ProcessWindowFunction的具体用法展开详细说明。</p>
+<h2 id="2-KeyedProcessFunction"><a href="#2-KeyedProcessFunction" class="headerlink" title="2. KeyedProcessFunction"></a>2. KeyedProcessFunction</h2><p>这个处理函数用的挺多，keyby后能并行处理，并且只有在 KeyedStream 中才支持使用 TimerService 设置定时器的操作。</p>
+<h3 id="2-1-定时器和定时服务"><a href="#2-1-定时器和定时服务" class="headerlink" title="2.1 定时器和定时服务"></a>2.1 定时器和定时服务</h3><p>定时服务 TimerService 可以注册定时器，它是 Flink 关于时间和定时器的基础服务接口，包含以下六个方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 获取当前的处理时间，注意处理时间和水位线是等价的</span><br><span class="line">long currentProcessingTime();</span><br><span class="line"></span><br><span class="line">// 获取当前的水位线</span><br><span class="line">long currentWatermark();</span><br><span class="line"></span><br><span class="line">// 基于事件时间 注册定时器</span><br><span class="line">void registerEventTimeTimer(long time);</span><br><span class="line"></span><br><span class="line">// 基于事件时间 删除定时器</span><br><span class="line">void deleteEventTimeTimer(long time);</span><br></pre></td></tr></table></figure>
+
+<p>六个方法对应的操作主要有三个：<strong>获取当前时间，注册定时器，以及删除定时器</strong>。尽管处理函数中都可以直接访问TimerService，不过只有基于KeyedStream的处理函数，才能去调用注册和删除定时器的方法，其他的只能获取当前时间。</p>
+<p>对于定时器，TimerService内部会用一个队列将它们的时间戳保存起来，排队等待执行，它会以键key+时间戳为准，对定时器进行去重，所以<strong>相同key相同时间戳上的定时器只有1个，定时器也只会触发1次</strong>。利用这个特性，有时我们可以故意降低时间戳的精度，来减少定时器的数量，从而提高处理性能。比如我们可以在设置定时器时只保留整秒数，那么定时器的触发频率就是最多1秒一次：<code>long ts = time / 1000 * 1000</code>。</p>
+<p>Flink的定时器同样具有容错性，它和状态一起都会被保存到检查点中。当发生故障时，Flink会重启并读取检查点中的状态，恢复定时器。如果是处理时间的定时器，有可能会出现已经过期的情况，这时它们会在重启时被立刻触发。</p>
+<p>另外注意：</p>
+<ul>
+<li><strong>keyby后调用的方法，对每个key都是有效的，并且对于每个key来说都是各自独立的</strong></li>
+<li>定时器的时间戳必须是毫秒级</li>
+<li>定时器也算作算子的状态</li>
+<li>Flink对onTimer()和processElement()方法是同步调用的，不会出现状态的并发修改</li>
+</ul>
+<h3 id="2-2-KeyedProcessFunction的使用"><a href="#2-2-KeyedProcessFunction的使用" class="headerlink" title="2.2 KeyedProcessFunction的使用"></a>2.2 KeyedProcessFunction的使用</h3><p>代码见com.study.chapter07.F31_KeyedProcessFunctionTest</p>
+<p>猜结果，代码见com.study.chapter07.F32_EventTimeTimerTest，书上关于这个结果说的很详细。</p>
+<h2 id="3-ProcessWindowFunction"><a href="#3-ProcessWindowFunction" class="headerlink" title="3. ProcessWindowFunction"></a>3. ProcessWindowFunction</h2><h3 id="3-1-窗口处理函数的使用"><a href="#3-1-窗口处理函数的使用" class="headerlink" title="3.1 窗口处理函数的使用"></a>3.1 窗口处理函数的使用</h3><p>ProcessWindowFunction 和 ProcessAllWindowFunction，后面可以调用简单聚合方法sum&#x2F;max&#x2F;min，也可以通过调用reduce()或aggregate()来自定义一般的增量聚合函数，还可以直接使用全窗口函数、把数据全部收集保存在窗口内，等到触发窗口计算时再统一处理。窗口处理函数就是一种典型的<strong>全窗口函数</strong>？？？基于WindowedStream直接调用方法就可以。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">private static class UrlViewCountWindow extends </span><br><span class="line">		ProcessWindowFunction&lt;Long,UrlViewCount,String,TimeWindow&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void process(String url, Context context, Iterable&lt;Long&gt; elements, Collector&lt;UrlViewCount&gt; out) throws Exception &#123;</span><br><span class="line">        long start = context.window().getStart();</span><br><span class="line">        long end = context.window().getEnd();</span><br><span class="line">        out.collect(new UrlViewCount(url,elements.iterator().next(),start,end));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-ProcessWindowFunction"><a href="#3-2-ProcessWindowFunction" class="headerlink" title="3.2 ProcessWindowFunction"></a>3.2 ProcessWindowFunction</h3><p><strong>ProcessWindowFunction既是处理函数又是全窗口函数</strong>。参数里的TimeWindow那里要填个窗口类型，一般定义时间窗口就是TimeWindow。全窗口函数不是逐个处理数据的，所以处理数据的方法并不是processElement()，而是process()，里面的参数elements是窗口收集到的所有数据，这是一个可迭代的集合类型，下面是全窗口函数的上下文能调用的一些信息。除了process方法外，还有一个clear方法，如果我们自定义了窗口状态，必须在clear()方法中进行显式地清除，避免内存溢出。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public abstract class Context implements java.io.Serializable &#123;</span><br><span class="line">    public abstract W window();</span><br><span class="line">    public abstract long currentProcessingTime();</span><br><span class="line">    public abstract long currentWatermark();</span><br><span class="line">    public abstract KeyedStateStore windowState();</span><br><span class="line">    public abstract KeyedStateStore globalState();</span><br><span class="line">    public abstract &lt;X&gt; void output(OutputTag&lt;X&gt; outputTag, X value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>windowState和globalState好像还没用过，说是自定义的窗口状态与全局状态，前者对当前key的当前窗口有效，后者对当前key的所有窗口有效。对于窗口而言，本身就包含了一个触发计算的时间点，如果还需要定时触发某些操作，可以用触发器Trigger。在触发器中也有一个TriggerContext，它可以起到类似TimerService的作用：获取当前时间、注册和删除定时器，另外还可以获取当前的状态。</p>
+<h2 id="4-TopN案例"><a href="#4-TopN案例" class="headerlink" title="4. TopN案例"></a>4. TopN案例</h2><p>统计最近10秒钟内最热门的两个url链接，并且每5秒钟更新一次。url的访问量是个简单的增量聚合，可以用滑动窗口实现，但是后续的排序输出TopN就很难实现了，所以接下来我们用窗口处理函数进行实现。</p>
+<p><strong>方式一：</strong></p>
+<p>一种最简单的想法是，将所有数据都收集起来，统一进行计算，用全窗口函数ProcessAllWindowFunction，在窗口中可以用一个HashMap来保存每个url的访问次数，最后把HashMap转成一个列表ArrayList，然后进行排序，取出前两名输出就可以了。</p>
+<p>代码见com.study.chapter07.F33_TopNProcessAllWindow</p>
+<p><strong>方式二：</strong></p>
+<p>直接对所有数据开窗，并行度为1，在实际开发中要尽量避免，而且把窗口里的所有数据收集好，在窗口触发时统一计算，效率也不高。我们可以利用增量聚合函数的特性，每来一条数据就更新一次对应url的浏览量，那么到窗口触发计算时只需要做排序输出就可以了。基于这样的想法，我们可以从两个方面去做优化：一是按键分区，使用增量聚合函数AggregateFunction统计浏览量，二是结合ProcessWindowFunction进行排序输出。但是按键分区后，窗口就只对当前key有效了，所以还要再按窗口keyby一次，把同个窗口的数据放一起，然后排序输出。而为了拿窗口信息，需要用到ProcessWindowFunction。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">env</span><br><span class="line">    .addSource(new ClickGenerate())</span><br><span class="line">    .assignTimestampsAndWatermarks(</span><br><span class="line">        WatermarkStrategy</span><br><span class="line">            .&lt;TestEvent&gt;forBoundedOutOfOrderness(Duration.ZERO)</span><br><span class="line">            .withTimestampAssigner((event,timestamp) -&gt; event.timestamp)</span><br><span class="line">    )</span><br><span class="line">    .keyBy(event -&gt; event.url)</span><br><span class="line">    .window(SlidingEventTimeWindows.of(Time.seconds(10),Time.seconds(5)))</span><br><span class="line">    .aggregate(new UrlViewCountAgg(),new UrlViewCountWindow())</span><br><span class="line">    .keyBy( urlview -&gt; urlview.windowEnd)</span><br><span class="line">    .process(new KeyedProcessFunTopN(2))</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
+
+<p>这里用到了一个延迟1ms的定时器，这里的定时器就是模仿那种窗口的感觉，如果没有定时器，最终结果也是对的，只是数据来一条就会计算一条并输出，另外延迟1ms是因为，定时器的触发不能以窗口关闭时间为准，因为数据从窗口关闭到keyby到process的过程也需要时间。说白了这里的1ms就是为了解决“我要对哪些数据进行排序”的问题，保证把要排序的数据都收集完，然后只做一次排序，只输出一次，因为上面要求每隔5s只能输出一次。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 这里+1是因为，这里的key是窗口关闭时间，窗口关闭后往下游发送需要时间，最好不要马上触发定时器</span><br><span class="line">ctx.timerService().registerEventTimeTimer(ctx.getCurrentKey() + 1);</span><br></pre></td></tr></table></figure>
+
+<p>详细代码见com.study.chapter07.F34_TopNKeyedProcess，这里用到了1个列表状态，列表状态变量是单例，只会被实例化一次。add添加数据，get获取列表状态中的所有元素。</p>
+<h2 id="5-侧输出流"><a href="#5-侧输出流" class="headerlink" title="5. 侧输出流"></a>5. 侧输出流</h2><p>好像只有处理函数才能把数据发往侧输出流，使用的时候需要先声明侧输出流标签，注意这是个静态内部类。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 声明侧输出流标签，是个静态内部类</span><br><span class="line">OutputTag&lt;String&gt; outputTag = new OutputTag&lt;String&gt;(&quot;sideoutput&quot;) &#123;&#125;;</span><br><span class="line"></span><br><span class="line">// 把数据放进侧输出流</span><br><span class="line">ctx.output(outputTag, &quot;sideoutput: &quot; + String.valueOf(value));</span><br><span class="line"></span><br><span class="line">// 调用测输出流</span><br><span class="line">stream.getSideOutput(outputTag);</span><br></pre></td></tr></table></figure>
+
+<h1 id="八、多流转换"><a href="#八、多流转换" class="headerlink" title="八、多流转换"></a>八、多流转换</h1><p>多流转换可以分为分流和合流两大类。分流一般通过侧输出流实现，合流的算子比较丰富，有 union、connect、join 以及 coGroup 等接口进行连接合并操作。</p>
+<h2 id="1-分流"><a href="#1-分流" class="headerlink" title="1. 分流"></a>1. 分流</h2><p>分流用处理函数的侧输出流就行，分出的流数据类型可以不一样。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.process(new ProcessFunction&lt;TestEvent, TestEvent&gt;() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void processElement(TestEvent value, Context ctx, Collector&lt;TestEvent&gt; out) throws Exception &#123;</span><br><span class="line">        if (value.user.equals(&quot;lisi&quot;)) &#123;</span><br><span class="line">            ctx.output(lisitag, value);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            ctx.output(othertag, value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>代码见com.study.chapter07.F35_SplitStream</p>
+<h2 id="2-合流"><a href="#2-合流" class="headerlink" title="2. 合流"></a>2. 合流</h2><h3 id="2-1-Union"><a href="#2-1-Union" class="headerlink" title="2.1 Union"></a>2.1 Union</h3><p>Union操作要求流中的数据类型必须相同，可以一次合并多条流，基于DataStream调用union()方法。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">stream1.union(stream2, stream3, ...)</span><br></pre></td></tr></table></figure>
+
+<p>不同的流中的水位线不一样，合并后以哪个为准呢？也是最小的那个，跟并行任务水位线传递的规则完全一致。</p>
+<h3 id="2-2-Connect"><a href="#2-2-Connect" class="headerlink" title="2.2 Connect"></a>2.2 Connect</h3><p>Connect只能连接两条流，但允许两条流的数据类型不同，所以它的返回值就不再是DataStream，而是连接流ConnectedStreams。要想回到DataStream，需要调用方法把两条流的数据类型转换成一致的，比如可以用map、flatmap、process等。连接流的两条流是各自独立的，只是形式上合并到了一起，类似一国两制。连接流也可以通过TimerService操作定时器。</p>
+<p>连接流调用的方法，跟平常的不一样，比如调用的map，形参不再是MapFunction而是CoMapFunction，而且里面有俩map方法。连接流也能直接调用keyby方法，返回的也是连接流。先connect再keyby，和先keyby再connect，效果是一样的。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">orderOperator1</span><br><span class="line">    .connect(payOperator2)    </span><br><span class="line">    .keyBy(tuple3 -&gt; tuple3.f0,tuple3 -&gt; tuple3.f0)</span><br><span class="line">    // 形参是个CoProcessFunction</span><br><span class="line">    .process(new OrderMatch())    // SingleOutputStreamOperator</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
+
+<p>下面是一个实时对账的需求，也是一个简单的双流 Join，订单事件和支付事件会互相等待 5 秒钟，如果等不来就输出报警信息。“等5秒钟”这个定义是通过定时器实现的。</p>
+<p>代码见com.study.chapter07.F36_CoProcessFunTest</p>
+<h3 id="2-3-广播连接流"><a href="#2-3-广播连接流" class="headerlink" title="2.3 广播连接流"></a>2.3 广播连接流</h3><p>DataStream调用connect()方法时，传入的参数也可以不是一个DataStream，而是一个广播流BroadcastStream，这时合并两条流得到的就变成了一个广播连接流BroadcastConnectedStream。广播连接流调用process方法，如果有keyby过，传入的是KeyedBroadcastProcessFunction，没有keyby的话，传入的是BroadcastProcessFunction。BroadcastProcessFunction里也有两个方法，一个正常处理数据，另一个用新规则来更新广播状态。</p>
+<p>这种连接方式往往用在需要动态定义某些全局规则或配置的场景，下游子任务收到广播出来的规则，会把它保存成一个状态，这就是所谓的广播状态broadcaststate。广播状态底层是用一个map结构来保存的，<strong>直接调用DataStream的broadcast()方法，传入一个映射状态描述器MapStateDescriptor，就可以得到一个广播流BroadcastStream</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 状态是单例的，只会实例化1个</span><br><span class="line">MapStateDescriptor&lt;Void, Pattern&gt; descriptor </span><br><span class="line">		= new MapStateDescriptor&lt;&gt;(&quot;pattern&quot;, Types.VOID, Types.POJO(Pattern.class));</span><br><span class="line">BroadcastStream&lt;Pattern&gt; broadcastStream = patternStream.broadcast(descriptor);</span><br></pre></td></tr></table></figure>
+
+<p>关于广播状态和广播连接流的用法和示例，在讲状态的时候会细说。</p>
+<h2 id="3-双流join"><a href="#3-双流join" class="headerlink" title="3. 双流join"></a>3. 双流join</h2><p>Flink中两条流keyBy后的connect操作，就可以简单的实现类似于SQL中的join操作，并且connect支持处理函数，可以定义状态和TimerService灵活实现各种需求，其实已经能够处理双流合并的大多数场景。</p>
+<p>不过处理函数是底层接口，所以尽管connect能做的事情多，但在一些具体应用场景下还是显得太过抽象了。比如我们希望统计固定时间内两条流数据的匹配情况，那就需要设置定时器、自定义触发逻辑来实现——其实这完全可以用窗口来表示。为了更方便地实现基于时间的合流操作，Flink的DataStremaAPI提供了两种内置的join算子，以及coGroup算子。本节我们就来做一个详细的讲解。</p>
+<h3 id="3-1-Window-Join"><a href="#3-1-Window-Join" class="headerlink" title="3.1 Window Join"></a>3.1 Window Join</h3><p>如果希望将两条流的数据进行合并，并且针对某段时间进行处理和统计，就可以用Window Join，它可以定义时间窗口，并将两条流中的数据放在窗口中进行配对处理。配对的逻辑类似 join on t1.key &#x3D; t2.key，配对后具体的处理逻辑在通过调用apply传入一个JoinFunction或FlatJoinFunction，然后在里面的join方法中定义，每次配对成功都会调用这个方法。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">    窗口连接，就像开个窗，然后join on t1.key = t2.key；</span><br><span class="line">间隔连接，就像不开窗，拿到全部数据后，join on t1.key = t2.key and t2.timestamp &gt;= t1.timestamp - 5 and t2.timestamp &lt;= t1.timestamp + 10的这种感觉</span><br><span class="line"></span><br><span class="line">    stream1</span><br><span class="line">        .join(stream2)</span><br><span class="line">        .where(tuple2 -&gt; tuple2.f0)</span><br><span class="line">        .equalTo(tuple2 -&gt; tuple2.f0)</span><br><span class="line">        .window(TumblingEventTimeWindows.of(Time.seconds(5)))</span><br><span class="line">        // 下面要传入一个JoinFunction或FlatJoinFunction</span><br><span class="line">        .apply(new JoinFunction&lt;Tuple2&lt;String, Long&gt;, Tuple2&lt;String, Long&gt;, String&gt;() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public String join(Tuple2&lt;String, Long&gt; first, Tuple2&lt;String, Long&gt; second) throws Exception &#123;</span><br><span class="line">                return first + &quot;--&gt;&quot; + second;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        .print();</span><br></pre></td></tr></table></figure>
+
+<p>代码见com.study.chapter07.F37_WindowJoinTest</p>
+<h3 id="3-2-Interval-Join"><a href="#3-2-Interval-Join" class="headerlink" title="3.2 Interval Join"></a>3.2 Interval Join</h3><p>实时对账就不能用Window Join实现了，如果两条数据刚好分到了两个窗口，那就匹配不到了。所以就出现了另一种join方式：interval join。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220805141511601.png" alt="image-20220805141511601" style="zoom:67%;" />
+
+<p>下方的流A去间隔联结上方的流B，所以基于A的每个数据元素，都开辟一个间隔区间。我们这里设置下界为-2毫秒，上界为1毫秒。于是对于时间戳为2的A中元素，它的可匹配区间就是[0,3],流B中有时间戳为0、1的两个元素落在这个范围内，所以就可以得到匹配数据对(2,0)和(2,1)。同样地，A中时间戳为3的元素，可匹配区间为[1,4]，B中只有时间戳为1的一个数据可以匹配，于是得到匹配数据对(3,1)。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">stream1</span><br><span class="line">    .keyBy(t -&gt; t.f0)</span><br><span class="line">    .intervalJoin(stream2.keyBy(t -&gt; t.f0))</span><br><span class="line">    .between(Time.seconds(-5),Time.seconds(10))</span><br><span class="line">    // ProcessJoinFunction，处理函数中的一个</span><br><span class="line">    .process(new ProcessJoinFunction&lt;Tuple2&lt;String, Long&gt;, Tuple2&lt;String, Long&gt;, String&gt;() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void processElement(Tuple2&lt;String, Long&gt; left, Tuple2&lt;String, Long&gt; right, Context ctx, Collector&lt;String&gt; out) throws Exception &#123;</span><br><span class="line">            out.collect(left + &quot;--&gt;&quot; + right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
+
+<p>窗口连接，就像开个窗，然后join on t1.key &#x3D; t2.key；间隔连接，就像不开窗，拿到全部数据后，join on t1.key &#x3D; t2.key and t2.timestamp &gt;&#x3D; t1.timestamp - 5 and t2.timestamp &lt;&#x3D; t1.timestamp + 10。这里的-5和+10，就相当于interval join的下界和上界，目前只支持事件时间语义。</p>
+<p>代码见com.study.chapter07.F38_IntervalJoinTest</p>
+<h3 id="3-3-Window-CoGroup"><a href="#3-3-Window-CoGroup" class="headerlink" title="3.3 Window CoGroup"></a>3.3 Window CoGroup</h3><p>window coGroup的用法跟window join非常类似，传入一个CoGroupFunction，里面的coGroup()方法，同样有三个参数，分别代表两条流中的数据以及用于输出的收集器。它会先把两条流中的数据按where后的key分组收集，然后每个key再调用一次coGroup()方法。所以能够看出，coGroup操作比窗口的join更加通用，可以实现join、left join和full join。事实上window join的底层，也是通过coGroup来实现的。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">stream1</span><br><span class="line">    .coGroup(stream2)</span><br><span class="line">    .where(t -&gt; t.f0)</span><br><span class="line">    .equalTo(t -&gt; t.f0)</span><br><span class="line">    .window(TumblingEventTimeWindows.of(Time.seconds(5)))</span><br><span class="line">    .apply(new CoGroupFunction&lt;Tuple2&lt;String, Long&gt;, Tuple2&lt;String, Long&gt;, String&gt;() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void coGroup(Iterable&lt;Tuple2&lt;String, Long&gt;&gt; first, Iterable&lt;Tuple2&lt;String, Long&gt;&gt; second, Collector&lt;String&gt; out) throws Exception &#123;</span><br><span class="line">            out.collect(first + &quot;--&gt;&quot; + second);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
+
+<p>代码见com.study.chapter07.F39_CoGroupTest，一看结果就懂。</p>
+<p>注意：</p>
+<ul>
+<li>Connect后面调用的是CoProcessFunction</li>
+<li>Window Join后面调用的是JoinFunction</li>
+<li>Interval Join后面调用的是ProcessJoinFunction</li>
+<li>Window CoGroup后面调用的是CoGroupFunction</li>
+</ul>
+<h2 id="4-本章总结"><a href="#4-本章总结" class="headerlink" title="4. 本章总结"></a>4. 本章总结</h2><p>多流转换是流处理在实际应用中常见的需求，主要包括分流和合流两大类，本章分别做了详细讲解。在Flink中，分流操作可以通过处理函数的侧输出流很容易地实现，而合流则提供不同层级的各种API。</p>
+<p>最基本的合流方式是union和connect，两者的主要区别在于union可以对多条流进行合并，数据类型必须一致；而connect只能连接两条流，数据类型可以不同。事实上connect提供了最底层的处理函数接口，可以通过状态和定时器实现任意自定义的合流操作，所以是最为通用的合流方式。</p>
+<p>除此之外，Flink还提供了内置的几个join操作，它们都是基于某个时间段的双流合并，是需求特化之后的高层级API。主要包括window join、interval join和window coGroup。其中window join和coGroup都是基于时间窗口的操作，窗口分配器的定义与之前介绍的相同，而窗口函数则被限定为一种，通过apply()来调用；interval join则与窗口无关，而是基于每个数据元素截取对应的一个时间段来做join，最终的处理操作则需调用process()，由处理函数ProcessJoinFunction实现。可以看到，基于时间的join每一步都是固定的接口，没有其他变化，使用起来专项专用，非常方便。</p>
+<p>至此我们已经将DataStreamAPI的主要用法介绍完毕，处理函数家族中的成员也都已一一亮相。而处理函数中一些比较高级和复杂的用法，往往会涉及定时器和状态。在下一章中，我们将继续深入展开，系统地介绍Flink的状态管理机制和状态编程的用法。</p>
+<h1 id="九、状态编程"><a href="#九、状态编程" class="headerlink" title="九、状态编程"></a>九、状态编程</h1><p>Flink处理机制的核心，就是有状态的流式计算。不论是简单聚合、窗口聚合，还是处理函数的应用，都会有状态的身影出现。在Flink这样的分布式系统中，我们不仅需要定义出状态在任务并行时的处理方式，还需要考虑如何持久化保存、<strong>以便发生故障时正确地恢复</strong>，这就需要一套完整的管理机制来处理所有的状态。本章将从状态的概念入手，详细介绍Flink中的状态分类、状态的使用、持久化及状态后端的配置。</p>
+<h2 id="1-Flink-中的状态"><a href="#1-Flink-中的状态" class="headerlink" title="1. Flink 中的状态"></a>1. Flink 中的状态</h2><h3 id="1-1-有状态算子"><a href="#1-1-有状态算子" class="headerlink" title="1.1 有状态算子"></a>1.1 有状态算子</h3><p>在Flink中，算子任务可以分为无状态和有状态两种情况。计算时不依赖其他数据，就属于无状态的算子比如map、filter、flatMap等。需要依赖其他数据，就是有状态的算子，这里的其他数据就是指状态，比如窗口算子中会保存已经到达的所有数据，这就是状态，比如sum时需要保持之前所有数据的和，这也是状态。容易发现，之前讲过的聚合算子、窗口算子都属于有状态的算子。</p>
+<p>有状态算子的一般处理流程如下：</p>
+<ul>
+<li>算子任务接收到上游发来的数据</li>
+<li>获取当前状态</li>
+<li>根据业务逻辑进行计算，更新状态</li>
+<li>得到计算结果，输出发送到下游任务</li>
+</ul>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220805160123068.png" alt="image-20220805160123068" style="zoom: 50%;" />
+
+<h3 id="1-2-状态的管理"><a href="#1-2-状态的管理" class="headerlink" title="1.2 状态的管理"></a>1.2 状态的管理</h3><p>在传统的事务型处理架构中，这种额外的状态数据是保存在数据库中的。而对于实时流处理来说，频繁读写数据库延迟太高。所以Flink将状态直接保存在内存中，并通过分布式扩展来提高吞吐量。<strong>状态可以认为是并行子任务实例上的一个本地变量，能够被任务访问和修改。</strong></p>
+<p>大数据的场景下，我们必须使用分布式架构来做扩展，在低延迟、高吞吐的基础上还要保证容错性，一系列复杂的问题就来了。</p>
+<ul>
+<li>状态的访问权限。keyby后，同一个分区（也就是slot）上执行的任务实例，可能会包含多个key的数据。每个key都能访问所有在这个slot上的状态吗？并不是，keyby之后产生的状态，当然只对当前key有效</li>
+<li>容错性，也就是故障后的恢复。状态只保存在内存中肯定不行，需要做持久化备份，并且在发生故障后可以从备份中恢复</li>
+<li>横向扩展性，调大并行度时，状态如何重组？比如wordcount中hello被分到了slot3，它的状态也在slot3，当增加并行度后，hello被分到了slot2，那它之前的状态会跟着去slot2吗？</li>
+</ul>
+<p>可见状态的管理并不是一件轻松的事。好在Flink作为有状态的大数据流式处理框架，已经帮我们搞定了这一切。Flink有一套完整的状态管理机制，将底层一些核心功能全部封装起来，<strong>包括状态的高效存储和访问、持久化保存和故障恢复，以及资源扩展时的调整</strong>。这样，我们只需要调用相应的API就可以很方便地使用状态，或对应用的容错机制进行配置，从而将更多的精力放在业务逻辑的开发上。</p>
+<h3 id="1-3-状态的分类"><a href="#1-3-状态的分类" class="headerlink" title="1.3 状态的分类"></a>1.3 状态的分类</h3><h4 id="1-3-1-托管状态和原始状态"><a href="#1-3-1-托管状态和原始状态" class="headerlink" title="1.3.1 托管状态和原始状态"></a>1.3.1 托管状态和原始状态</h4><p>Flink的状态有两种：托管状态ManagedState和原始状态RawState。<strong>托管状态是由Flink统一管理</strong>，状态的存储访问、故障恢复和重组等一系列问题都由Flink实现，我们只要调接口就可以，而原始状态则是自定义的，相当于就是开辟了一块内存，需要我们自己管理，实现状态的序列化和故障恢复，所以一般都<strong>只用托管状态</strong>，接下来的重点也都是托管状态。</p>
+<p>托管状态在配置容错机制后，状态会自动持久化保存，并在发生故障时自动恢复。当应用发生横向扩展时，状态也会自动地重组分配到所有的子任务实例上。对于具体的状态内容，Flink也提供了值状态、列表状态、映射状态、聚合状态等多种结构，内部支持各种数据类型。聚合、窗口等算子中内置的状态，就都是托管状态，我们也可以在富函数类中通过上下文来自定义状态，这些也都是托管状态。</p>
+<p>这里提到了富函数可以自定义状态，所以对于map这样的无状态算子，也可以通过富函数RichMapFunction手动添加状态。</p>
+<h4 id="1-3-2-算子状态和按键分区状态"><a href="#1-3-2-算子状态和按键分区状态" class="headerlink" title="1.3.2 算子状态和按键分区状态"></a>1.3.2 算子状态和按键分区状态</h4><p>一个算子任务会按照并行度分为多个并行子任务执行，而不同的子任务会占据不同的任务槽。由于不同的槽在计算资源上是物理隔离的，所以状态在并行任务间无法共享，每个状态只能针对当前子任务的实例有效。</p>
+<p>根据有没有keyby，又分为算子状态OperatorState和按键分区状态KeyedState。</p>
+<ul>
+<li><strong>算子状态：</strong>状态作用范围限定为当前并行子任务的实例，也就是状态槽内共享。还需进一步实现CheckpointedFunction接口？</li>
+<li><strong>按键分区状态：</strong>状态是根据key来维护和访问的，不同key间彼此隔离</li>
+</ul>
+<h2 id="2-KeyedState"><a href="#2-KeyedState" class="headerlink" title="2. KeyedState"></a>2. KeyedState</h2><h3 id="2-1-状态的创建和分类"><a href="#2-1-状态的创建和分类" class="headerlink" title="2.1 状态的创建和分类"></a>2.1 状态的创建和分类</h3><p>最为常见的状态类型就是 Keyed State，因为一个并行子任务可能会处理多个key的数据，所以Flink需要对KeyedState进行一些特殊优化。在底层，KeyedState类似于一个分布式的map结构，所有的状态会根据key保存成键值对的形式。这样当一条数据到来时，任务就会自动将状态的访问范围限定为当前数据的key，从map存储中读取出对应的状态值。所以具有相同key的所有数据都会到访问相同的状态，而不同key的状态之间是彼此隔离的。</p>
+<p>另外，在应用的并行度改变时，状态也需要随之进行重组。不同key对应的KeyedState可以进一步组成所谓的键组keygroups，每一组都对应着一个并行子任务。键组是Flink重新分配KeyedState的单元，键组的数量就等于定义的最大并行度。当算子并行度发生改变时，KeyedState就会按照当前的并行度重新平均分配，保证运行时各个子任务的负载相同。</p>
+<p>状态的创建都需要用<strong>状态描述器</strong>来注册，用来指定数据类型、状态名称。因为状态的访问需要获取运行时上下文，这只能在富函数类中获取到，所以自定义的KeyedState只能在富函数中使用。底层的处理函数本身继承了AbstractRichFunction抽象类，所以也可以使用。创建时在外部声明状态对象，在open生命周期方法中通过运行时上下文获取状态。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ValueStateDescriptor&lt;Long&gt; countDescriptor = new ValueStateDescriptor&lt;&gt;(&quot;count&quot;, Long.class);</span><br><span class="line">countState = getRuntimeContext().getState(countDescriptor);</span><br></pre></td></tr></table></figure>
+
+<p>按键分区状态有5种，点进去或者.调一下就能知道怎么用，所有类型的状态都有一个方法clear()，用于清除当前状态</p>
+<ul>
+<li>值状态 ValueState：就是存个值</li>
+<li>列表状态ListState：注意它的get方法返回的是个迭代器</li>
+<li>映射状态MapState：存键值对</li>
+<li>归约状态ReducingState：在状态描述器中，需要传入一个归约函数ReduceFunction，Reduce的话，要求状态类型跟输入的数据类型保持一致</li>
+<li>聚合状态AggregatingState：在状态描述器中，需要传入一个聚合函数AggregateFunction，状态类型跟输入的数据类型可以不一样</li>
+</ul>
+<p>另外状态不一定都存储在内存中，也可以放在磁盘或其他地方，可以通过状态后端State Backend进行配置。</p>
+<h3 id="2-2-案例"><a href="#2-2-案例" class="headerlink" title="2.2 案例"></a>2.2 案例</h3><p><strong>ValueState案例</strong></p>
+<p>需求：统计每个用户的 pv 数据，业务不想每次 pv 加一，就将统计结果发送到下游去，所以这里我们注册了一个定时器，用来隔一段时间发送 pv 的统计结果，这样对下游算子的压力不至于太大。</p>
+<p>代码见F40_ValueStateTest，这里不用状态也能实现，但是最好还是用状态，方便故障后恢复。</p>
+<p><strong>ListState案例</strong></p>
+<p>需求：实现 join on t1.key &#x3D; t2.key，这样一条 SQL 语句要慎用，因为 Flink 会将 A 流和 B 流的所有数据都保存下来，然后进行 Join。不过在这里我们可以用列表状态变量来实现一下这个 SQL 语句的功能。(能用，只不过要用多流转换的join方法)</p>
+<p>代码见 com.study.chapter07.F41_ListStateTest</p>
+<p><strong>MapState案例</strong></p>
+<p>需求：这里可以通过 MapState 的使用来探索一下窗口的底层实现，也就是<strong>用映射状态来模拟窗口</strong>的功能。这里模拟一个滚动窗口，要计算的是每一个 url 在每一个窗口中的 pv 数据。我们之前使用增量聚合和全窗口聚合结合的方式实现过这个需求，这里用 MapState 再来实现一下。</p>
+<p>代码见 com.study.chapter07.F42_MapStateTest</p>
+<p><strong>AggregatingState案例</strong></p>
+<p>需求：对用户点击事件流每 5 个数据统计一次平均时间戳。这是一个类似计数窗口求平均值的计算， 这里我们可以使用一个有聚合状态的RichFlatMapFunction 来实现。也不是非要用process。</p>
+<p>代码见 com.study.chapter07.F43_AggStateTest</p>
+<h3 id="2-3-状态生存时间"><a href="#2-3-状态生存时间" class="headerlink" title="2.3 状态生存时间"></a>2.3 状态生存时间</h3><p>为防止内存占用过大，当状态在内存中存在的时间超出这个值时，就将它清除。状态创建的时候，设置 失效时间 &#x3D; 当前时间 + TTL，之后如果有对状态的访问和修改，再对失效时间进行更新，当设置的清除条件被触发时（比如状态被访问的时候，或者每隔一段时间扫描一次失效状态），就可以判断状态是否失效，从而进行清除了。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">StateTtlConfig ttlConfig = StateTtlConfig</span><br><span class="line">// 构造器方法，传入状态生存时间</span><br><span class="line">.newBuilder(Time.seconds(10))</span><br><span class="line">.setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite)</span><br><span class="line">.setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)</span><br><span class="line">.build();</span><br><span class="line"></span><br><span class="line">ValueStateDescriptor&lt;String&gt; stateDescriptor = new ValueStateDescriptor&lt;&gt;(&quot;my state&quot;, String.class);</span><br><span class="line">stateDescriptor.enableTimeToLive(ttlConfig);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>newBuilder：构造器方法，传入状态生存时间</p>
+</li>
+<li><p>setUpdateType：更新类型，指定了什么时候更新状态失效时间，OnCreateAndWrite 表示只有创建状态和更改状态时更新失效时间。OnReadAndWrite 则表示无论读写操作都会更新失效时间，默认为 OnCreateAndWrite</p>
+</li>
+<li><p>setStateVisibility：设置状态的可见性，状态过期后清除之前这个时间段，能不能被访问</p>
+</li>
+</ul>
+<p>除此之外，TTL 配置还可以设置在保存检查点时触发清除操作，目前的 TTL 设置只支持处理时间。另外所有集合类型的状态在设置 TTL 时，都是针对每一项元素的。也就是说，一个列表状态中的每一个元素，都会以自己的失效时间来进行清理，而不是整个列表一起清理。</p>
+<h2 id="3-OperatorState"><a href="#3-OperatorState" class="headerlink" title="3. OperatorState"></a>3. OperatorState</h2><h3 id="3-1-算子状态的创建和分类"><a href="#3-1-算子状态的创建和分类" class="headerlink" title="3.1 算子状态的创建和分类"></a>3.1 算子状态的创建和分类</h3><p>算子状态作用范围限定为当前并行子任务的实例，也就是状态槽内共享，不keyby直接调用，所以不考虑不同key的隔离。算子状态的实际应用场景不如Keyed State多，一般用在Source或Sink等与外部系统连接的算子上，或者完全没有key定义的场景。比如Flink的Kafka连接器中，就用到了算子状态。在我们给Source算子设置并行度后，Kafka消费者的每一个并行实例，都会为对应的topic主题分区维护一个偏移量，作为算子状态保存起来。这在保证Flink应用精确一次状态一致性时非常有用。当算子的并行度发生变化时，算子状态也支持在并行的算子任务实例之间做重组分配。根据状态的类型不同，重组分配的方案也会不同。</p>
+<p>算子状态主要有三种：ListState、UnionListState 和 BroadcastState。</p>
+<ul>
+<li><p>列表状态ListState：当算子并行度进行缩放调整时，算子的列表状态中的所有元素会被统一收集起来，相当于把多个分区的列表合并成了一个大列表，然后再轮询分配给所有并行任务。算子状态中不会存在键组这样的结构，所以为了方便重组分配，就把它直接定义成了列表。这也就解释了，为什么算子状态中没有最简单的值状态ValueState</p>
+</li>
+<li><p>联合列表状态UnionListState：与ListState类似，区别在于算子并行度进行缩放调整时对于状态的分配方式不同。这个是把多个分区的列表合并成了一个大列表，然后广播，所以不太建议使用</p>
+</li>
+<li><p>广播状态BroadcastState：广播状态在每个并行子任务上的实例都一样，所以在并行度调整的时候就比较简单，只要复制一份到新的并行任务就可以实现扩展。在底层，广播状态是以类似映射结构map的键值对来保存的，必须基于一个广播流来创建。</p>
+</li>
+</ul>
+<p>状态从本质上来说就是算子并行子任务实例上的一个特殊本地变量，它的特殊之处就在于Flink会提供完整的管理机制，来保证它的持久化保存，以便发生故障时进行状态恢复，另外还可以针对不同的key保存独立的状态实例。按键分区状态对这两个功能都要考虑，而算子状态并不考虑key的影响，看起来算子状态的使用应该更加简单才对。<strong>现在有个问题是，重启后数据还会被发往之前分配的分区吗？</strong>不一定，因为并行度可能发生了调整。</p>
+<p>对于KeyedState这个问题很好解决：状态都是跟key相关的，而相同key的数据不管发往哪个分区，总是会全部进入一个分区的；于是只要将状态也按照key的哈希值计算出对应的分区，进行重组分配就可以了。而对于OperatorState来说，因为不存在key，所有数据发往哪个分区是不可预测的，所以Flink无法直接判断该怎样保存和恢复状态，而是提供了接口，让我们根据业务需求自行设计状态的快照保存（snapshot）和恢复（restore）逻辑。</p>
+<h3 id="3-2-CheckpointedFunction接口"><a href="#3-2-CheckpointedFunction接口" class="headerlink" title="3.2 CheckpointedFunction接口"></a>3.2 CheckpointedFunction接口</h3><p>在 Flink 中，对状态进行持久化保存的快照机制叫作检查点，使用算子状态时，需要对检查点的相关操作进行定义，实现一个 CheckpointedFunction 接口。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public interface CheckpointedFunction &#123;</span><br><span class="line">    // 保存状态快照到检查点时，调用这个方法</span><br><span class="line">    void snapshotState(FunctionSnapshotContext context) throws Exception</span><br><span class="line">    // 初始化状态时调用这个方法，也会在恢复状态时调用</span><br><span class="line">    // 这里的context才是真正的上下文信息，上面那个不全</span><br><span class="line">    void initializeState(FunctionInitializationContext context) throws Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每次应用保存检查点做快照时，都会调用snapshotState()方法，将状态进行外部持久化。而在算子任务进行初始化时，会调用initializeState()方法。这又有两种情况：一种是整个应用第一次运行，这时状态会被初始化为一个默认值，另一种是应用重启时，从检查点或者保存点中读取之前状态的快照，并赋给本地状态。所以，<strong>接口中的snapshotState()方法定义了检查点的快照保存逻辑，而initializeState()方法不仅定义了初始化逻辑，也定义了恢复逻辑。</strong></p>
+<h3 id="3-3-案例"><a href="#3-3-案例" class="headerlink" title="3.3 案例"></a>3.3 案例</h3><p>自定义 SinkFunction 在 CheckpointedFunction 中进行数据缓存，然后统一发送到下游，发送到下游的时候涉及到了状态的分区重组。</p>
+<p>代码见com.study.chapter07.F44_CheckPointTest</p>
+<p>注意这里状态的分区重组不是我们自定义的，而是调用状态时就自动调用的。对于不同类型的算子状态，需要调用不同的获取状态对象的接口，对应地也就会使用不同的状态分配重组算法。比如获取列表状态时，调用getListState() 会使用最简单的 平均分割重组even-split redistribution算法；而获取联合列表状态时，调用的是getUnionListState() ， 对应就会使用联合重组union redistribution算法。</p>
+<h2 id="4-广播状态"><a href="#4-广播状态" class="headerlink" title="4. 广播状态"></a>4. 广播状态</h2><p>Broadcast State，从概念和原理上讲，广播状态非常容易理解：状态广播出去，所有并行子任务的状态都是相同的。让所有并行子任务都持有同一份状态，也就意味着一旦状态有变化，所以子任务上的实例都要更新。什么时候会用到这样的广播状态呢？</p>
+<p>一个最为普遍的应用，就是动态配置或者动态规则。我们在处理流数据时，有时会基于一些配置或者规则。简单的配置当然可以直接读取配置文件，一次加载，永久有效；但数据流是连续不断的，如果这配置随着时间推移还会动态变化，那又该怎么办呢？一个简单的想法是，定期扫描配置文件，发现改变就立即更新。但这样就需要另外启动一个扫描进程，如果扫描周期太长，配置更新不及时就会导致结果错误；如果扫描周期太短，又会耗费大量资源做无用功。我们可以将这动态的配置数据看作一条流，将这条流和本身要处理的数据流进行连接connect，就可以实时地更新配置进行计算了。</p>
+<p>由于配置或者规则数据是全局有效的，我们需要把它广播给所有的并行子任务。而子任务需要把它作为一个算子状态保存起来，以保证故障恢复后处理结果是一致的。这时的状态，就是一个典型的广播状态。广播状态与其他算子状态的列表结构不同，底层是以键值对形式描述的，所以其实就是一个MapState。</p>
+<p>在代码上，可以直接调用DataStream的broadcast()方法，传入一个状态描述器就可以得到一个广播流，进而将要处理的数据流与这条广播流进行连接connect，就会得到广播连接流BroadcastConnectedStream，广播状态只能用在广播连接流中。</p>
+<p>案例：判断用户先后发生的行为的组合模式，比如登录-下单或者登录-支付。</p>
+<p>代码见 com.study.chapter07.F45_BroadcastStateTest，这个写的有问题，直接运行就能看到问题在哪儿</p>
+<h2 id="5-状态持久化和状态后端"><a href="#5-状态持久化和状态后端" class="headerlink" title="5. 状态持久化和状态后端"></a>5. 状态持久化和状态后端</h2><p>在 Flink 的状态管理机制中，很重要的一个功能就是<strong>对状态进行持久化保存</strong>，这样就可以在发生故障后进行重启恢复。它会将当前所有分布式状态进行快照保存，写入一个检查点或者保存点保存到外部存储系统中。具体的存储介质，一般是分布式文件系统。</p>
+<h3 id="5-1-检查点与保存点"><a href="#5-1-检查点与保存点" class="headerlink" title="5.1 检查点与保存点"></a>5.1 检查点与保存点</h3><p>检查点其实就是<strong>所有任务的状态在某个时间点的一个快照</strong>。在一个流应用程序运行时，Flink会定期保存检查点，在检查点中会记录每个算子的id和状态。如果发生故障，Flink就会用最近一次成功保存的检查点来恢复应用的状态，重新启动处理流程。</p>
+<p>如果保存检查点之后又处理了一些数据，故障重启后就会丢失这些数据。为了让最终处理结果正确，我们还需要让源算子重新读取这些数据，再次处理一遍。这就需要流的数据源具有数据重放的能力，一个典型的例子就是Kafka，我们可以通过保存消费数据的偏移量、故障重启后重新提交来实现数据的重放。这是对至少一次状态一致性的保证，如果希望实现精确一次的一致性，还需要数据写入外部系统时的相关保证。关于这部分内容我们会在第10章继续讨论。</p>
+<p>默认情况下，检查点是被禁用的，需要在代码中手动开启，这里传入的参数是检查点的间隔时间，单位为毫秒。除了检查点之外，Flink还提供了保存点的功能。保存点在原理和形式上跟检查点完全一样，也是状态持久化保存的一个快照，区别在于，保存点是自定义的镜像保存，所以不会由Flink自动创建，而需要用户手动触发。这在有计划地停止、重启应用时非常有用。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">StreamExecutionEnvironment env = StreamExecutionEnvironment.getEnvironment();</span><br><span class="line">env.enableCheckpointing(1000);</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-状态后端"><a href="#5-2-状态后端" class="headerlink" title="5.2 状态后端"></a>5.2 状态后端</h3><p>检查点的保存离不开JobManager和TaskManager，以及外部存储系统的协调。在应用进行检查点保存时，首先会由JobManager向所有TaskManager发出触发检查点的命令，TaskManger收到之后，将当前任务的所有状态进行快照保存，持久化到远程的存储介质中，完成之后向JobManager返回确认信息。这个过程是分布式的，当JobManger收到所有TaskManager的返回信息后，就会确认当前检查点成功保存。而这一切工作的协调，就需要一个专职人员来完成。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220807151554326.png" alt="image-20220807151554326" style="zoom:67%;" />
+
+
+
+<p>在Flink中，状态的存储、访问以及维护，都是由一个可插拔的组件决定的，这个组件就叫作状态后端state backend。<strong>状态后端主要负责两件事：一是本地的状态管理，二是将检查点写入远程的持久化存储。</strong></p>
+<h4 id="5-2-1-状态后端的分类"><a href="#5-2-1-状态后端的分类" class="headerlink" title="5.2.1 状态后端的分类"></a>5.2.1 状态后端的分类</h4><p>Flink中提供了两类不同的状态后端，一种是哈希表状态后端HashMapStateBackend，另一种是内嵌RocksDB状态后端EmbeddedRocksDBStateBackend，系统默认的状态后端是HashMapStateBackend。</p>
+<p><strong>HashMapStateBackend：</strong>把状态存放在内存里，哈希表状态后端在内部会直接把状态当作对象，保存在Taskmanager的JVM堆（heap）上。普通的状态以及窗口中收集的数据和触发器，都会以键值对的形式存储起来，所以底层是一个哈希表（HashMap），这种状态后端也因此得名。对于检查点的保存，一般是放在持久化的分布式文件系统中，也可以通过配置检查点存储CheckpointStorage来另外指定。由于是把本地状态全部放入内存，它可以获得最快的读写速度，使计算性能达到最佳，代价则是内存的占用。</p>
+<p><strong>EmbeddedRocksDBStateBackend：</strong>RocksDB是一种内嵌的key-value存储介质，会将处理中的数据全部放入RocksDB数据库中，RocksDB默认存储在TaskManager的本地数据目录里。数据被存储为序列化的字节数组ByteArrays，读写操作需要序列化&#x2F;反序列化，因此状态的访问性能要差一些。因为做了序列化，key的比较也会按照字节进行，而不是直接调用.hashCode()和.equals()方法。对于检查点，同样会写入到远程的持久化文件系统中。它执行的是异步快照，也就是不会因为保存检查点而阻塞数据的处理，而且它还提供了增量式保存检查点的机制，这在很多情况下可以大大提升保存效率。</p>
+<h4 id="5-2-2-如何选择正确的状态后端"><a href="#5-2-2-如何选择正确的状态后端" class="headerlink" title="5.2.2 如何选择正确的状态后端"></a>5.2.2 如何选择正确的状态后端</h4><p>HashMap和RocksDB两种状态后端最大的区别，就在于本地状态存放在哪里：前者是内存，后者是RocksDB。在实际应用中，选择那种状态后端，主要是在处理性能和应用的扩展性上做一个选择。HashMapStateBackend是内存计算，读写速度非常快，但是时间长了可能会耗尽内存资源。而RocksDB是硬盘存储，所以可以根据可用的磁盘空间进行扩展，而且是唯一支持增量检查点的状态后端，所以它非常适合于超级海量状态的存储。不过由于每个状态的读写都需要做序列化&#x2F;反序列化，而且可能需要直接从磁盘读取数据，这就会导致性能的降低，平均读写性能要比HashMapStateBackend慢一个数量级。</p>
+<p>我们可以发现，实际应用就是权衡利弊后的取舍。最理想的当然是处理速度快且内存不受限制可以处理海量状态，那就需要非常大的内存资源了，这会导致成本超出项目预算。比起花更多的钱，稍慢的处理速度或者稍小的处理规模，老板可能更容易接受一点。</p>
+<h4 id="5-2-3-状态后端的配置"><a href="#5-2-3-状态后端的配置" class="headerlink" title="5.2.3 状态后端的配置"></a>5.2.3 状态后端的配置</h4><p>在配置文件中配置</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 默认状态后端，可选值有hashmap和rocksdb</span><br><span class="line">state.backend: hashmap</span><br><span class="line"># 存放检查点的文件路径</span><br><span class="line">state.checkpoints.dir: hdfs://namenode:40010/flink/checkpoints</span><br></pre></td></tr></table></figure>
+
+<p>在代码中配置，如果想在 IDE 中使用 EmbeddedRocksDBStateBackend，需要添加RocksDB的相关依赖。而由于Flink发行版中默认就包含了RocksDB，所以只要我们的代码中没有使用RocksDB的相关内容，就不需要引入这个依赖。即使我们在flink-conf.yaml配置文件中设定了state.backend为rocksdb，也可以直接正常运行，并且使用RocksDB作为状态后端。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">env.setStateBackend(new HashMapStateBackend());</span><br><span class="line">env.setStateBackend(new EmbeddedRocksDBStateBackend());</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-本章总结"><a href="#6-本章总结" class="headerlink" title="6. 本章总结"></a>6. 本章总结</h2><p>有状态的流处理是Flink的本质，所以状态可以说是Flink中最为重要的概念。之前聚合算子、窗口算子中已经提到了状态的概念，而通过本章的学习，我们对整个Flink的状态管理机制和状态编程的方式都有了非常详尽的了解。本章从状态的概念和分类出发，详细介绍了Flink中的按键分区状态（KeyedState）和算子状态（OperatorState）的特点和用法，并对广播状态（BroadcastState）做了进一步的展开说明。最后，我们还介绍了状态的持久化和状态后端，引出了检查点（checkpoint）的概念。检查点是一个非常重要的概念，是Flink容错机制的核心，我们将在下一章继续进行详细的讨论。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%802%E4%B9%8BDataStreamAPI/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/launching.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Flink基础2之DataStreamAPI</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%803%E4%B9%8B%E6%97%B6%E9%97%B4%E5%92%8C%E7%AA%97%E5%8F%A3/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/airport.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Flink基础3之时间和窗口</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0"><span class="toc-text">七、处理函数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9F%BA%E6%9C%AC%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0"><span class="toc-text">1. 基本处理函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0%E7%9A%84%E5%8A%9F%E8%83%BD%E5%92%8C%E4%BD%BF%E7%94%A8"><span class="toc-text">1.1 处理函数的功能和使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-ProcessFunction%E8%A7%A3%E6%9E%90"><span class="toc-text">1.2 ProcessFunction解析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-1-%E6%8A%BD%E8%B1%A1%E6%96%B9%E6%B3%95processElement"><span class="toc-text">1.2.1 抽象方法processElement()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-2-%E9%9D%9E%E6%8A%BD%E8%B1%A1%E6%96%B9%E6%B3%95onTimer"><span class="toc-text">1.2.2 非抽象方法onTimer()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0%E7%9A%84%E5%88%86%E7%B1%BB"><span class="toc-text">1.3 处理函数的分类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-KeyedProcessFunction"><span class="toc-text">2. KeyedProcessFunction</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%AE%9A%E6%97%B6%E5%99%A8%E5%92%8C%E5%AE%9A%E6%97%B6%E6%9C%8D%E5%8A%A1"><span class="toc-text">2.1 定时器和定时服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-KeyedProcessFunction%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">2.2 KeyedProcessFunction的使用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-ProcessWindowFunction"><span class="toc-text">3. ProcessWindowFunction</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%AA%97%E5%8F%A3%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">3.1 窗口处理函数的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-ProcessWindowFunction"><span class="toc-text">3.2 ProcessWindowFunction</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-TopN%E6%A1%88%E4%BE%8B"><span class="toc-text">4. TopN案例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BE%A7%E8%BE%93%E5%87%BA%E6%B5%81"><span class="toc-text">5. 侧输出流</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%A4%9A%E6%B5%81%E8%BD%AC%E6%8D%A2"><span class="toc-text">八、多流转换</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%88%86%E6%B5%81"><span class="toc-text">1. 分流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%90%88%E6%B5%81"><span class="toc-text">2. 合流</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-Union"><span class="toc-text">2.1 Union</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-Connect"><span class="toc-text">2.2 Connect</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%B9%BF%E6%92%AD%E8%BF%9E%E6%8E%A5%E6%B5%81"><span class="toc-text">2.3 广播连接流</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%8F%8C%E6%B5%81join"><span class="toc-text">3. 双流join</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Window-Join"><span class="toc-text">3.1 Window Join</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Interval-Join"><span class="toc-text">3.2 Interval Join</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Window-CoGroup"><span class="toc-text">3.3 Window CoGroup</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%9C%AC%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="toc-text">4. 本章总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E7%8A%B6%E6%80%81%E7%BC%96%E7%A8%8B"><span class="toc-text">九、状态编程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Flink-%E4%B8%AD%E7%9A%84%E7%8A%B6%E6%80%81"><span class="toc-text">1. Flink 中的状态</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E6%9C%89%E7%8A%B6%E6%80%81%E7%AE%97%E5%AD%90"><span class="toc-text">1.1 有状态算子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E7%8A%B6%E6%80%81%E7%9A%84%E7%AE%A1%E7%90%86"><span class="toc-text">1.2 状态的管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E7%8A%B6%E6%80%81%E7%9A%84%E5%88%86%E7%B1%BB"><span class="toc-text">1.3 状态的分类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-1-%E6%89%98%E7%AE%A1%E7%8A%B6%E6%80%81%E5%92%8C%E5%8E%9F%E5%A7%8B%E7%8A%B6%E6%80%81"><span class="toc-text">1.3.1 托管状态和原始状态</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-2-%E7%AE%97%E5%AD%90%E7%8A%B6%E6%80%81%E5%92%8C%E6%8C%89%E9%94%AE%E5%88%86%E5%8C%BA%E7%8A%B6%E6%80%81"><span class="toc-text">1.3.2 算子状态和按键分区状态</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-KeyedState"><span class="toc-text">2. KeyedState</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E7%8A%B6%E6%80%81%E7%9A%84%E5%88%9B%E5%BB%BA%E5%92%8C%E5%88%86%E7%B1%BB"><span class="toc-text">2.1 状态的创建和分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%A1%88%E4%BE%8B"><span class="toc-text">2.2 案例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E7%8A%B6%E6%80%81%E7%94%9F%E5%AD%98%E6%97%B6%E9%97%B4"><span class="toc-text">2.3 状态生存时间</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-OperatorState"><span class="toc-text">3. OperatorState</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%AE%97%E5%AD%90%E7%8A%B6%E6%80%81%E7%9A%84%E5%88%9B%E5%BB%BA%E5%92%8C%E5%88%86%E7%B1%BB"><span class="toc-text">3.1 算子状态的创建和分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-CheckpointedFunction%E6%8E%A5%E5%8F%A3"><span class="toc-text">3.2 CheckpointedFunction接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E6%A1%88%E4%BE%8B"><span class="toc-text">3.3 案例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%B9%BF%E6%92%AD%E7%8A%B6%E6%80%81"><span class="toc-text">4. 广播状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E7%8A%B6%E6%80%81%E6%8C%81%E4%B9%85%E5%8C%96%E5%92%8C%E7%8A%B6%E6%80%81%E5%90%8E%E7%AB%AF"><span class="toc-text">5. 状态持久化和状态后端</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E6%A3%80%E6%9F%A5%E7%82%B9%E4%B8%8E%E4%BF%9D%E5%AD%98%E7%82%B9"><span class="toc-text">5.1 检查点与保存点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E7%8A%B6%E6%80%81%E5%90%8E%E7%AB%AF"><span class="toc-text">5.2 状态后端</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-1-%E7%8A%B6%E6%80%81%E5%90%8E%E7%AB%AF%E7%9A%84%E5%88%86%E7%B1%BB"><span class="toc-text">5.2.1 状态后端的分类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-2-%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E6%AD%A3%E7%A1%AE%E7%9A%84%E7%8A%B6%E6%80%81%E5%90%8E%E7%AB%AF"><span class="toc-text">5.2.2 如何选择正确的状态后端</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-3-%E7%8A%B6%E6%80%81%E5%90%8E%E7%AB%AF%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="toc-text">5.2.3 状态后端的配置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%9C%AC%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="toc-text">6. 本章总结</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,673 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Git | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;Git&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;Git介绍 分布式版本控制工具 VS 集中式版本控制工具Git安装 基于官网发布的最新版本安装讲解Git命令 基于开发案例，详细讲解git的常用命令Git分支 分支特性 分支创建 分支转换 分支合并 代码合并冲突解决Idea 集成Git&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;GitHub&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E5%9F%BA%E7%A1%80%E5%B7%A5%E5%85%B7/Git/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;Git&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;Git介绍 分布式版本控制工具 VS 集中式版本控制工具Git安装 基于官网发布的最新版本安装讲解Git命令 基于开发案例，详细讲解git的常用命令Git分支 分支特性 分支创建 分支转换 分支合并 代码合并冲突解决Idea 集成Git&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;GitHub&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/diving-illustration.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.748Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/diving-illustration.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E5%9F%BA%E7%A1%80%E5%B7%A5%E5%85%B7/Git/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Git',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/christmas-4701783.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Git</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.748Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%9F%BA%E7%A1%80%E5%B7%A5%E5%85%B7/">基础工具</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">6.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>21分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Git"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">=====================Git=======================</span><br><span class="line">Git介绍 分布式版本控制工具 VS 集中式版本控制工具</span><br><span class="line">Git安装 基于官网发布的最新版本安装讲解</span><br><span class="line">Git命令 基于开发案例，详细讲解git的常用命令</span><br><span class="line">Git分支 分支特性 分支创建 分支转换 分支合并 代码合并冲突解决</span><br><span class="line">Idea 集成Git</span><br><span class="line"></span><br><span class="line">==================GitHub=======================</span><br><span class="line">创建远程库</span><br><span class="line">代码推送 push</span><br><span class="line">代码拉取 pull</span><br><span class="line">代码克隆 clone</span><br><span class="line">ssh免密登录</span><br><span class="line">idea集成GitHub</span><br><span class="line"></span><br><span class="line">==================Gitee码云=====================</span><br><span class="line">码云创建远程库</span><br><span class="line">idea集成gitee码云</span><br><span class="line">码云连接GitHub进行代码的复制和迁移</span><br><span class="line"></span><br><span class="line">==================GitLab========================</span><br><span class="line">基于局域网的代码管理系统，公司如果不愿意放GitHub的话，可以自己搭建</span><br><span class="line">GitLab服务器的搭建和部署</span><br><span class="line">idea集成GitLab</span><br><span class="line"></span><br><span class="line">课程目标：五小时熟练掌握以上四个工具的使用</span><br></pre></td></tr></table></figure>
+
+<h1 id="一、Git概述"><a href="#一、Git概述" class="headerlink" title="一、Git概述"></a>一、Git概述</h1><blockquote>
+<p>官网：<a target="_blank" rel="noopener" href="https://git-scm.com/">https://git-scm.com/</a></p>
+</blockquote>
+<p>Git 是一个免费的、开源的<strong>分布式版本控制系统</strong>，可以快速高效地处理从小型到大型的各种项目。</p>
+<p>Git 易于学习，占地面积小，性能极快。 它具有廉价的本地库(可以放<strong>磁盘</strong>)，方便的暂存区域和多个工作流分支等特性。其性能优于 Subversion、CVS、Perforce 和 ClearCase 等版本控制工具。</p>
+<h2 id="1-何为版本控制"><a href="#1-何为版本控制" class="headerlink" title="1. 何为版本控制"></a>1. 何为版本控制</h2><p>版本控制是一种记录文件内容变化，以便将来查阅特定版本修订情况的系统。</p>
+<p>版本控制其实最重要的是可以记录文件修改历史记录，从而让用户能够查看历史版本， 方便版本切换。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928200234883.png" alt="image-20210928200234883" style="zoom:50%;" />
+
+<p><strong>为什么需要版本控制？</strong>从个人开发过渡到团队协作。</p>
+<p>小红和小蓝分别修改了代码，小红提交后如果小蓝再提交，就会把小红的覆盖掉，如何把两个人修改的结果都保留并合并呢？</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928200450832.png" alt="image-20210928200450832" style="zoom: 50%;" />
+
+<h2 id="2-版本控制工具"><a href="#2-版本控制工具" class="headerlink" title="2. 版本控制工具"></a>2. 版本控制工具</h2><h3 id="2-1-集中式版本控制工具"><a href="#2-1-集中式版本控制工具" class="headerlink" title="2.1 集中式版本控制工具"></a>2.1 集中式版本控制工具</h3><p>CVS、SVN(Subversion)、VSS……</p>
+<p>集中化的版本控制系统诸如 CVS、SVN 等，都有一个单一的集中管理的服务器，保存所有文件的修订版本，而协同工作的人们都通过客户端连到这台服务器，取出最新的文件或者提交更新。多年以来，这已成为版本控制系统的标准做法。</p>
+<p>这种做法带来了许多好处，每个人都可以在一定程度上看到项目中的其他人正在做些什么。而管理员也可以轻松掌控每个开发者的权限，并且管理一个集中化的版本控制系统，要远比在各个客户端上维护本地数据库来得轻松容易。</p>
+<p>事分两面，有好有坏。这么做显而易见的缺点是<strong>中央服务器的单点故障</strong>。如果服务器宕机一小时，那么在这一小时内，谁都无法提交更新，也就无法协同工作。</p>
+<h4 id="2-2-分布式版本控制工具"><a href="#2-2-分布式版本控制工具" class="headerlink" title="2.2 分布式版本控制工具"></a>2.2 分布式版本控制工具</h4><p>Git、Mercurial、Bazaar、Darcs……</p>
+<p>像 Git 这种分布式版本控制工具，客户端提取的不是最新版本的文件快照，而是把代码从<strong>远程库</strong>完整地镜像下来（本地库）。这样任何一处协同工作用的文件发生故障，事后都可以用其他客户端的本地仓库进行恢复。因为每个客户端的每一次文件提取操作，实际上都是一次对<strong>整个文件仓库的完整备份</strong>。</p>
+<p>分布式的版本控制系统出现之后,解决了集中式版本控制系统的缺陷:</p>
+<ul>
+<li>服务器断网的情况下也可以进行开发（因为版本控制是在本地进行的，只是无法推送）</li>
+<li>每个客户端保存的也都是整个完整的项目（包含历史记录，更加安全）</li>
+</ul>
+<h2 id="3-Git工作机制"><a href="#3-Git工作机制" class="headerlink" title="3. Git工作机制"></a>3. Git工作机制</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928203923123.png" alt="image-20210928203923123" style="zoom:67%;" />
+
+<p>工作区指的是你代码存放的磁盘的目录位置，写好代码后add进暂存区，暂存区只是临时存储，也可以随时删除，此时依然没有生产历史版本，只有把暂存区的代码提交到本地库，才会生产历史版本，从此这个代码就<strong>再也删不掉</strong>了，除非删库跑路</p>
+<h2 id="4-Git-和代码托管中心"><a href="#4-Git-和代码托管中心" class="headerlink" title="4. Git 和代码托管中心"></a>4. Git 和代码托管中心</h2><p>代码托管中心是基于网络服务器的远程代码仓库，一般我们简单称为<strong>远程库</strong>。</p>
+<ul>
+<li>局域网：GitLab</li>
+<li>互联网：GitHub（外网）、Gitee 码云（国内网站）</li>
+</ul>
+<h1 id="二、Git安装"><a href="#二、Git安装" class="headerlink" title="二、Git安装"></a>二、Git安装</h1><p><strong>所有软件的安装路径，最好都是非中文无空格！！！</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928215404021.png" alt="image-20210928215404021"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928215828284.png" alt="image-20210928215828284"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928220151187.png" alt="image-20210928220151187"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928220326516.png" alt="image-20210928220326516"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928220730097.png" alt="image-20210928220730097"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928220858252.png" alt="image-20210928220858252"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928221306956.png" alt="image-20210928221306956"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928221528618.png" alt="image-20210928221528618"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928221708157.png" alt="image-20210928221708157"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928221857017.png" alt="image-20210928221857017"></p>
+<p>凭据管理器，将来要用Git客户端，去远程库进行代码的推送和拉取，不可能每次都登录一下</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928222003961.png" alt="image-20210928222003961"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928222415874.png"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928222518157.png" alt="image-20210928222518157"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928222810117.png" alt="image-20210928222810117"></p>
+<p>安装成功！！！</p>
+<h1 id="三、Git常用命令"><a href="#三、Git常用命令" class="headerlink" title="三、Git常用命令"></a>三、Git常用命令</h1><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ctrl + 滚轮</td>
+<td>放大字体</td>
+</tr>
+<tr>
+<td>git –version</td>
+<td>查看版本</td>
+</tr>
+<tr>
+<td>git config –global user.name 用户名</td>
+<td>设置用户签名</td>
+</tr>
+<tr>
+<td>git config –global user.email 邮箱</td>
+<td>设置用户签名</td>
+</tr>
+<tr>
+<td>git init</td>
+<td>初始化本地库</td>
+</tr>
+<tr>
+<td>git status</td>
+<td>查看本地库状态</td>
+</tr>
+<tr>
+<td>git add 文件名</td>
+<td>添加到暂存区</td>
+</tr>
+<tr>
+<td>git commit -m “日志信息” 文件名</td>
+<td>提交到本地库</td>
+</tr>
+<tr>
+<td>git reflog</td>
+<td>查看历史记录</td>
+</tr>
+<tr>
+<td>git log</td>
+<td>查看版本详细信息</td>
+</tr>
+<tr>
+<td>git reset –hard 版本号</td>
+<td>版本穿梭</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>git branch 分支名</td>
+<td>创建分支</td>
+</tr>
+<tr>
+<td>git branch -v</td>
+<td>查看分支</td>
+</tr>
+<tr>
+<td>git checkout 分支名</td>
+<td>切换分支</td>
+</tr>
+<tr>
+<td>git merge 分支名</td>
+<td>把指定的分支合并到当前分支上</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>git remote -v</td>
+<td>查看当前所有远程地址别名</td>
+</tr>
+<tr>
+<td>git remote add 别名 远程地址</td>
+<td>起别名，一般用库名就行</td>
+</tr>
+<tr>
+<td>git push 别名 分支</td>
+<td>推送到远程库，注意推送的最小单位是分支</td>
+</tr>
+<tr>
+<td>git clone 远程地址</td>
+<td>将远程仓库的内容克隆到本地</td>
+</tr>
+<tr>
+<td>git pull 远程库地址别名 远程分支名</td>
+<td>将远程仓库对于分支最新内容拉下来后与当前本地分支直接合并</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>初始化本地库：要想要Git管理一个目录，首先Git要获得这个目录的管理权</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">demo流程：</span><br><span class="line">找个空文件夹，右键打开git，先初始化，这个时候会生成.git目录，默认是隐藏的，需要设置显示隐藏的项目，注意里面的东西千万不能修改</span><br><span class="line">然后vim hello.txt，写入文件后再次查看状态，发现有未被追踪的文件</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">==============================基础操作============================</span><br><span class="line">从新建一个Git_test文件夹开始</span><br><span class="line">右键Git Bash</span><br><span class="line">git init 				#初始化</span><br><span class="line">ll -a 					#查看文件</span><br><span class="line">git status 				#查看状态</span><br><span class="line">vim hello.txt 			#新建文件</span><br><span class="line">git status 				#查看状态</span><br><span class="line">git add hello.txt 		#添加到暂存区</span><br><span class="line">git status 				#查看状态</span><br><span class="line">git rm --cached hello.txt #从暂存区删除</span><br><span class="line">git status 				#查看状态</span><br><span class="line">git add hello.txt 		#再次添加到暂存区</span><br><span class="line">git status 				#查看状态</span><br><span class="line">git commit -m &quot;my first commit&quot; hello.txt #将暂存区的文件提交到本地库</span><br><span class="line">此时会报错：Please tell me who you are.需要设置用户签名</span><br><span class="line">git config --global user.name kuyehen</span><br><span class="line">git config --global user.email 2711825945@qq.com</span><br><span class="line">cat ~/.gitconfig 		#查看签名信息</span><br><span class="line">git commit -m &quot;my first commit&quot; hello.txt #将暂存区的文件提交到本地库</span><br><span class="line">git status 				#查看状态</span><br><span class="line">git reflog				#查看版本信息，版本号取前7位</span><br><span class="line">git log					#查看详细版本信息</span><br><span class="line">vim hello.txt 			#修改文件，添加一行22222</span><br><span class="line">git status 				#查看状态</span><br><span class="line">git add hello.txt 		#将修改后的文件再次添加到暂存区</span><br><span class="line">git status 				#查看状态</span><br><span class="line">git commit -m &quot;my second commit&quot; hello.txt #将暂存区的文件提交</span><br><span class="line">git reflog				#查看版本信息，此时会有两个版本</span><br><span class="line">vim hello.txt			#第三次修改</span><br><span class="line">git add hello.txt		#添加到暂存区</span><br><span class="line">git commit -m &quot;my third commit&quot; hello.txt #将暂存区的文件提交</span><br><span class="line">git reflog				#查看版本信息</span><br><span class="line">注意，到这里为止，hello.txt已经有了三个版本，但是在工作区，永远只会有一个文件，它不是靠副本来维持版本的</span><br><span class="line">git reset --hard 6bea208	#版本穿梭，后面是版本号</span><br><span class="line">cat hello.txt			#没有333了，只有222</span><br><span class="line">cat ./.git/HEAD			#发现指针指向了master分支(也可以去文件夹看)</span><br><span class="line">cat ./.git/refs/heads/master#而master分支指向了第二个版本</span><br><span class="line">以上是版本的穿梭，可以随意穿梭了</span><br><span class="line"></span><br><span class="line">================================分支============================</span><br><span class="line">git branch -v			#查看分支</span><br><span class="line">git branch hot-fix		#创建分支</span><br><span class="line">git branch -v			#查看分支</span><br><span class="line">git checkout hot-fix	#切换分支</span><br><span class="line">git branch -v			#查看分支</span><br><span class="line">vim hello.txt			#对hot-fix分支修改</span><br><span class="line">git add hello.txt		#添加到暂存区</span><br><span class="line">git commit -m &quot;hot-fix first commit&quot; hello.txt #将暂存区的文件提交</span><br><span class="line">git status				#查看状态</span><br><span class="line">cat hello.txt			#内容改变</span><br><span class="line">cat ./.git/HEAD			#指针改变</span><br><span class="line">cat ./.git/refs/heads/master#指针改变</span><br><span class="line">cat ./.git/refs/heads/hot-fix#指针改变</span><br><span class="line">git reflog				#查看所有分支的信息</span><br><span class="line">git checkout master		#切换分支</span><br><span class="line">cat hello.txt</span><br><span class="line">git merge hot-fix		#把指定的分支合并到当前分支上</span><br><span class="line">上面是正常合并，只有hot-fix分支改了，master分支没有改</span><br><span class="line">如果两个分支的数据都修改了呢？？？冲突合并</span><br><span class="line">vim hello.txt			#在master分支修改，然后提交</span><br><span class="line">git add hello.txt</span><br><span class="line">git commit -m &quot;master test&quot; hello.txt</span><br><span class="line">git checkout hot-fix	#切换分支</span><br><span class="line">vim hello.txt			#在hot-fix分支修改，然后提交</span><br><span class="line">git add hello.txt</span><br><span class="line">git commit -m &quot;hot-fix test&quot; hello.txt</span><br><span class="line">git checkout master		#切换分支</span><br><span class="line">git merge hot-fix		#把指定的分支合并到当前分支上</span><br><span class="line">cat hello.txt			#查看冲突</span><br><span class="line">vim hello.txt			#手动修改，决定要保留的代码，但是行数要和原来一致</span><br><span class="line">git add hello.txt		#添加到暂存区</span><br><span class="line">git commit -m &quot;merge hot-fix&quot; #注意，这次不能加文件名！！！</span><br><span class="line">注意合并的修改只针对当前分支，hot-fix原来的代码是不会被修改的</span><br><span class="line"></span><br><span class="line">=======================远程库============================</span><br><span class="line">git remove -v			#查看远程库别名</span><br><span class="line">git remote add git_test https://github.com/he-tengfei/Git_test.git	#给远程库起别名</span><br><span class="line">git remove -v			#查看远程库别名</span><br><span class="line">git push git_test master	#推送到远程库</span><br><span class="line">注意此时会弹出一个小框，让你选择是口令登录还是选择一个浏览器账号</span><br><span class="line">先选浏览器账号，绑定后推送成功，此时可以在GitHub上查看了，在远程库手动修改代码</span><br><span class="line">此时如果在windows左下角搜凭据管理器的话，上面就会有github了</span><br><span class="line">windows只能记住一个人的凭据，如果想换个github账号登录的话，要先在凭据管理器上删除当前凭据</span><br><span class="line">git pull git_test master	#拉取远程库代码</span><br><span class="line">cat hello.txt				#查看代码</span><br><span class="line">此时如果同事想看你的代码该怎么办？</span><br><span class="line">去GitHub找到想查看的远程库的https链接：https://github.com/he-tengfei/Git_test.git</span><br><span class="line">在本地新建个文件夹，git init初始化后，模拟同事</span><br><span class="line">git clone https://github.com/he-tengfei/Git_test.git</span><br><span class="line">发现，clone是不需要账号密码的，因为创建的是公共库</span><br><span class="line">git remote -v				#查看远程地址别名</span><br><span class="line">git status					#git里套git？最好不要在git init的文件夹下clone</span><br><span class="line">cd git_test</span><br><span class="line">git remote -v				#查看远程地址别名</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">====================几个概念=================</span><br><span class="line">(1) on branch master：在master分支</span><br><span class="line">(2) no commits yet：目前还没有提交过任何东西</span><br><span class="line">(3) nothing to commit：目前没有东西需要提交</span><br><span class="line">(4) untracked files：未被追踪的文件，红色</span><br><span class="line">(5) changes to be committed：要被提交的变更，绿色，此时文件在暂存区中，还没有生成历史版本</span><br><span class="line">(6) 从暂存区删除：暂存区的文件可以被删掉，但只是不存在于暂存区了，在工作区还是有的</span><br><span class="line">(7) 用户签名：签名的作用是区分不同操作者身份。用户的签名信息在每一个版本的提交信息中能够看到，以此确认本次提交是谁做的。Git 首次安装必须设置一下用户签名，否则无法提交代码。注意：这里设置用户签名和将来登录 GitHub（或其他代码托管中心）的账号没有任何关系。</span><br><span class="line">(8) LF与CRLF：Linux和windows的换行符</span><br><span class="line">(9) nothing to commit, working tree clean：没有什么需要提交，工作数很干净</span><br><span class="line">(10) 1 file changed，1 insertion(+)，1 deletion(-)：git是按照行来维护文件的，当对一行修改时，先删除行再添加行</span><br><span class="line">(11) HEAD -&gt; master：指针指向master</span><br><span class="line">(12) HEAD is now at 6bea208 my second commit：指针在这个位置</span><br><span class="line">(13) Merge conflict in hello.txt：合并冲突</span><br><span class="line">(14) master|MERGING：正在合并中，遇到了冲突</span><br><span class="line">(15) $ cat hello.txt</span><br><span class="line">    hello git !!!</span><br><span class="line">    hello git !!!</span><br><span class="line">    hello git !!!</span><br><span class="line">    &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span><br><span class="line">    hello git !!! master test</span><br><span class="line">    hello git !!!</span><br><span class="line">    =======</span><br><span class="line">    hello git !!!</span><br><span class="line">    hello git !!! hot-fix test</span><br><span class="line">    &gt;&gt;&gt;&gt;&gt;&gt;&gt; hot-fix</span><br><span class="line">    hello git !!!</span><br><span class="line">    22222</span><br><span class="line">    上面的意思是，代码一共7行，前三行和后两行没问题，4和5两行发生了冲突，head代表当前分支</span><br><span class="line">(16) 远程地址别名：想往远程库推送代码，必须要远程库地址 https://github.com/he-tengfei/Git_test.git 但是很明显这个地址太长了，给它起个短点的通俗易懂的别名就可以了</span><br><span class="line"></span><br><span class="line">(17) pull，push的时候，如果不加分支，默认提交当前分支或者全部分支？不过最好还是加上</span><br><span class="line">这种情况可能是，本地工作空间虽然有两个分支，但是远程库就一个master分支，所以pull，push的时候不加分支也没别的选，只能默认主分支</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">凭据管理器</span><br><span class="line"></span><br><span class="line">fork，fetch，pull，clone的区别？？？</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Changes not staged for commit:</span><br><span class="line">use &quot;git restore &lt;file&gt;...&quot; to discard changes in working directory</span><br><span class="line"></span><br><span class="line">git commit -a？？？</span><br><span class="line">Your branch is up to date with &#x27;origin/master&#x27;？？？？</span><br><span class="line"></span><br><span class="line">ssh和token有区别吗？？？</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210929215418078.png" alt="image-20210929215418078" style="zoom: 67%;" />
+
+
+
+
+
+
+
+
+
+<p><strong>直接对这个目录右键打开git，就能直接跳转到这个目录下</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210928234450488.png" alt="image-20210928234450488"></p>
+<h1 id="四、Git分支操作"><a href="#四、Git分支操作" class="headerlink" title="四、Git分支操作"></a>四、Git分支操作</h1><h2 id="1-什么是分支？"><a href="#1-什么是分支？" class="headerlink" title="1. 什么是分支？"></a>1. 什么是分支？</h2><p>在版本控制过程中，同时推进多个任务，为每个任务，我们就可以创建每个任务的单独分支。使用分支意味着程序员可以把自己的工作从开发主线上分离开来，开发自己分支的时候，不会影响主线分支的运行。</p>
+<p>比如下图，master分支正在生产环境上运行，要增加新功能，在代码修改期间又不能对原来的版本造成影响，另开个modify分支。modify分支完成后与master分支进行合并，合并后发现异常卡顿，于是赶紧另开hot-fix分支对其进行紧急修复，修复完与master分支合并。</p>
+<ul>
+<li>分支底层其实也是指针的引用。</li>
+<li>分支可以同时并行推进多个功能开发，提高开发效率</li>
+<li>如果某一个分支开发失败，不会对其他分支有任何影响，失败的分支删除重新开始即可</li>
+</ul>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930003357430.png" alt="image-20210930003357430" style="zoom:50%;" />
+
+
+
+<h2 id="2-分支的操作"><a href="#2-分支的操作" class="headerlink" title="2. 分支的操作"></a>2. 分支的操作</h2><p>冲突产生的表现：后面状态为 MERGING</p>
+<p>冲突产生的原因：合并分支时，两个分支在同一个文件的同一个位置有两套完全不同的修改，Git 无法替我们决定使用哪一个，必须人为决定新代码内容</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930012919944.png" alt="image-20210930012919944" style="zoom:50%;" />
+
+<h1 id="五、Git团队协作机制"><a href="#五、Git团队协作机制" class="headerlink" title="五、Git团队协作机制"></a>五、Git团队协作机制</h1><h2 id="1-团队内协作"><a href="#1-团队内协作" class="headerlink" title="1. 团队内协作"></a>1. 团队内协作</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930133815720.png" alt="image-20210930133815720"></p>
+<p><strong>添加团队成员流程</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930134425480.png" alt="image-20210930134425480"></p>
+<p>复制邀请函链接，发送给令狐冲</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930134736007.png" alt="image-20210930134736007"></p>
+<p>之后岳不群分享的远程库也能在令狐冲的GitHub上看到了，这时令狐冲修改完才能正常推送，否则一律失败</p>
+<p>推送完发现，岳不群的GitHub上也能查看到令狐冲修改后的剑法，想看原来的代码的话，可以翻历史提交记录</p>
+<h2 id="2-跨团队协作"><a href="#2-跨团队协作" class="headerlink" title="2. 跨团队协作"></a>2. 跨团队协作</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930102413436.png" alt="image-20210930102413436"></p>
+<p>跨团队协作的话，东方不败首先要拿到岳不群的华山剑法</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930140941608.png" alt="image-20210930140941608"></p>
+<p>或者岳不群直接把华山剑法的远程库链接发送给东方不败，东方不败在GitHub的地址栏里直接就能访问</p>
+<p>东方不败作为团队外的人，首先要fork一份到自己的GitHub远程库里</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930141346035.png" alt="image-20210930141346035"></p>
+<p>fork成功后，东方不败的GitHub上是这样显示的，之后东方不败就可以随意更改了，直到改成辟邪剑法</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930141540897.png" alt="image-20210930141540897"></p>
+<p>改好后，东方不败想让岳不群评估一下改的怎么样，但是她不能直接往岳不群的远程库里push，只能发生pull request，让岳不群来主动拉</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930142001877.png" alt="image-20210930142001877"></p>
+<p>这里会展示哪里做了更改</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930142110113.png" alt="image-20210930142110113"></p>
+<p>创建成功后，岳不群刷新界面就会在他自己的pull requests界面看到请求，下面可以查看具体的修改内容，如果有疑问还能实时聊天，确定没问题点merge pull request，之后就能在自己远程库里看到东方不败的辟邪剑法了</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930142756965.png" alt="image-20210930142756965"></p>
+<h1 id="六、GitHub操作"><a href="#六、GitHub操作" class="headerlink" title="六、GitHub操作"></a>六、GitHub操作</h1><h2 id="1-基础知识点"><a href="#1-基础知识点" class="headerlink" title="1. 基础知识点"></a>1. 基础知识点</h2><ul>
+<li>创建远程仓库<ul>
+<li>public库：任何人都可以访问</li>
+<li>创建完会生成两个远程库链接</li>
+</ul>
+</li>
+<li>推送本地分支到远程仓库</li>
+<li>克隆远程仓库到本地<ul>
+<li>clone 会做如下操作：1、拉取代码    2、初始化本地仓库    3、创建别名</li>
+<li>自动创建的别名叫origin</li>
+</ul>
+</li>
+</ul>
+<p>创建远程库</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930104201446.png" alt="image-20210930104201446"></p>
+<p>创建完会生成两个链接</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930104314792.png" alt="image-20210930104314792"></p>
+<h2 id="2-团队内协作"><a href="#2-团队内协作" class="headerlink" title="2. 团队内协作"></a>2. 团队内协作</h2><p>见第五章</p>
+<h2 id="3-跨团队协作"><a href="#3-跨团队协作" class="headerlink" title="3. 跨团队协作"></a>3. 跨团队协作</h2><p>见第五章</p>
+<h2 id="4-配置SSH免密登录"><a href="#4-配置SSH免密登录" class="headerlink" title="4. 配置SSH免密登录"></a>4. 配置SSH免密登录</h2><p>免密登录的意义是什么呢？？？是那个弹出来的小窗口？？？</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930145828082.png" alt="image-20210930145828082"></p>
+<p>添加公钥，在windows上切换到C:\Users\kuyehen目录，或者直接在git bash上输入cd</p>
+<ul>
+<li>cd</li>
+<li>rm -rvf .ssh</li>
+<li>ssh-keygen -t rsa -C <a href="mailto:&#50;&#x37;&#49;&#x31;&#56;&#x32;&#53;&#x39;&#52;&#x35;&#x40;&#x71;&#113;&#46;&#99;&#111;&#x6d;">&#50;&#x37;&#49;&#x31;&#56;&#x32;&#53;&#x39;&#52;&#x35;&#x40;&#x71;&#113;&#46;&#99;&#111;&#x6d;</a></li>
+<li>回三次车</li>
+</ul>
+<p>ssh-keygen：生成ssh免密登录协议的命令</p>
+<p>-t rsa：-t指定用哪种加密方式来生成，rsa著名的非对称加密协议</p>
+<p>-C：后面跟自己GitHub账号的邮箱</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930155346704.png" alt="image-20210930155346704"></p>
+<p>把公钥的内容复制到GitHub账号里</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930155043655.png" alt="image-20210930155043655"></p>
+<p>然后SSH链接就有值了</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930155240022.png" alt="image-20210930155240022"></p>
+<p>测试SSH免密登录能不能用，SSH免密登录配置成功！</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20210930160822273.png" alt="image-20210930160822273"></p>
+<h1 id="七、IDEA集成Git"><a href="#七、IDEA集成Git" class="headerlink" title="七、IDEA集成Git"></a>七、IDEA集成Git</h1><h2 id="1-配置-Git-忽略文件"><a href="#1-配置-Git-忽略文件" class="headerlink" title="1. 配置 Git 忽略文件"></a>1. 配置 Git 忽略文件</h2><p>有些我们是不希望保存到Git上的，比如.iml文件、.idea文件夹、target文件夹等。</p>
+<p><strong>为什么要忽略他们？怎么忽略？</strong></p>
+<p>答：与项目的实际功能无关，不参与服务器上部署运行。把它们忽略掉能够屏蔽IDE工具之间的差异。</p>
+<p><strong>创建忽略规则文件xxxx.ignore（前缀名随便起，建议是git.ignore）</strong></p>
+<p>这个文件的存放位置原则上在哪里都可以，为了便于让~&#x2F;.gitconfig文件引用，建议也放在用户家目录下，因为.gitconfig文件也在家目录下，git.ignore文件模版内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Compiled class file</span><br><span class="line">*.class</span><br><span class="line"></span><br><span class="line"># Log file</span><br><span class="line">*.log</span><br><span class="line"></span><br><span class="line"># BlueJ files</span><br><span class="line">*.ctxt</span><br><span class="line"></span><br><span class="line"># Mobile Tools for Java (J2ME)</span><br><span class="line">.mtj.tmp/</span><br><span class="line"></span><br><span class="line"># Package Files #</span><br><span class="line">*.jar</span><br><span class="line">*.war</span><br><span class="line">*.nar</span><br><span class="line">*.ear</span><br><span class="line">*.zip</span><br><span class="line">*.tar.gz</span><br><span class="line">*.rar</span><br><span class="line"></span><br><span class="line"># virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml </span><br><span class="line">hs_err_pid*</span><br><span class="line">.classpath</span><br><span class="line">.project</span><br><span class="line">.settings </span><br><span class="line">target</span><br><span class="line">.idea</span><br><span class="line">*.iml</span><br></pre></td></tr></table></figure>
+
+<p><strong>在.gitconfig文件中引用忽略配置文件(此文件在Windows 的家目录中)</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[user]</span><br><span class="line">    name = kuyehen</span><br><span class="line">    email = 2711825945@qq.com</span><br><span class="line">[core]</span><br><span class="line">    excludesfile = C:/Users/kuyehen/git.ignore</span><br><span class="line">注意：这里要使用“正斜线（/）”，不要使用“反斜线（\）”</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-定位-Git-程序"><a href="#2-定位-Git-程序" class="headerlink" title="2. 定位 Git 程序"></a>2. 定位 Git 程序</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005044205505.png" alt="image-20211005044205505"></p>
+<h2 id="3-基础操作"><a href="#3-基础操作" class="headerlink" title="3. 基础操作"></a>3. 基础操作</h2><ul>
+<li>初始化本地库</li>
+<li>添加和提交</li>
+<li>切换版本</li>
+<li>创建分支</li>
+<li>切换分支</li>
+<li>正常合并</li>
+<li>冲突合并</li>
+</ul>
+<p><strong>(1) 初始化本地库</strong></p>
+<p>创建完成后，红色代表未被追踪，未添加到缓存区，先添加，然后变绿色，再提交</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005044600126.png" alt="image-20211005044600126"></p>
+<p><strong>(2) 添加和提交</strong></p>
+<p>提交完会变无色，代表无更改，不需要被提交了。一旦修改就会变蓝，重新提交就可以，不用添加了</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005045808549.png" alt="image-20211005045808549"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005045547586.png" alt="image-20211005045547586"></p>
+<p><strong>(3) 切换版本</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005051329353.png" alt="image-20211005051329353"></p>
+<p><strong>(4) 创建分支</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005154653897.png" alt="image-20211005154653897"></p>
+<p><strong>(5) 切换分支</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005154958783.png" alt="image-20211005154958783"></p>
+<p><strong>(6) 正常合并</strong></p>
+<p>切换到hot-fix分支，添行代码然后提交，再切换回master，把hot-fix分支的修改合并到master分支上</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005155910451.png" alt="image-20211005155910451"></p>
+<p><strong>(7) 冲突合并</strong></p>
+<p>在master和hot-fix分支上分别做修改然后提交，再把hot-fix分支合并到master上</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005161122315.png" alt="image-20211005161122315"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005161251901.png" alt="image-20211005161251901"></p>
+<p>下面是截止到目前操作的整个截屏：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005161432319.png" alt="image-20211005161432319"></p>
+<h1 id="八、IDEA集成GitHub"><a href="#八、IDEA集成GitHub" class="headerlink" title="八、IDEA集成GitHub"></a>八、IDEA集成GitHub</h1><h2 id="1-设置GitHub账号并分享到远程库"><a href="#1-设置GitHub账号并分享到远程库" class="headerlink" title="1. 设置GitHub账号并分享到远程库"></a>1. 设置GitHub账号并分享到远程库</h2><p>旧版需要用token口令才能在IDEA中登录GitHub账号，新版直接选共享到GitHub，然后通过浏览器授权就行</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005162550111.png" alt="image-20211005162550111"></p>
+<p>来到GitHub中发现IDEA已经帮我们创建好了远程仓库。</p>
+<p>授权账号的界面在这里，可登录多个账号：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005164002028.png" alt="image-20211005164002028"></p>
+<h2 id="2-push推送本地库到远程库"><a href="#2-push推送本地库到远程库" class="headerlink" title="2. push推送本地库到远程库"></a>2. push推送本地库到远程库</h2><p><strong>方式一，直接push：</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005165453766.png" alt="image-20211005165453766"></p>
+<p>这种方式省事，但是网不好的话可能推送不上</p>
+<p><strong>方式二，SSH免密登录：</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005165629456.png" alt="image-20211005165629456"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005165805989.png" alt="image-20211005165805989"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005170007620.png" alt="image-20211005170007620"></p>
+<p><strong>什么时候会出现版本不一致的情况？？？有铁头娃擅自push导致版本号更新？？？这种情况该怎么解决呢？？？</strong></p>
+<p>注意：push是将本地库代码推送到远程库，如果本地库代码跟远程库代码版本不一致，push的操作是会被拒绝的。也就是说，要想push成功，一定要保证本地库的版本要比远程库的版本高！因此一个成熟的程序员在动手<strong>改本地代码之前，一定会先检查下远程库跟本地代码的区别！</strong>如果本地的代码版本已经落后，切记要先pull拉取一下远程库的代码，将本地代码更新到最新以后，然后再修改，提交，推送！</p>
+<h2 id="3-pull拉取远程库到本地库"><a href="#3-pull拉取远程库到本地库" class="headerlink" title="3. pull拉取远程库到本地库"></a>3. pull拉取远程库到本地库</h2><p>在网页端修改代码并提交，这个时候远程库的代码已经比本地库更新了。</p>
+<p>注意：pull是拉取远端仓库代码到本地，如果远程库代码和本地库代码不一致，会自动合并，如果自动合并失败，<strong>还会涉及到手动解决冲突的问题。</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005171225285.png" alt="image-20211005171225285"></p>
+<h2 id="4-clone克隆远程库到本地"><a href="#4-clone克隆远程库到本地" class="headerlink" title="4. clone克隆远程库到本地"></a>4. clone克隆远程库到本地</h2><p>我们把整个maven_modules_manage托管到GitHub，此时就可以把本地的代码删了</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005172056818.png" alt="image-20211005172056818"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005172229213.png" alt="image-20211005172229213"></p>
+<p>克隆完成后，首先发现目录结构发生了改变，原来空项目是不显示的，克隆回来会以文件夹的形式显示，然后就是远程库别名，它把以前定义的别名全删了，并且自动创建个名为origin的别名，不影响正常推送</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005172844116.png" alt="image-20211005172844116"></p>
+<h1 id="九、国内代码托管中心Gitee码云"><a href="#九、国内代码托管中心Gitee码云" class="headerlink" title="九、国内代码托管中心Gitee码云"></a>九、国内代码托管中心Gitee码云</h1><p>众所周知，GitHub服务器在国外，使用GitHub作为项目托管网站，如果网速不好的话，严重影响使用体验，甚至会出现登录不上的情况。针对这个情况，大家也可以使用国内的项目托管网站-码云。</p>
+<p>码云是开源中国推出的基于Git的代码托管服务中心，网址是<code>https://gitee.com/</code>，使用方式跟GitHub一样，而且它还是一个中文网站，如果你英文不是很好它是最好的选择。</p>
+<p>码云的话就推荐用HTTPS而不是免密登录了，因为服务器在国内，它的公共仓库是免费的，私有仓库如果超过5个人使用，就要购买企业版。</p>
+<p><strong>最最最重要的！！！在这里语言切换为中文！！！</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/Snipaste_2021-08-30_20-06-18-16303266002761.png" alt="Snipaste_2021-08-30_20-06-18"></p>
+<h2 id="1-安装码云插件"><a href="#1-安装码云插件" class="headerlink" title="1. 安装码云插件"></a>1. 安装码云插件</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005173750453.png" alt="image-20211005173750453"></p>
+<p>设置Gitee账户并分享到远程库</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005175848093.png" alt="image-20211005175848093"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005180042509.png" alt="image-20211005180042509"></p>
+<p>或者不让IDEA帮我们建库了，先建好库，往指定库里push，这个时候需要在下面自定义别名，把Gitee的HTTPS链接复制过来</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005180440539.png" alt="image-20211005180440539"></p>
+<h2 id="2-码云复制GitHub项目"><a href="#2-码云复制GitHub项目" class="headerlink" title="2. 码云复制GitHub项目"></a>2. 码云复制GitHub项目</h2><p><strong>码云提供了直接复制GitHub项目的功能，方便我们做项目的迁移和下载，直接把HTTPS复制到下面即可。</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005181025829.png" alt="image-20211005181025829"></p>
+<p><strong>极其智能：</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005181158029.png" alt="image-20211005181158029"></p>
+<p><strong>从GitHub导入的代码，一旦GitHub上发生了更改，这里还能做强制同步：</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20211005181424121.png" alt="image-20211005181424121"></p>
+<h1 id="十、自建代码托管平台GitLab"><a href="#十、自建代码托管平台GitLab" class="headerlink" title="十、自建代码托管平台GitLab"></a>十、自建代码托管平台GitLab</h1><p>搭建很简单，用的时候再看吧，这里也就20分钟的视频</p>
+<h1 id="附：Linux命令"><a href="#附：Linux命令" class="headerlink" title="附：Linux命令"></a>附：Linux命令</h1><p>Linux和Git命令互通，这俩同一个爸爸</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ll</td>
+<td>查看文件</td>
+</tr>
+<tr>
+<td>ll -a</td>
+<td>查看隐藏文件</td>
+</tr>
+<tr>
+<td>vim</td>
+<td>编辑文件</td>
+</tr>
+<tr>
+<td>i</td>
+<td>插入模式，esc退出插入模式</td>
+</tr>
+<tr>
+<td>yy</td>
+<td>复制</td>
+</tr>
+<tr>
+<td>p</td>
+<td>粘贴</td>
+</tr>
+<tr>
+<td>:wq</td>
+<td>保存退出</td>
+</tr>
+<tr>
+<td>:q!</td>
+<td>强制退出</td>
+</tr>
+<tr>
+<td>cat 文件</td>
+<td>查看文件</td>
+</tr>
+<tr>
+<td>tail -n 10 文件</td>
+<td>查看末尾n行</td>
+</tr>
+<tr>
+<td>ctrl + l</td>
+<td>清屏</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/20180815232620931" alt="img"></p>
+<h1 id="十一、实操"><a href="#十一、实操" class="headerlink" title="十一、实操"></a>十一、实操</h1><h2 id="1-如何给本地文件做备份"><a href="#1-如何给本地文件做备份" class="headerlink" title="1. 如何给本地文件做备份"></a>1. 如何给本地文件做备份</h2><p>比如，把typora文件夹推送到GitHub</p>
+<p>首先，在GitHub上新建仓库(不要新建readme)，然后在本地目录下 右键 -&gt; Git Bash，之后左上会出现个.git文件夹</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220919101740718.png" alt="image-20220919101740718" style="zoom: 67%;" />
+
+<p>然后依次在小黑窗输入</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git init</span><br><span class="line">git add .						  -- 添加所有文件到本地仓库</span><br><span class="line">git commit -m &quot;初始化&quot;				-- 添加描述，必不可少，不然报错</span><br><span class="line">git branch -M main				  -- 切换分支</span><br><span class="line">git remote add origin https://github.com/he-tengfei/typora_bak.git</span><br><span class="line">git push -u origin main			  -- add添加、push发布</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-报错"><a href="#2-报错" class="headerlink" title="2. 报错"></a>2. 报错</h2><h3 id="错误1"><a href="#错误1" class="headerlink" title="错误1"></a>错误1</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"> ! [rejected]        main -&gt; main (fetch first)</span><br><span class="line">error: failed to push some refs to &#x27;https://github.com/he-tengfei/typora_bak.git&#x27;</span><br><span class="line">hint: Updates were rejected because the remote contains work that you do</span><br><span class="line">hint: (e.g., &#x27;git pull ...&#x27;) before pushing again.</span><br></pre></td></tr></table></figure>
+
+<p>创建仓库时，勾选了“使用Readme文件初始化这个仓库”这个操作，创建了一个README文件并配置添加了忽略文件，此时我们的仓库就有了README.md和.gitignore文件。之后把本地推送到远程时，两端都是有内容的，但是这两份内容并没有联系，当我们推送到远程或者从远程拉取内容时，都会有没有被跟踪的内容，于是你看git报的详细错误中总是会让你先拉取再推送，但是拉取总是失败。<strong>所以新建仓库的时候千万不要勾选readme</strong>。</p>
+<p>补救办法：先rebase，然后再push</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git pull --rebase origin main</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure>
+
+<h3 id="错误2"><a href="#错误2" class="headerlink" title="错误2"></a>错误2</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Everything up-to-date</span><br><span class="line">Branch &#x27;main&#x27; set up to track remote branch &#x27;main&#x27; from &#x27;origin&#x27;.</span><br></pre></td></tr></table></figure>
+
+<p>这个报错是之后再推送时发生的，原因居然是没写commit！解决办法就是把上面的步骤，除了init外全走一遍，只会push更改过的内容。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E5%9F%BA%E7%A1%80%E5%B7%A5%E5%85%B7/Linux/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/alien.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Linux</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E5%9F%BA%E7%A1%80%E5%B7%A5%E5%85%B7/Zookeeper/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/agriculture.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Zookeeper</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81Git%E6%A6%82%E8%BF%B0"><span class="toc-text">一、Git概述</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BD%95%E4%B8%BA%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6"><span class="toc-text">1. 何为版本控制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E5%B7%A5%E5%85%B7"><span class="toc-text">2. 版本控制工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E9%9B%86%E4%B8%AD%E5%BC%8F%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E5%B7%A5%E5%85%B7"><span class="toc-text">2.1 集中式版本控制工具</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-%E5%88%86%E5%B8%83%E5%BC%8F%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E5%B7%A5%E5%85%B7"><span class="toc-text">2.2 分布式版本控制工具</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Git%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="toc-text">3. Git工作机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Git-%E5%92%8C%E4%BB%A3%E7%A0%81%E6%89%98%E7%AE%A1%E4%B8%AD%E5%BF%83"><span class="toc-text">4. Git 和代码托管中心</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Git%E5%AE%89%E8%A3%85"><span class="toc-text">二、Git安装</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">三、Git常用命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81Git%E5%88%86%E6%94%AF%E6%93%8D%E4%BD%9C"><span class="toc-text">四、Git分支操作</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%86%E6%94%AF%EF%BC%9F"><span class="toc-text">1. 什么是分支？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%88%86%E6%94%AF%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="toc-text">2. 分支的操作</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81Git%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="toc-text">五、Git团队协作机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9B%A2%E9%98%9F%E5%86%85%E5%8D%8F%E4%BD%9C"><span class="toc-text">1. 团队内协作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%B7%A8%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C"><span class="toc-text">2. 跨团队协作</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81GitHub%E6%93%8D%E4%BD%9C"><span class="toc-text">六、GitHub操作</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="toc-text">1. 基础知识点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%9B%A2%E9%98%9F%E5%86%85%E5%8D%8F%E4%BD%9C"><span class="toc-text">2. 团队内协作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%B7%A8%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C"><span class="toc-text">3. 跨团队协作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%85%8D%E7%BD%AESSH%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95"><span class="toc-text">4. 配置SSH免密登录</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%83%E3%80%81IDEA%E9%9B%86%E6%88%90Git"><span class="toc-text">七、IDEA集成Git</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%85%8D%E7%BD%AE-Git-%E5%BF%BD%E7%95%A5%E6%96%87%E4%BB%B6"><span class="toc-text">1. 配置 Git 忽略文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%AE%9A%E4%BD%8D-Git-%E7%A8%8B%E5%BA%8F"><span class="toc-text">2. 定位 Git 程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C"><span class="toc-text">3. 基础操作</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AB%E3%80%81IDEA%E9%9B%86%E6%88%90GitHub"><span class="toc-text">八、IDEA集成GitHub</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%AE%BE%E7%BD%AEGitHub%E8%B4%A6%E5%8F%B7%E5%B9%B6%E5%88%86%E4%BA%AB%E5%88%B0%E8%BF%9C%E7%A8%8B%E5%BA%93"><span class="toc-text">1. 设置GitHub账号并分享到远程库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-push%E6%8E%A8%E9%80%81%E6%9C%AC%E5%9C%B0%E5%BA%93%E5%88%B0%E8%BF%9C%E7%A8%8B%E5%BA%93"><span class="toc-text">2. push推送本地库到远程库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-pull%E6%8B%89%E5%8F%96%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%88%B0%E6%9C%AC%E5%9C%B0%E5%BA%93"><span class="toc-text">3. pull拉取远程库到本地库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-clone%E5%85%8B%E9%9A%86%E8%BF%9C%E7%A8%8B%E5%BA%93%E5%88%B0%E6%9C%AC%E5%9C%B0"><span class="toc-text">4. clone克隆远程库到本地</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E5%9B%BD%E5%86%85%E4%BB%A3%E7%A0%81%E6%89%98%E7%AE%A1%E4%B8%AD%E5%BF%83Gitee%E7%A0%81%E4%BA%91"><span class="toc-text">九、国内代码托管中心Gitee码云</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85%E7%A0%81%E4%BA%91%E6%8F%92%E4%BB%B6"><span class="toc-text">1. 安装码云插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%A0%81%E4%BA%91%E5%A4%8D%E5%88%B6GitHub%E9%A1%B9%E7%9B%AE"><span class="toc-text">2. 码云复制GitHub项目</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E8%87%AA%E5%BB%BA%E4%BB%A3%E7%A0%81%E6%89%98%E7%AE%A1%E5%B9%B3%E5%8F%B0GitLab"><span class="toc-text">十、自建代码托管平台GitLab</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%99%84%EF%BC%9ALinux%E5%91%BD%E4%BB%A4"><span class="toc-text">附：Linux命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%AE%9E%E6%93%8D"><span class="toc-text">十一、实操</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%A6%82%E4%BD%95%E7%BB%99%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E5%81%9A%E5%A4%87%E4%BB%BD"><span class="toc-text">1. 如何给本地文件做备份</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%8A%A5%E9%94%99"><span class="toc-text">2. 报错</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF1"><span class="toc-text">错误1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF2"><span class="toc-text">错误2</span></a></li></ol></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

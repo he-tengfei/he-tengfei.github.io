@@ -1,0 +1,365 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Hadoop基础1之Hadoop概述 | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="版本：3.1.3 HDFS：分布式文件系统 MapReduce：分布式计算 Yarn：资源调度 HA：高可用，zookeeper讲完才能讲这个 前置知识：java、maven、Linux、shell  官网：https:&#x2F;&#x2F;hadoop.apache.org&#x2F; 官方文档：https:&#x2F;&#x2F;hadoop.apache.org&#x2F;docs  Apache的官网都长这样，如果要看Apache下别的框架，把h">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop基础1之Hadoop概述">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/Hadoop%E5%9F%BA%E7%A1%801%E4%B9%8BHadoop%E6%A6%82%E8%BF%B0/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="版本：3.1.3 HDFS：分布式文件系统 MapReduce：分布式计算 Yarn：资源调度 HA：高可用，zookeeper讲完才能讲这个 前置知识：java、maven、Linux、shell  官网：https:&#x2F;&#x2F;hadoop.apache.org&#x2F; 官方文档：https:&#x2F;&#x2F;hadoop.apache.org&#x2F;docs  Apache的官网都长这样，如果要看Apache下别的框架，把h">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/boat.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.765Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/boat.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/Hadoop%E5%9F%BA%E7%A1%801%E4%B9%8BHadoop%E6%A6%82%E8%BF%B0/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Hadoop基础1之Hadoop概述',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/christmas-4701783.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Hadoop基础1之Hadoop概述</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.765Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/">离线数仓</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>16分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Hadoop基础1之Hadoop概述"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>版本：3.1.3</p>
+<p>HDFS：分布式文件系统</p>
+<p>MapReduce：分布式计算</p>
+<p>Yarn：资源调度</p>
+<p>HA：高可用，zookeeper讲完才能讲这个</p>
+<p>前置知识：java、maven、Linux、shell</p>
+<blockquote>
+<p>官网：<a target="_blank" rel="noopener" href="https://hadoop.apache.org/">https://hadoop.apache.org/</a></p>
+<p>官方文档：<a target="_blank" rel="noopener" href="https://hadoop.apache.org/docs">https://hadoop.apache.org/docs</a></p>
+</blockquote>
+<p>Apache的官网都长这样，如果要看Apache下别的框架，把hadoop换成zookeeper、hive即可。</p>
+<h1 id="入门篇"><a href="#入门篇" class="headerlink" title="入门篇"></a>入门篇</h1><h1 id="一、大数据概论"><a href="#一、大数据概论" class="headerlink" title="一、大数据概论"></a>一、大数据概论</h1><p><strong>大数据（Big Data）：</strong>指<strong>无法在一定时间范围内</strong>用常规软件工具进行捕捉、管理和处理的数据集合，是需要新处理模式才能具有更强的决策力、洞察发现力和流程优化能力的<strong>海量、高增长率和多样化</strong>的信息资产。</p>
+<p>大数据并不是指数据量特别大，它描述的是一种解决方案，<strong>主要解决海量数据的存储和海量数据的分析计算问题。</strong>在海量数据面前，处理数据的效率就是企业的生命。</p>
+<p><strong>大数据特点(4V)：</strong>volume、velocity、variety、value(大量、高速、多样、低价值密度)。</p>
+<ul>
+<li>多样：数据类型的多样性也让数据被分为结构化数据和非结构化数据。相对于以往便于存储的以数据库&#x2F;文本为主的结构化数据，非结构化数据越来越多，包括网络日志、音频、视频、图片、地理位置信息等，这些多类型的数据对数据的处理能力提出了更高要求</li>
+<li>低价值密度：价值密度的高低与数据总量的大小成反比。比如，在一天监控视频中，我们只关心宋宋老师晚上在床上健身那一分钟，如何快速对有价值数据“提纯”成为目前大数据背景下待解决的难题</li>
+</ul>
+<p><strong>大数据应用场景：</strong>物流、零售、旅游、广告推荐、保险、金融、房产、人工智能、疫情防控(健康码)、交通 ……</p>
+<p><strong>大数据部门业务流程分析：</strong>产品提需求，数据开发，数据展示(可能会多个数据分析师)</p>
+<p><strong>大数据部门组织架构：</strong></p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220219222350747.png" alt="image-20220219222350747" style="zoom: 33%;" />
+
+<h1 id="二、从Hadoop框架讨论大数据生态"><a href="#二、从Hadoop框架讨论大数据生态" class="headerlink" title="二、从Hadoop框架讨论大数据生态"></a>二、从Hadoop框架讨论大数据生态</h1><h2 id="1-Hadoop是什么？"><a href="#1-Hadoop是什么？" class="headerlink" title="1. Hadoop是什么？"></a>1. Hadoop是什么？</h2><p>Hadoop是一个由Apache基金会所开发的<strong>分布式系统基础架构</strong>，主要解决，海量数据的存储和海量数据的分析计算问题。广义上来说，Hadoop通常是指一个更广泛的概念——<strong>Hadoop生态圈</strong>。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220219233933303.png" alt="image-20220219233933303" style="zoom:50%;" />
+
+<h2 id="2-Hadoop发展历史"><a href="#2-Hadoop发展历史" class="headerlink" title="2. Hadoop发展历史"></a>2. Hadoop发展历史</h2><p><strong>底层用java写的</strong>，最初是为了解决搜索引擎存储数据困难，检索速度慢的问题(搜索引擎的数据量才是最大的比如Google)，其他略。</p>
+<h2 id="3-Hadoop三大发行版本了解"><a href="#3-Hadoop三大发行版本了解" class="headerlink" title="3. Hadoop三大发行版本了解"></a>3. Hadoop三大发行版本了解</h2><p>Hadoop三大发行版本：Apache、Cloudera、Hortonworks，后面俩已经合并了。Apache版本框架之间可能会有依赖冲突，Cloudera内部集成了很多大数据框架，对应产品CDH，CDH每个节点一万美元，但是用起来很方便，内部已经解决了依赖冲突的问题。</p>
+<h2 id="4-Hadoop的优势-4高"><a href="#4-Hadoop的优势-4高" class="headerlink" title="4. Hadoop的优势(4高)"></a>4. Hadoop的优势(4高)</h2><ul>
+<li><strong>高可靠性：</strong>Hadoop底层维护多个数据副本，所以即使Hadoop某个计算元素或存储出现故障，也不会导致数据的丢失。实质就是，一份数据不可靠，那就多存几份，但是这几份数据分别存在C盘、D盘、E盘是没有任何意义的，因为都是同一块硬盘。一般存3份就足够了，很难说3台服务器一起坏了</li>
+<li><strong>高扩展性：</strong>在集间分配任务数据，可方便的扩展数以干计的节点。比如说计算能力不足了，买台机器直接加在集群里就好，资源过剩也可以减</li>
+<li><strong>高效性：</strong>在MapRecduce的思想下，Hadoop是并行工作的，以加快任务处理速度。比如有一份60G的数据需要处理，3个计算节点，每个节点分20G的计算量，然后再把结果汇总</li>
+<li><strong>高容错性：</strong>能够自动将失败的任务重新分配。比如A、B、C三个节点，同个任务C节点计算失败了，它会把C节点的任务再次分配，可能分配给A节点，也可能还是分配到C节点，可以自定义重分配次数。</li>
+</ul>
+<p><strong>在接下来的学习中，要深入体会这四点Hadoop分别是怎么做到的！！！</strong></p>
+<h2 id="5-Hadoop组成-面试重点"><a href="#5-Hadoop组成-面试重点" class="headerlink" title="5. Hadoop组成(面试重点)"></a>5. Hadoop组成(面试重点)</h2><h3 id="5-1-Hadoop1-x和2-x的区别"><a href="#5-1-Hadoop1-x和2-x的区别" class="headerlink" title="5.1 Hadoop1.x和2.x的区别"></a>5.1 Hadoop1.x和2.x的区别</h3><p>在Hadoop1.x时代，Hadoop中的MapReduce同时处理业务逻辑运算和资源的调度，<strong>耦合性较大</strong>，在Hadoop2.x时代，增加了Yarn，相当于做了解耦，这时<strong>HDFS负责存储数据，MapReduce负责运算，Yarn负责资源的调度</strong>，还有个common用作辅助工具，不过不重要，一般没人提这个。其中HDFS、MapReduce、Yarn后面会专门分3个文档进行讲解！！！</p>
+<h3 id="5-2-HDFS架构概述"><a href="#5-2-HDFS架构概述" class="headerlink" title="5.2 HDFS架构概述"></a>5.2 HDFS架构概述</h3><p>HDFS：Hadoop Distributed File System，分布式文件系统，基于多台机器做分布式存储。比如要存一份文件90G，有三个储存节点，并不是把这份文件全放到一个节点，可能每个节点存30G，这个就是分布式存储。</p>
+<ul>
+<li><strong>NameNode(NN)：</strong>存储文件的元数据，元数据就是描述数据的数据，比如文件名，文件目录结构，文件属性(生成时间、副本数、文件权限)，以及每个文件的块列表和块所在的DataNode等等。在HA(高可用)集群中，NN会有多个，但是同时在工作的只有1个，因为要想访问DN里的数据只能通过NN来访问，多个同时工作的话就不知道去找哪个NN了</li>
+<li><strong>DataNode(DN)：</strong>在本地文件系统存储文件块数据，以及<strong>块数据的校验和</strong>。默认以<strong>128M</strong>(可以改)块大小进行分块，然后以块单位进行存储，然后校验看块是否完整。也就是真实数据存储在DN，但是这些数据要通过元数据才能找到</li>
+<li><strong>Secondary NameNode(2NN)：</strong>相当于NN的秘书，做辅助工作，减轻NN的压力，但是工作量级和NN不是一个级别的，每隔一段时间对NameNode元数据备份</li>
+</ul>
+<p>这三个组件的名字直接翻译过来就是名称节点、数据节点、第二名称节点。</p>
+<h3 id="5-3-MapReduce架构概述"><a href="#5-3-MapReduce架构概述" class="headerlink" title="5.3 MapReduce架构概述"></a>5.3 MapReduce架构概述</h3><p>这里主要就是个计算的思想，Map与Reduce翻译过来就是映射与规约，但是这么说肯定听不懂，实际就是分与合，先把数据分开，再把数据合起来，Map阶段就是并行处理数据，Reduce阶段就是对Map的结果进行汇总。比如有一份60G的数据需要处理，3个计算节点，Map阶段就是把60G数据分给每个节点20G，Reduce阶段就是在各个节点上做计算，然后再把计算的结果汇总。</p>
+<p>疑问是，20G数据在各个节点上计算的过程，算在Map阶段还是Reduce阶段？</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220220014953494.png" alt="image-20220220014953494"></p>
+<h3 id="5-4-YARN架构概述"><a href="#5-4-YARN架构概述" class="headerlink" title="5.4 YARN架构概述"></a>5.4 YARN架构概述</h3><p>Yarn负责资源调度，从资源的角度讲网络、CPU、内存、硬盘都算作资源，但是从Yarn的角度讲，这里的资源调度更倾向于内存。下图每个框框相当于一个机器，每个NM都各自在一台机器上，NM有多个，只管理自己所在机器上的资源，RM相当于Yarn里的大哥，只有1个(HA集群下会有多个)，管理整个集群所有的资源。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220220011636907.png" alt="image-20220220011636907"></p>
+<p><strong>ResourceManager(RM)主要作用：</strong></p>
+<ul>
+<li>是Yarn的大哥，管理和分配集群中的所有资源(来自于每个机器的资源)</li>
+<li>用来处理客户端的请求，客户端不能直接访问NM</li>
+<li>监控NM的节点状态，比如是否存活</li>
+<li>启动或监控ApplicationMaster(AM)，当作业被提交到RM后，RM会随机在NM所在的机器上启动<strong>1个</strong>AM</li>
+</ul>
+<p><strong>NodeManager(NM)的主要作用：</strong></p>
+<ul>
+<li>是Yarn的小弟，管理自己所在节点上的资源，但是它不能擅自分配自己的资源，也是要听从RM的调度</li>
+<li>处理来自RM的命令</li>
+<li>处理来自AM的命令</li>
+</ul>
+<p><strong>ApplicationMaster(AM)的主要作用：</strong></p>
+<ul>
+<li>为任务job申请资源并分配给task，比如执行一个任务需要8G内存，由AM向RM申请资源，然后RM告诉NM把你节点上的资源划出来一块儿给AM，然后AM再把申请到的资源划分给task，注意AM和具体的任务task可能不在同一台节点上，但是每个job都对应一个AM，主要负责整个job的执行过程(资源申请、监控、容错等)</li>
+<li>当作业被提交到RM后，RM会随机在NM所在的机器上启动1个AM，AM负责整个job的执行过程，RM负责分配资源</li>
+<li>负责数据的切分</li>
+<li>任务的监控与容错，也就是任务的具体执行过程是由AM来负责的</li>
+</ul>
+<p><strong>Container：</strong></p>
+<ul>
+<li>Container是YARN中的资源抽象，它封装了某个节点上的多维度资源，如内存、CPU、磁盘、网络等</li>
+<li>不管是AM还是task，在执行的过程中都需要各种资源，这些资源都要通过Container进行封装，所以Container里面运行的是AM或者task</li>
+<li>封装的目的是为了避免发生资源的抢占</li>
+</ul>
+<p><strong>这里统一规定下job与task：</strong>job是客户端提交的任务，是个整体，task是分布式计算时划分的每个小任务。</p>
+<p><strong>做个类比方便理解各个组件之间的关系：</strong>RM相当于项目总监，管理公司中的所有开发人员，AM相当于项目经理，管理某个项目的开发人员。RM接了个项目(客户端提交job)，然后分配给AM(负责该job)，AM就要把控项目的整个流程，并向RM申请开发人员(申请资源)，每个开发人员就相当于NM，每个项目的NM归AM管，所有的NM归RM管。</p>
+<h3 id="5-5-大数据技术生态体系"><a href="#5-5-大数据技术生态体系" class="headerlink" title="5.5 大数据技术生态体系"></a>5.5 大数据技术生态体系</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220220015215571.png" alt="image-20220220015215571"></p>
+<ul>
+<li>Sqoop：一款开源的工具，主要用于在Hadoop、Hive与传统的数据库（MySql）间进行数据的传递，可以将一个关系型数据库（例如 ：MySQL，Oracle 等）中的数据导进到Hadoop的HDFS中，也可以将HDFS的数据导进到关系型数据库中</li>
+<li>Flume：一个高可用的，高可靠的，分布式的海量日志采集、聚合和传输的系统，Flume支持在日志系统中定制各类数据发送方，用于收集数据</li>
+<li>Kafka：一种高吞吐量的分布式发布订阅消息系统</li>
+<li>Storm：用于“连续计算”，对数据流做连续查询，在计算时就将结果以流的形式输出给用户</li>
+<li>Spark：当前最流行的开源大数据内存计算框架，可以基于Hadoop上存储的大数据进行计算</li>
+<li>Flink：当前最流行的开源大数据内存计算框架，用于实时计算的场景较多</li>
+<li>Oozie：一个管理Hdoop作业（job）的工作流程调度管理系统</li>
+<li>Hbase：一个分布式的、面向列的开源数据库，HBase不同于一般的关系数据库，它是一个适合于非结构化数据存储的数据库</li>
+<li>Hive：基于Hadoop的一个数据仓库工具，可以将结构化的数据文件映射为一张数据库表，并提供简单的SQL查询功能，可以将SQL语句转换为MapReduce任务进行运行。 其优点是学习成本低，可以通过类SQL语句快速实现简单的MapReduce统计，不必开发专门的MapReduce应用，十分适合数据仓库的统计分析</li>
+<li>ZooKeeper：它是一个针对大型分布式系统的可靠协调系统，提供的功能包括：配置维护、名字服务、分布式同步、组服务等，功能及其重要但是存在感又最低</li>
+</ul>
+<h1 id="三、Hadoop的安装-开发重点）"><a href="#三、Hadoop的安装-开发重点）" class="headerlink" title="三、Hadoop的安装(开发重点）"></a>三、Hadoop的安装(开发重点）</h1><h2 id="1-Hadoop的安装"><a href="#1-Hadoop的安装" class="headerlink" title="1. Hadoop的安装"></a>1. Hadoop的安装</h2><p>先装JDK，再装Hadoop，详情见&lt;&lt;大数据框架安装篇&gt;&gt;</p>
+<h2 id="2-Hadoop的目录结构"><a href="#2-Hadoop的目录结构" class="headerlink" title="2. Hadoop的目录结构"></a>2. Hadoop的目录结构</h2><ul>
+<li>bin： 存放对Hadoop相关服务（HDFS,YARN）进行操作的脚本命令</li>
+<li>etc： Hadoop的配置文件目录，存放Hadoop的配置文件，以后只要看到etc就是配置文件目录</li>
+<li>lib： 存放Hadoop的本地库（对数据进行压缩解压缩功能）</li>
+<li>sbin：存放启动或停止Hadoop相关服务的脚本，这里面的start-all.sh和stop-all.sh基本不用，因为它启动的东西比较多，我们会专门写个脚本来控制都起那些组件</li>
+<li>share：存放Hadoop的依赖jar包、文档、和官方案例</li>
+</ul>
+<h1 id="四、Hadoop运行模式"><a href="#四、Hadoop运行模式" class="headerlink" title="四、Hadoop运行模式"></a>四、Hadoop运行模式</h1><p>Hadoop运行模式包括：本地模式、伪分布式模式以及完全分布式模式。</p>
+<h2 id="1-本地运行模式"><a href="#1-本地运行模式" class="headerlink" title="1. 本地运行模式"></a>1. 本地运行模式</h2><p>Hadoop默认配置就是本地模式，因此不需要进行任何设置即可运行本地模式。本地模式不用修改配置文件，不用起集群，起了集群后就是在yarn上跑了</p>
+<h3 id="1-1-官方Grep案例"><a href="#1-1-官方Grep案例" class="headerlink" title="1.1 官方Grep案例"></a>1.1 官方Grep案例</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 准备数据</span><br><span class="line">[kuyehen@hadoop180 hadoop-3.1.3]$ mkdir input</span><br><span class="line">[kuyehen@hadoop180 hadoop-3.1.3]$ cp ./etc/hadoop/*.xml input/</span><br><span class="line"></span><br><span class="line"># 运行grep案例，这里的grep不是Linux里的命令，而是jar包里写好的代码，后面跟输入路径、输出路径(不能事先存在)、过滤规则，注意路径一定要写对</span><br><span class="line">[kuyehen@hadoop180 hadoop-3.1.3]$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar grep input output &#x27;dfs[a-z]+&#x27;</span><br><span class="line"></span><br><span class="line"># 查看结果，其中_SUCCESS文件夹没用，就是个标记文件</span><br><span class="line">[kuyehen@hadoop180 hadoop-3.1.3]$ cd output/</span><br><span class="line">[kuyehen@hadoop180 output]$ ll</span><br><span class="line">    总用量 4</span><br><span class="line">    -rw-r--r--. 1 kuyehen kuyehen 11 2月  20 04:47 part-r-00000</span><br><span class="line">    -rw-r--r--. 1 kuyehen kuyehen  0 2月  20 04:47 _SUCCESS</span><br><span class="line">[kuyehen@hadoop180 output]$ cat *</span><br><span class="line">    1	dfsadmin</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-官方WordCount案例"><a href="#1-2-官方WordCount案例" class="headerlink" title="1.2 官方WordCount案例"></a>1.2 官方WordCount案例</h3><p>略</p>
+<p><strong>如何卸载多个rpm包？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 查询出带java的rpm包，然后把查询结果做为参数，一个一个的传给rpm -e命令</span><br><span class="line">[kuyehen@hadoop180 output]$ rpm -qa | grep -i java | xargs -n1 sudo rpm -e --nodeps</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-完全分布式运行模式-重点"><a href="#2-完全分布式运行模式-重点" class="headerlink" title="2. 完全分布式运行模式(重点)"></a>2. 完全分布式运行模式(重点)</h2><h3 id="2-1-两个数据同步命令"><a href="#2-1-两个数据同步命令" class="headerlink" title="2.1 两个数据同步命令"></a>2.1 两个数据同步命令</h3><p><strong>scp (secure copy)：</strong>安全拷贝，可以实现服务器与服务器之间的数据拷贝</p>
+<p>基本语法：scp -r 源用户名@主机名:路径 目的用户名@主机名:路径</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">案例实操</span><br><span class="line">   前提：在三台服务器能互相通讯，并且都有已经创建好的 /opt/module /opt/software 两个目录，并且已经把这两个目录修改为kuyehen:kuyehen</span><br><span class="line">   </span><br><span class="line"># 在181上把数据从180拷贝到182</span><br><span class="line">[kuyehen@hadoop181 module]$ scp -r kuyehen@hadoop180:/opt/module/test kuyehen@hadoop182:/opt/module</span><br></pre></td></tr></table></figure>
+
+<p><strong>rsync</strong> <strong>远程同步工具</strong></p>
+<p>rsync主要用于备份和镜像，具有速度快、避免复制相同内容和支持符号链接的优点。<br>rsync和scp区别：用rsync做文件的复制要比scp的速度快，<strong>rsync只对差异文件做更新，scp是把所有文件都复制过去</strong>。</p>
+<p>基本语法：rsync -av 源用户名@主机名:路径 目的用户名@主机名:路径，-a归档拷贝，-v显示复制过程</p>
+<h3 id="2-2-集群配置说明"><a href="#2-2-集群配置说明" class="headerlink" title="2.2 集群配置说明"></a>2.2 集群配置说明</h3><h4 id="2-2-1-集群部署规划"><a href="#2-2-1-集群部署规划" class="headerlink" title="2.2.1 集群部署规划"></a>2.2.1 集群部署规划</h4><p><strong>理论规划</strong></p>
+<p>HDFS：NN、DN、2NN<br>Yarn：RM、NM (AM和container不算组件，只有在运行的时候才会产生)</p>
+<p>其中NN、RM、2NN是比较耗资源的，把他们放到不同的机器中，DN和NM要搭在一起并且有DN的地方就有NM，因为NM主要管理的就是DN的资源，3个副本就要有3个DN，所以理论最少需要6台机器，DN可以无限扩展，搭100个都行。</p>
+<p><strong>实际规划</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">hadoop180</th>
+<th align="center">hadoop181</th>
+<th align="center">hadoop182</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">HDFS</td>
+<td align="center">NN DN</td>
+<td align="center">DN</td>
+<td align="center">2NN DN</td>
+</tr>
+<tr>
+<td align="center">YARN</td>
+<td align="center">NM</td>
+<td align="center">RM NM</td>
+<td align="center">NM</td>
+</tr>
+</tbody></table>
+<h4 id="2-2-2-配置文件说明"><a href="#2-2-2-配置文件说明" class="headerlink" title="2.2.2 配置文件说明"></a>2.2.2 配置文件说明</h4><p>Hadoop配置文件分两类：默认配置文件和自定义配置文件，用户想修改某一默认配置值时，可以通过修改<strong>自定义配置文件</strong>的方式来执行。默认配置文件是放在jar包里的，不方便操作。</p>
+<p>默认配置文件：</p>
+<p>core-default.xml、hdfs-default.xml、yarn-default.xml、mapred-default.xml，默认配置文件存放在Hadoop的jar包里。</p>
+<p><strong>自定义配置文件：</strong></p>
+<p><strong>core-site.xml、hdfs-site.xml、yarn-site.xml、mapred-site.xml</strong> 四个配置文件存放在**$HADOOP_HOME&#x2F;etc&#x2F;hadoop**这个目录下。</p>
+<p><strong>为什么修改自定义配置文件就可以修改默认配置文件呢？</strong></p>
+<p>Hadoop在启动的时候，会先加载4个默认配置文件，然后再读取4个自定义配置文件进行覆盖。</p>
+<p><strong>怎么知道往自定义配置文件里写什么东西呢？</strong></p>
+<p>去官网看默认配置文件长什么样，然后仿着写，或者去jar包里把默认配置文件解压后单独拿出来，仿着写。默认配置文件讲师给的资料里有。</p>
+<h3 id="2-3集群搭建"><a href="#2-3集群搭建" class="headerlink" title="2.3集群搭建"></a>2.3集群搭建</h3><p>见&lt;&lt;大数据框架安装篇&gt;&gt;</p>
+<h3 id="2-4-HDFS数据怎么存的？"><a href="#2-4-HDFS数据怎么存的？" class="headerlink" title="2.4 HDFS数据怎么存的？"></a>2.4 HDFS数据怎么存的？</h3><p>HDFS既然是个分布式文件存储系统，那它把数据存哪儿了呢？Linux虚拟机有80个G，来自Windows的磁盘，HDFS的数据存放在自定义的data文件夹，它<strong>会把Linux的磁盘按照自己的方式进行规划</strong>，然后管理。它规划完也是以&#x2F;为根目录，并且这个目录在Linux里是看不到的，因为这些东西全是在运行的过程中，在内存中维护的，不运行的时候，它会把这些东西以数据的方式记录在某个文件中。比如下面这个图的目录结构实际就是一些NN的元数据信息，在磁盘上找不到。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[kuyehen@hadoop180 hadoop-3.1.3]$ hadoop fs -mkdir /input</span><br><span class="line">[kuyehen@hadoop180 hadoop-3.1.3]$ hadoop fs -put README.txt /input</span><br></pre></td></tr></table></figure>
+
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220220214336206.png" alt="image-20220220214336206" style="zoom: 67%;" />
+
+<p>上图中的128M是块大小，这个文件实际占用的空间是1.33kb，占一个块儿。这个文件是真实存在的并且配置了三份副本，在Linux的三台机器上都能找到</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220220214719073.png" alt="image-20220220214719073" style="zoom:67%;" />
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[kuyehen@hadoop180 subdir0]$ pwd</span><br><span class="line">/opt/module/hadoop-3.1.3/data/data/current/BP-2045927912-192.168.200.180-1645346309889/current/finalized/subdir0/subdir0</span><br><span class="line">[kuyehen@hadoop180 subdir0]$ ll</span><br><span class="line">总用量 8</span><br><span class="line">下面这个就是上传到HDFS的README.txt，在DN里是以块的形式存的，NN里有维护它的元数据信息，所以能通过文件名找到这个块，也只有NN知道哪个块和哪个文件名对应，所以整个集群没有NN就无法工作。但是在web端会显示文件名，因为web端是NN维护的，它存的有元数据信息。如果文件过大会进行切块，也就是说可能多个块对应一个文件</span><br><span class="line">-rw-rw-r--. 1 kuyehen kuyehen 1366 2月  20 21:42 blk_1073741825</span><br><span class="line">下面这个是一些校验数据</span><br><span class="line">-rw-rw-r--. 1 kuyehen kuyehen   19 2月  20 21:42 blk_1073741825_1001.meta</span><br></pre></td></tr></table></figure>
+
+<p>还有关于副本的问题，hadoop不会把同一份文件在同一台机器上存多份，所以3个副本最少有3台机器，那么问题来了，3个副本4台机器数据是怎么存的呢？现在可以理解为随机放到3台机器上，实际有个机架感知的概念，后面会说到。</p>
+<h3 id="2-5-常用端口号"><a href="#2-5-常用端口号" class="headerlink" title="2.5 常用端口号"></a>2.5 常用端口号</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">NN内部通信端口：8020</span><br><span class="line">NN web端端口：9870</span><br><span class="line">2NN web端端口：9868</span><br><span class="line">RM web端端口：8088</span><br><span class="line">历史服务器web端端口：19888</span><br></pre></td></tr></table></figure>
+
+<h1 id="五、Hadoop源码编译-了解"><a href="#五、Hadoop源码编译-了解" class="headerlink" title="五、Hadoop源码编译(了解)"></a>五、Hadoop源码编译(了解)</h1><p>什么时候需要编译源码？在处理hadoop生态圈兼容性的时候，比如旧版本的hadoop和hive的兼容性非常好，但是hadoop升级到3.1.3后，就发生了兼容性问题，这时就需要手动编译源码，所以尚硅谷的hive3.1.2版本的安装包就是手动编译过的。所以尽量不要去选比较新的版本去用，会有各种问题。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E6%95%B0%E6%8D%AE%E5%BA%93/Redis/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/message-sent.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Redis</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/Hadoop%E5%9F%BA%E7%A1%803%E4%B9%8BMR/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/crowdfunding.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hadoop基础3之MR</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%A5%E9%97%A8%E7%AF%87"><span class="toc-text">入门篇</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%A6%82%E8%AE%BA"><span class="toc-text">一、大数据概论</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E4%BB%8EHadoop%E6%A1%86%E6%9E%B6%E8%AE%A8%E8%AE%BA%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81"><span class="toc-text">二、从Hadoop框架讨论大数据生态</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Hadoop%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">1. Hadoop是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Hadoop%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2"><span class="toc-text">2. Hadoop发展历史</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Hadoop%E4%B8%89%E5%A4%A7%E5%8F%91%E8%A1%8C%E7%89%88%E6%9C%AC%E4%BA%86%E8%A7%A3"><span class="toc-text">3. Hadoop三大发行版本了解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Hadoop%E7%9A%84%E4%BC%98%E5%8A%BF-4%E9%AB%98"><span class="toc-text">4. Hadoop的优势(4高)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Hadoop%E7%BB%84%E6%88%90-%E9%9D%A2%E8%AF%95%E9%87%8D%E7%82%B9"><span class="toc-text">5. Hadoop组成(面试重点)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-Hadoop1-x%E5%92%8C2-x%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">5.1 Hadoop1.x和2.x的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-HDFS%E6%9E%B6%E6%9E%84%E6%A6%82%E8%BF%B0"><span class="toc-text">5.2 HDFS架构概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-MapReduce%E6%9E%B6%E6%9E%84%E6%A6%82%E8%BF%B0"><span class="toc-text">5.3 MapReduce架构概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-YARN%E6%9E%B6%E6%9E%84%E6%A6%82%E8%BF%B0"><span class="toc-text">5.4 YARN架构概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF%E7%94%9F%E6%80%81%E4%BD%93%E7%B3%BB"><span class="toc-text">5.5 大数据技术生态体系</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81Hadoop%E7%9A%84%E5%AE%89%E8%A3%85-%E5%BC%80%E5%8F%91%E9%87%8D%E7%82%B9%EF%BC%89"><span class="toc-text">三、Hadoop的安装(开发重点）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Hadoop%E7%9A%84%E5%AE%89%E8%A3%85"><span class="toc-text">1. Hadoop的安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Hadoop%E7%9A%84%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-text">2. Hadoop的目录结构</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81Hadoop%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="toc-text">四、Hadoop运行模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="toc-text">1. 本地运行模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%AE%98%E6%96%B9Grep%E6%A1%88%E4%BE%8B"><span class="toc-text">1.1 官方Grep案例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%AE%98%E6%96%B9WordCount%E6%A1%88%E4%BE%8B"><span class="toc-text">1.2 官方WordCount案例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%AE%8C%E5%85%A8%E5%88%86%E5%B8%83%E5%BC%8F%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F-%E9%87%8D%E7%82%B9"><span class="toc-text">2. 完全分布式运行模式(重点)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E4%B8%A4%E4%B8%AA%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%91%BD%E4%BB%A4"><span class="toc-text">2.1 两个数据同步命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E"><span class="toc-text">2.2 集群配置说明</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-1-%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%A7%84%E5%88%92"><span class="toc-text">2.2.1 集群部署规划</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-2-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%AF%B4%E6%98%8E"><span class="toc-text">2.2.2 配置文件说明</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA"><span class="toc-text">2.3集群搭建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-HDFS%E6%95%B0%E6%8D%AE%E6%80%8E%E4%B9%88%E5%AD%98%E7%9A%84%EF%BC%9F"><span class="toc-text">2.4 HDFS数据怎么存的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E5%B8%B8%E7%94%A8%E7%AB%AF%E5%8F%A3%E5%8F%B7"><span class="toc-text">2.5 常用端口号</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81Hadoop%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91-%E4%BA%86%E8%A7%A3"><span class="toc-text">五、Hadoop源码编译(了解)</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

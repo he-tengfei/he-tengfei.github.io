@@ -1,0 +1,407 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Flink基础3之时间和窗口 | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="六、Flink 中的时间和窗口在流数据处理应用中，一个很重要也很常见的操作就是窗口计算。窗口和时间往往是分不开的。接下来我们就深入了解一下Flink中的时间语义和窗口的应用。 1. 时间语义时间语义就是时间以谁为准，比如上游任务在8点59分59秒发出一条数据，到下游要做窗口计算时已经是9点零1秒了，那这条数据到底该不该被收到8点~9点的窗口呢？  事件时间：数据产生的时间，需要数据本身有时间戳">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flink基础3之时间和窗口">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%803%E4%B9%8B%E6%97%B6%E9%97%B4%E5%92%8C%E7%AA%97%E5%8F%A3/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="六、Flink 中的时间和窗口在流数据处理应用中，一个很重要也很常见的操作就是窗口计算。窗口和时间往往是分不开的。接下来我们就深入了解一下Flink中的时间语义和窗口的应用。 1. 时间语义时间语义就是时间以谁为准，比如上游任务在8点59分59秒发出一条数据，到下游要做窗口计算时已经是9点零1秒了，那这条数据到底该不该被收到8点~9点的窗口呢？  事件时间：数据产生的时间，需要数据本身有时间戳">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/airport.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.753Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/airport.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%803%E4%B9%8B%E6%97%B6%E9%97%B4%E5%92%8C%E7%AA%97%E5%8F%A3/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Flink基础3之时间和窗口',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background: transparent"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Flink基础3之时间和窗口</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.753Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Flink/">Flink</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">12.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>38分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Flink基础3之时间和窗口"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="六、Flink-中的时间和窗口"><a href="#六、Flink-中的时间和窗口" class="headerlink" title="六、Flink 中的时间和窗口"></a>六、Flink 中的时间和窗口</h1><p>在流数据处理应用中，一个很重要也很常见的操作就是<strong>窗口计算</strong>。窗口和时间往往是分不开的。接下来我们就深入了解一下Flink中的时间语义和窗口的应用。</p>
+<h2 id="1-时间语义"><a href="#1-时间语义" class="headerlink" title="1. 时间语义"></a>1. 时间语义</h2><p>时间语义就是<strong>时间以谁为准</strong>，比如上游任务在8点59分59秒发出一条数据，到下游要做窗口计算时已经是9点零1秒了，那这条数据到底该不该被收到8点~9点的窗口呢？</p>
+<ul>
+<li><p>事件时间：数据产生的时间，需要数据本身有时间戳</p>
+</li>
+<li><p>处理时间：数据真正被处理的时刻，由于分布式系统中网络传输的延迟和时钟漂移，处理时间相对事件发生的时间会有所滞后</p>
+</li>
+<li><p>摄入时间：指数据进入Flink数据流的时间，也就是Source算子读入数据的时间，算是事件时间和处理时间的一个中和，一般没人用</p>
+</li>
+</ul>
+<p>更多时候我们使用事件时间，所以从1.12版本开始，Flink已经将事件时间作为了默认的时间语义。不过处理时间也不是一无是处。对于处理时间而言，由于没有任何附加考虑，数据一来就直接处理，因此这种方式可以让我们的流处理延迟降到最低，效率达到最高。</p>
+<p>在事件时间语义下，<strong>水位线成为了时钟</strong>，不会发生错分窗口的问题。但我们知道数据还可能是乱序的，要想让窗口正确地收集到所有数据，就必须等这些错乱的数据都到齐，这就需要一定的等待时间。<strong>所以整体上看，事件时间语义是以一定延迟为代价，换来了处理结果的正确性</strong>。由于<strong>网络延迟一般只有毫秒级</strong>，所以即使是事件时间语义，同样可以完成低延迟实时流处理的任务。</p>
+<p>两个概念：</p>
+<ul>
+<li>水位线：相当于时钟</li>
+<li>背压：数据量过大、处理能力不足，短时间堆了大量数据处理不完，产生背压backpressure</li>
+</ul>
+<h2 id="2-水位线Watermark"><a href="#2-水位线Watermark" class="headerlink" title="2. 水位线Watermark"></a>2. 水位线Watermark</h2><p>水位线Watermark，相当于一个时钟，它具体有什么含义，又跟数据的时间戳有什么关系呢？</p>
+<h3 id="2-1-事件时间和窗口"><a href="#2-1-事件时间和窗口" class="headerlink" title="2.1 事件时间和窗口"></a>2.1 事件时间和窗口</h3><p>水位线是如何”相当于时钟”的呢？以车运货物为例，到达车上的商品，生产时间是8点05分，那么当前车上的时间就是8点05分；又来了一个8点10分生产的商品，现在车上的时间就是8点10分，这就不受网络传输延迟的影响了。这个时钟的时间不会自动流逝，它的时间进展，就是靠着新到数据的时间戳来推动的。</p>
+<p>窗口时间区间为左闭右开，即包含8点不包含9点，窗口处理的是有界数据，等窗口的数据都到齐了，才能计算出最终的统计结果。</p>
+<h3 id="2-2-水位线的演变"><a href="#2-2-水位线的演变" class="headerlink" title="2.2 水位线的演变"></a>2.2 水位线的演变</h3><p>在事件时间语义下，我们不依赖系统时间，而是基于数据自带的时间戳去定义了一个时钟，用来表示当前时间的进展。于是<strong>每个并行子任务都会有一个自己的逻辑时钟，它的前进是靠数据的时间戳来驱动的</strong>。</p>
+<p>但在分布式系统中，这种驱动方式又会有一些问题。数据向下游任务传递时，<strong>一般只能传输给一个子任务，这样其他的并行子任务的时钟就无法推进了</strong>。例如一个时间戳为9点整的数据到来，当前任务的时钟就已经是9点了，处理完当前数据要发送到下游，如果下游任务是一个窗口计算，并行度为3，那么接收到这个数据的子任务，时钟也会进展到9点，9点结束的窗口就可以关闭进行计算了，而另外两个并行子任务则时间没有变化，不能进行窗口计算。</p>
+<p>一种简单的想法是，在数据流中加入一条特殊的数据记录作为时钟标记，记录当前的事件时间，随数据一起流动，这个标记可以直接<strong>广播</strong>到下游，当下游任务收到这个标记，就可以更新自己的时钟了。而它插入流中的位置，应该是在某个数据到来之后。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801111555569.png" alt="image-20220801111555569" style="zoom:80%;" />
+
+<p>实际应用中，如果当前数据量非常大，可能会有很多数据的时间戳是相同或差了几毫秒，这时每来一条数据就提取时间戳、插入水位线就做了大量的无用功。所以为了提高效率，一般会每隔一段时间生成一个水位线，默认好像是200ms。这里的200ms指的是系统时间而不是事件时间。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801111835460.png" alt="image-20220801111835460" style="zoom: 80%;" />
+
+<p>生产环境下，我们面对的大都是乱序数据，可能先收到了9秒的数据，之后7秒的数据才姗姗来迟。这时水位线该怎么表示当前的事件时间进展呢？如果再向之前那样提取时间戳并直接插入，时钟就倒退了。解决思路也很简单：<strong>插入新水位线时，要先判断一下时间戳是否比之前的大，否则就不再生成新的水位线</strong>。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801112511890.png" alt="image-20220801112511890" style="zoom:80%;" />
+
+<p>上面的问题都解决了，又有一个新的问题：现在貌似无法处理迟到的数据，<strong>窗口关闭后再来的数据该怎么办呢？</strong>我们可以等一等，把时钟调慢2s，比如10s的数据来了，水位线按8s算，12s的数据来了，再把水位线提到10s，触发窗口的关闭。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801124024094.png" alt="image-20220801124024094" style="zoom:80%;" />
+
+<p>这里一个窗口所收集的数据，并不是之前所有已经到达的数据。因为数据属于哪个窗口，是由数据本身的时间戳决定的，一个窗口只会收集真正属于它的那些数据。也就是说，上图中尽管水位线W(20)之前有时间戳为22的数据到来，10~20秒的窗口中也不会收集这个数据。</p>
+<p>其实到这里也没有解决全部的问题，比如迟到更久的数据，调慢2s，人家迟到了5s，这怎么办呢？后面几节会讨论。</p>
+<h3 id="2-3-水位线的特性"><a href="#2-3-水位线的特性" class="headerlink" title="2.3 水位线的特性"></a>2.3 水位线的特性</h3><p>水位线就代表了当前的事件时间时钟，而且可以在数据的时间戳基础上加一些<strong>延迟</strong>来保证不丢数据，这一点对于乱序流的正确处理非常重要。我们可以总结一下水位线的特性：</p>
+<ul>
+<li>水位线是插入到数据流中的一个标记，可以认为是一个特殊的数据</li>
+<li>水位线主要的内容是一个时间戳，用来表示当前事件时间的进展</li>
+<li>水位线是基于数据的时间戳生成的</li>
+<li>水位线的时间戳必须单调递增，以确保任务的事件时间时钟一直向前推进</li>
+<li>水位线可以通过设置延迟，来保证正确处理乱序数据</li>
+<li>一个水位线Watermark(t)，表示在当前流中事件时间已经达到了时间戳t，这代表t之前的所有数据都到齐了，之后流中不会出现时间戳t’≤t的数据</li>
+</ul>
+<p>水位线是Flink流处理中保证结果正确性的核心机制，它往往会跟窗口一起配合，完成对乱序数据的正确处理。关于这部分内容，我们会稍后进一步展开讲解。</p>
+<h3 id="2-4-如何生成水位线"><a href="#2-4-如何生成水位线" class="headerlink" title="2.4 如何生成水位线"></a>2.4 如何生成水位线</h3><p>绝对完美的水位线是不存在的，总有迟到更久的数据，只能根据具体业务灵活调整，处理时间语义可以在理论上可以得到最低的延迟，事件时间语义等的越久，延迟就越大。</p>
+<h4 id="2-4-1-水位线生成策略"><a href="#2-4-1-水位线生成策略" class="headerlink" title="2.4.1 水位线生成策略"></a>2.4.1 水位线生成策略</h4><p>在Flink的DataStreamAPI中，有一个单独用于生成水位线的方法：.assignTimestampsAndWatermarks()，它主要用来为流中的数据分配时间戳，并生成水位线来指示事件时间：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SingleOutputStreamOperator&lt;TestEvent&gt; streamOperator = streamSource.assignTimestampsAndWatermarks(</span><br><span class="line">    WatermarkStrategy</span><br><span class="line">        .&lt;TestEvent&gt;forBoundedOutOfOrderness(Duration.ofSeconds(5))</span><br><span class="line">        .withTimestampAssigner(new SerializableTimestampAssigner&lt;TestEvent&gt;() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public long extractTimestamp(TestEvent testEvent, long l) &#123;</span><br><span class="line">                return testEvent.timestamp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>疑问：有些时候数据源本身就提供了时间戳信息，比如读取Kafka时，我们就可以从Kafka数据中直接获取时间戳，而不需要单独提取字段分配了。这个该怎么操作？？？书里就提了一句。</p>
+</blockquote>
+<p>.assignTimestampsAndWatermarks()方法需要传入一个WatermarkStrategy作为参数，这就是所谓的水位线生成策略。<strong>WatermarkStrategy中包含了一个时间戳分配器TimestampAssigner和一个水位线生成器WatermarkGenerator</strong>。</p>
+<ul>
+<li>TimestampAssigner：告诉流从哪个字段提取时间戳</li>
+<li>WatermarkGenerator：主要负责按照既定的方式，基于时间戳生成水位线。在WatermarkGenerator接口中，主要又有两个方法：onEvent()和onPeriodicEmit()<ul>
+<li>onEvent：每个事件（数据）到来都会调用的方法，它的参数有当前事件、时间戳，以及允许发出水位线的一个WatermarkOutput，可以基于事件做各种操作</li>
+<li>onPeriodicEmit：周期性调用的方法，可以由WatermarkOutput发出水位线。周期时间为处理时间，可以调用环境配置的.setAutoWatermarkInterval()方法来设置，默认为200ms。比如env.getConfig().setAutoWatermarkInterval(60*1000L);</li>
+</ul>
+</li>
+</ul>
+<p>注意时间戳和水位线的单位，必须都是毫秒。</p>
+<h4 id="2-4-2-Flink内置水位线生成器"><a href="#2-4-2-Flink内置水位线生成器" class="headerlink" title="2.4.2 Flink内置水位线生成器"></a>2.4.2 Flink内置水位线生成器</h4><p>WatermarkStrategy这个接口是一个生成水位线策略的抽象，它提供了内置的水位线生成器（WatermarkGenerator），不仅开箱即用简化了编程，而且也为我们自定义水位线策略提供了模板。这两个生成器可以通过调用WatermarkStrategy的静态辅助方法来创建。它们都是周期性生成水位线的，分别对应着处理有序流和乱序流的场景。</p>
+<ul>
+<li>有序流：有序流的主要特点就是时间戳单调增长，所以永远不会出现迟到数据的问题。这是周期性生成水位线的最简单的场景，直接调用WatermarkStrategy.<strong>forMonotonousTimestamps</strong>()方法就可以实现。就是直接拿当前最大的时间戳作为水位线就可以了。</li>
+<li>乱序流：WatermarkStrategy.<strong>forBoundedOutOfOrderness</strong>()，这个方法需要传入一个maxOutOfOrderness参数，表示最大乱序程度或水位线延迟时间。</li>
+<li>事实上，有序流的水位线生成器本质上和乱序流是一样的，相当于延迟设为0的乱序流水位线生成器，两者完全等同</li>
+</ul>
+<p>这里需要注意的是，乱序流中生成的水位线真正的时间戳，其实是当前最大时间戳–延迟时间–1。为什么要减1毫秒呢？假设延迟为0，现有个0-7秒的窗口，有三条数据6、7、7，显然这3条数据都属于0-7这个窗口。如果把水位线设为7，那么第2条数据来的时候，水位线刚好是7，窗口关闭，第3条数据就没了。所以把7的水位线设为6.999，这样3条数据都可以正确进入相应的窗口。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">BoundedOutOfOrdernessWatermarks中：</span><br><span class="line">    @Override</span><br><span class="line">    public void onPeriodicEmit(WatermarkOutput output) &#123;</span><br><span class="line">        output.emitWatermark(new Watermark(maxTimestamp - outOfOrdernessMillis - 1));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-4-3-自定义水位线策略"><a href="#2-4-3-自定义水位线策略" class="headerlink" title="2.4.3 自定义水位线策略"></a>2.4.3 自定义水位线策略</h4><p>一般来说，Flink内置的水位线生成器就可以满足应用需求了。不过有时我们的业务逻辑可能非常复杂，这时对水位线生成的逻辑也有更高的要求，我们就必须自定义实现水位线策略WatermarkStrategy了。</p>
+<p>在WatermarkStrategy中，时间戳分配器TimestampAssigner都是大同小异的，指定字段提取时间戳就可以了；而不同策略的关键就在于WatermarkGenerator的实现。整体说来，Flink有两种不同的生成水位线的方式：一种是<strong>周期性</strong>的（Periodic），另一种是<strong>断点式</strong>的（Punctuated）。还记得WatermarkGenerator接口中的两个方法吗？——<strong>onEvent</strong>()和<strong>onPeriodicEmit</strong>()，前者是在每个事件到来时调用，而后者由框架周期性调用。周期性调用的方法中发出水位线，自然就是周期性生成水位线；而在事件触发的方法中发出水位线，自然就是断点式生成了。两种方式的不同就集中体现在这两个方法的实现上。</p>
+<ul>
+<li>PeriodicGenerator：周期性生成器一般是通过onEvent()观察判断输入的事件，在onPeriodicEmit()里调用output.emitWatermark()，就可以发出水位线了。这个方法由系统框架周期性地调用，默认200ms一次。</li>
+<li>PunctuatedGenerator：断点式生成器会不停地检测onEvent()中的事件，当发现带有水位线信息的特殊事件时，就立即发出水位线。</li>
+</ul>
+<p>两种自定义方式代码见com.study.chapter06.F21_MyWatermark，感觉这块儿还是有点迷糊。</p>
+<h4 id="2-4-4-在自定义数据源中发送水位线"><a href="#2-4-4-在自定义数据源中发送水位线" class="headerlink" title="2.4.4 在自定义数据源中发送水位线"></a>2.4.4 在自定义数据源中发送水位线</h4><p>我们也可以在自定义的数据源中抽取事件时间，然后发送水位线。这里要注意的是，在自定义数据源中发送了水位线以后，就不能再在程序中使用assignTimestampsAndWatermarks方法来生成水位线了，二者只能取其一。就是在run方法里加两行代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">private static class ClickGenerateWithWatermark implements SourceFunction&lt;TestEvent&gt; &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run(SourceContext&lt;TestEvent&gt; ctx) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">        while (isRunning)&#123;</span><br><span class="line"></span><br><span class="line">            ctx.collectWithTimestamp(testEvent,testEvent.timestamp);</span><br><span class="line">            // 发送水位线</span><br><span class="line">            ctx.emitWatermark(new Watermark(testEvent.timestamp - 1L));</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void cancel() &#123;isRunning = false&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码见com.study.chapter06.F22_MyWatermarkTest</p>
+<p>在自定义数据源中生成水位线相比assignTimestampsAndWatermarks方法更加灵活，可以任意的产生周期性的、非周期性的水位线，以及水位线的大小也完全由我们自定义。所以非常适合用来编写Flink的测试程序，测试Flink的各种各样的特性。</p>
+<h3 id="2-5-水位线的传递"><a href="#2-5-水位线的传递" class="headerlink" title="2.5 水位线的传递"></a>2.5 水位线的传递</h3><p>单条流上的水位线的演变我们搞清楚了，但是重分区redistributing的传输模式下，一个任务有可能会收到来自不同分区上游子任务的数据，而不同分区的子任务时钟并不同步，所以同一时刻发给下游任务的水位线可能并不相同。<strong>这时下游任务又该听谁的呢？以最小的为准。</strong></p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801152707438.png" alt="image-20220801152707438" style="zoom:80%;" />
+
+<p>我们可以用一个具体的例子，将水位线在任务间传递的过程完整梳理一遍。当前任务的上游，有四个并行子任务，所以会接收到来自四个分区的水位线，而下游有三个并行子任务，所以会向三个分区发出水位线。</p>
+<p>具体过程如下：上游并行子任务发来不同的水位线，当前任务会为每一个分区设置一个分区水位线PartitionWatermark，这是一个分区时钟，而当前任务自己的时钟，就是<strong>所有分区时钟里最小的那个</strong>。当有一个新的水位线（第一分区的4）从上游传来时，当前任务会首先更新对应的分区时钟，然后再次判断所有分区时钟中的最小值，如果比之前大，说明事件时间有了进展，当前任务的时钟也就可以更新了。这里要注意，更新后的任务时钟，并不一定是新来的那个分区水位线，比如这里改变的是第一分区的时钟，但最小的分区时钟是第三分区的3，于是当前任务时钟就推进到了3。当时钟有进展时，当前任务就会将自己的时钟以水位线的形式，广播给下游所有子任务。再次收到新的水位线（第二分区的7）后，执行同样的处理流程。首先将第二个分区时钟更新为7，然后比较所有分区时钟；发现最小值没有变化，那么当前任务的时钟也不变，<strong>也不会向下游任务发出水位线</strong>。</p>
+<p><strong>水位线在上下游任务之间的传递，非常巧妙地避免了分布式系统中没有统一时钟的问题。</strong></p>
+<h3 id="2-6-水位线的总结"><a href="#2-6-水位线的总结" class="headerlink" title="2.6 水位线的总结"></a>2.6 水位线的总结</h3><ul>
+<li>水位线在事件时间的世界里面，承担了<strong>时钟</strong>的角色，是<strong>唯一的时间尺度</strong>。后面讲到的窗口的闭合，以及定时器的触发都要通过判断水位线的大小来决定是否触发。</li>
+<li>水位线是一种特殊的事件，由程序员通过编程插入的数据流里面，然后跟随数据流向下游流动。</li>
+<li>水位线的默认计算公式：水位线&#x3D;观察到的最大事件时间–最大延迟时间–1毫秒。</li>
+<li>不同的算子的水位线可能是不一样的，因为下游的算子可能并未接收到来自上游算子的水位线，在编写Flink程序时，一定要谨慎的编写每一个算子的计算逻辑，尽量避免大量计算或者是大量的IO操作，这样才不会阻塞水位线的向下传递。</li>
+<li>在数据流开始之前，Flink会插入一个大小是负无穷大（在Java中是-Long.MAX_VALUE）的水位线，而在数据流结束时，Flink会插入一个正无穷大(Long.MAX_VALUE)的水位线，保证所有的窗口闭合以及所有的定时器都被触发。</li>
+<li>Flink对于离线数据集，只会插入两次水位线，也就是在最开始处插入负无穷大的水位线，在结束位置插入一个正无穷大的水位线，无需在数据流的中间插入水位线了</li>
+<li>水位线的重要性在于它的逻辑时钟特性，而逻辑时钟这个概念可以说是分布式系统里面最为重要的概念之一了，理解透彻了对理解各种分布式系统非常有帮助</li>
+</ul>
+<h2 id="3-窗口Window"><a href="#3-窗口Window" class="headerlink" title="3. 窗口Window"></a>3. 窗口Window</h2><p>数据来一条处理一条并输出，看起来很实时，但是大量数据一起进来时，系统负担很大。更加高效的做法是，把无界流进行切分，每一段数据分别进行聚合，结果只输出一次。这就相当于将无界流的聚合转化为了有界数据集的聚合，这就是所谓的窗口聚合操作。窗口聚合其实是对实时性和处理效率的一个权衡。在实际应用中，我们往往更关心一段时间内数据的统计结果，比如在过去的1分钟内有多少用户点击了网页。在这种情况下，我们就可以定义一个窗口，收集最近一分钟内的所有用户点击数据，然后进行聚合统计，最终输出一个结果就可以了。</p>
+<h3 id="3-1-窗口的概念"><a href="#3-1-窗口的概念" class="headerlink" title="3.1 窗口的概念"></a>3.1 窗口的概念</h3><p>将无限数据切割成有限的数据块进行处理，这就是所谓的窗口。<strong>窗口其实并不是一个流动的框，它更像一个桶</strong>。每个数据都会分发到对应的桶中，当到达窗口结束时间时，就对每个桶中收集的数据进行计算处理。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801154442612.png" alt="image-20220801154442612" style="zoom:80%;" />
+
+<p>Flink中窗口并不是静态准备好的，而是<strong>动态创建</strong>，当有落在这个窗口区间范围的数据达到时，才创建对应的窗口。另外这里我们认为到达窗口结束时间时，窗口就触发计算并关闭，事实上<strong>触发计算和窗口关闭两个行为也可以分开</strong>，这部分内容我们会在后面详述。</p>
+<h3 id="3-2-窗口的分类"><a href="#3-2-窗口的分类" class="headerlink" title="3.2 窗口的分类"></a>3.2 窗口的分类</h3><p>按照驱动类型分，由时间驱动的是时间窗口，由计数驱动的叫计数窗口。<strong>就是窗口有滚动、滑动、会话、全局4种，其中滚动滑动又有基于时间和基于计数两种实现。</strong></p>
+<ul>
+<li><strong>时间窗口TimeWindow：</strong>关于时间窗口的3个名字：开始时间、结束时间、窗口大小。Flink中有一个专门的类来表示时间窗口，名称就叫作<strong>TimeWindow</strong>。这个类只有两个私有属性：start和end，表示窗口的开始和结束的时间戳，单位为毫秒。我们可以调用公有的getStart()和getEnd()方法直接获取这两个时间戳。TimeWindow还提供了一个maxTimestamp()方法，用来获取窗口中能够包含数据的最大时间戳。很明显，窗口中的数据，最大允许的时间戳就是end-1，这也就代表了我们定义的窗口时间范围都是左闭右开的区间[start，end)。为什么不把窗口区间定义成左开右闭、包含上结束时间呢？上面解释过了，会丢数</li>
+<li><strong>计数窗口CountWindow：</strong>关于时间窗口的1个名词：窗口大小，每个窗口截取数据的个数，就是窗口的大小。计数窗口相比时间窗口就更加简单，我们只需指定窗口大小，就可以把数据分配到对应的窗口中了。在Flink内部也并没有对应的类来表示计数窗口，底层是通过全局窗口GlobalWindow来实现的</li>
+</ul>
+<p>按照窗口分配数据的规则分，窗口的具体实现可以分为4类：滚动窗口TumblingWindow、滑动窗口SlidingWindow、会话窗口SessionWindow，以及全局窗口GlobalWindow。</p>
+<ul>
+<li><strong>滚动窗口TumblingWindows：</strong>滚动窗口的窗口之间没有重叠，也不会有间隔，是首尾相接的状态。所以每个数据都会被分配到一个窗口，而且只会属于一个窗口。它可以基于时间定义，也可以基于数据个数定义，需要的参数只有一个，就是<strong>窗口的大小</strong>。滚动窗口应用很广泛</li>
+<li><strong>滑动窗口SlidingWindows：</strong>定义滑动窗口的参数有两个，<strong>除去窗口大小之外，还有一个滑动步长</strong>，它其实就代表了窗口计算的频率。例如，我们定义一个长度为1小时、滑动步长为5分钟的滑动窗口，那么就会统计1小时内的数据，每5分钟统计一次。同样，滑动窗口可以基于时间定义，也可以基于数据个数定义。滑动窗口可能会出现重叠，同一条数据可能会被同时分配到多个窗口中，或者1个窗口都不属于。当窗口大小等于滑动步长时，它就是个滚动窗口了，所以滚动窗口也可以看作是一种特殊的滑动窗口</li>
+<li><strong>会话窗口SessionWindows：</strong>借用<strong>会话超时失效的机制</strong>来描述窗口。数据来了之后就开启一个会话窗口，如果接下来还有数据陆续到来，那么就一直保持会话，如果一段时间一直没收到数据，那就认为会话超时失效，窗口自动关闭。只需要定义会话的超时时间就行，这个超时时间可以静态指定，也可以动态获取。在Flink底层，对会话窗口的处理会比较特殊，会为每条数据创建一个会话窗口，可能会发生窗口的合并</li>
+<li><strong>全局窗口GlobalWindows：</strong>还有一类比较通用的窗口，就是全局窗口，会把相同key的所有数据都分配到同一个窗口中，说直白一点，就跟没分窗口一样。无界流的数据永无止尽，所以这种窗口也没有结束的时候，<strong>默认是不会做触发计算的</strong>。如果希望它能对数据进行计算处理，还需要自定义<strong>触发器Trigger</strong></li>
+</ul>
+<h3 id="3-3-按键分区和非按键分区"><a href="#3-3-按键分区和非按键分区" class="headerlink" title="3.3 按键分区和非按键分区"></a>3.3 按键分区和非按键分区</h3><p>首先需要确定，到底是基于按键分区（Keyed）的数据流KeyedStream来开窗，还是直接在没有按键分区的DataStream上开窗。也就是说，在调用窗口算子之前，是否有keyBy操作。</p>
+<ul>
+<li>按键分区窗口：调用window()方法，基于KeyedStream进行窗口操作时，每个key上都定义了一组窗口，各自独立地进行统计计算</li>
+<li>非按键分区：调用windowAll()方法，窗口逻辑只能在一个任务上执行，就相当于并行度变成了1，所以在实际应用中一般不推荐使用这种方式。windowAll本身就是一个非并行的操作</li>
+</ul>
+<h3 id="3-4-窗口分配器"><a href="#3-4-窗口分配器" class="headerlink" title="3.4 窗口分配器"></a>3.4 窗口分配器</h3><p>窗口操作主要有两个部分：<strong>窗口分配器</strong> WindowAssigners和<strong>窗口函数</strong> WindowFunctions。</p>
+<p>窗口分配器其实就是在<strong>指定窗口的类型</strong>，最通用的定义方式，就是调用window()方法。这个方法需要传入一个WindowAssigner作为参数，返回WindowedStream。如果是非按键分区窗口，返回的是AllWindowedStream。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.keyBy(tuple2 -&gt; tuple2.f0)</span><br><span class="line">.window(TumblingEventTimeWindows.of(Time.seconds(5)))</span><br><span class="line">.reduce((value1,value2) -&gt; Tuple2.of(value1.f0,value1.f1+value2.f1))</span><br><span class="line">.print();</span><br></pre></td></tr></table></figure>
+
+<p><strong>窗口有滚动、滑动、会话、全局4种，其中滚动滑动又有基于时间和基于计数两种实现。</strong>除去需要自定义的全局窗口外，其他常用的类型Flink中都给出了内置的分配器实现。标准的声明方式就是直接调用window()，在里面传入对应时间语义下的窗口分配器。这样一来，我们不需要专门定义时间语义，默认就是事件时间，如果想用处理时间，那么在这里传入处理时间的窗口分配器就可以了。</p>
+<ul>
+<li><p><strong>滚动窗口：</strong>窗口分配器由类TumblingProcessingTimeWindows提供，需要调用它的静态方法of()。这里of()方法需要传入两个参数，size和offset，第一个参数表示窗口大小，第二个参数则表示窗口起始点的偏移量，用来调整时差。我们是东八区，跟UTC有8小时的时差。比如想要从北京时间的0点开始开窗，就可以这样写：<code>.window(TumblingEventTimeWindows.of(Time.days(1),Time.hours(-8)))</code></p>
+</li>
+<li><p><strong>滑动窗口：</strong>窗口分配器由类SlidingEventTimeWindows提供，同样需要调用它的静态方法.of()。也可以指定窗口大小、步长、偏移量</p>
+</li>
+<li><p><strong>会话窗口：</strong>窗口分配器由类EventTimeSessionWindows提供，需要调用它的静态方法withGap()或者withDynamicGap()。withGap()方法需要传入一个Time类型的参数size，表示会话的超时时间。withDynamicGap()方法需要传入一个SessionWindowTimeGapExtractor作为参数，用来定义sessiongap的动态提取逻辑</p>
+</li>
+<li><p><strong>全局窗口：</strong>全局窗口是计数窗口的底层实现，一般在需要自定义窗口时使用。它的定义同样是直接调用.window()，分配器由GlobalWindows类提供。需要注意使用全局窗口，必须自行定义触发器才能实现窗口计算，否则起不到任何作用</p>
+</li>
+</ul>
+<h3 id="3-5-窗口函数"><a href="#3-5-窗口函数" class="headerlink" title="3.5 窗口函数"></a>3.5 窗口函数</h3><p>经窗口分配器处理之后，得到的数据类型是WindowedStream。这个类型并不是DataStream，所以并不能直接进行其他转换，而必须进一步调用窗口函数，对收集到的数据进行处理计算之后，才能最终再次得到DataStream。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801170015787.png" alt="image-20220801170015787" style="zoom:67%;" />
+
+<p>窗口函数可以分为两类：增量聚合函数和全窗口函数。</p>
+<h4 id="3-5-1-增量聚合函数"><a href="#3-5-1-增量聚合函数" class="headerlink" title="3.5.1 增量聚合函数"></a>3.5.1 增量聚合函数</h4><p>窗口对无限流的切分，可以看作得到了一个有界数据集。如果我们等到所有数据都收集齐，在窗口到了结束时间要输出结果的一瞬间再去进行聚合，显然就不够高效了，这相当于真的在用批处理的思路来做实时流处理。为了提高实时性，我们可以再次将流处理的思路发扬光大，就像DataStream的简单聚合一样，每来一条数据就立即进行计算，中间只要保持一个简单的聚合<strong>状态</strong>就可以了。区别只是在于不立即输出结果，等到窗口到了结束时间需要输出计算结果的时候，我们只需要拿出之前聚合的状态直接输出，这无疑就大大提高了程序运行的效率和实时性。</p>
+<p>典型的增量聚合函数有两个：ReduceFunction和AggregateFunction，归约函数代码见F23_WindowReduceTest，下面说下聚合函数。</p>
+<p>ReduceFunction可以解决大多数归约聚合的问题，但是这个接口有一个限制，就是聚合状态的类型、输出结果的类型都必须和输入数据类型一样。这就迫使我们必须在聚合前，先将数据map成预期结果类型。例如，如果我们希望计算一组数据的平均值，应该怎样做聚合呢？很明显，这时我们需要计算两个状态量：数据的总和，以及数据的个数，而最终输出结果是两者的商。如果用ReduceFunction，那么我们应该先把数据转换成二元组(sum,count)的形式，然后进行归约聚合，最后再将元组的两个元素相除转换得到最后的平均值(这是最后一个map)。本来应该只是一个任务，可我们却需要<strong>map-reduce-map三步操作</strong>，这显然不够高效。</p>
+<p>于是自然可以想到，如果取消类型一致的限制，让输入数据、中间状态、输出结果<strong>三者类型都可以不同</strong>，不就可以一步直接搞定了吗？Flink的Window API中的aggregate就提供了这样的操作。AggregateFunction可以看作是ReduceFunction的通用版本，这里有三种类型：<strong>输入类型、累加器类型和输出类型</strong>。接口中有四个方法：</p>
+<ul>
+<li>createAccumulator()：初始化累加器，只调用一次</li>
+<li>add()：属于本窗口的数据，来一条累加一次，并返回累加器</li>
+<li>getResult()：窗口闭合时调用一次，将计算结果发往下游</li>
+<li>merge()：合并两个累加器，并将合并后的状态作为一个累加器返回，一般不用</li>
+</ul>
+<p>AggregateFunction的<strong>工作原理</strong>是：首先调用createAccumulator()为任务初始化一个状态(累加器)；而后每来一个数据就调用一次add()方法，对数据进行聚合，得到的结果保存在状态中；等到了窗口需要输出时，再调用getResult()方法得到计算结果。</p>
+<p>下面来看一个具体例子，求PV&#x2F;UV，也就是平均每个用户会访问多少次页面，这在一定程度上代表了用户的粘度。代码见com.study.chapter06.F24_WindowAggregateTest</p>
+<p>另外，Flink也为窗口的聚合提供了一系列预定义的简单聚合方法，可以直接基于WindowedStream调用。主要包括.sum()&#x2F;max()&#x2F;maxBy()&#x2F;min()&#x2F;minBy()，与KeyedStream的简单聚合非常相似。它们的底层，其实都是通过AggregateFunction来实现的。通过ReduceFunction和AggregateFunction我们可以发现，增量聚合函数其实就是在用流处理的思路来处理有界数据集，核心是保持一个聚合状态，当数据到来时不停地更新状态。这就是Flink所谓的<strong>有状态的流处理</strong>，通过这种方式可以极大地提高程序运行的效率，所以在实际应用中最为常见。</p>
+<h4 id="3-5-2-全窗口函数"><a href="#3-5-2-全窗口函数" class="headerlink" title="3.5.2 全窗口函数"></a>3.5.2 全窗口函数</h4><p>窗口操作中的另一大类就是全窗口函数。与增量聚合函数不同，<strong>全窗口函数需要先收集窗口中的数据，并在内部缓存起来，等到窗口要输出结果的时候再取出数据进行计算</strong>。这就是典型的批处理思路了，这样做毫无疑问是低效的，因为窗口全部的计算任务都积压在了要输出结果的那一瞬间。那为什么还需要有全窗口函数呢？这是因为有些场景下，我们要做的计算必须基于全部的数据才有效，这时做增量聚合就没什么意义了；另外，输出的结果有可能要包含<strong>上下文中的一些信息</strong>（比如窗口的起始时间），这是增量聚合函数做不到的。所以，我们还需要有更丰富的窗口计算方式，这就可以用全窗口函数来实现。</p>
+<p>在Flink中，全窗口函数也有两种：WindowFunction和ProcessWindowFunction。WindowFunction 字面上就是窗口函数，它其实是老版本的通用窗口函数接口。它的作用可以被 ProcessWindowFunction 全覆盖，所以之后可能会逐渐弃用。一般在实际应用，直接使用 ProcessWindowFunction 就可以了。</p>
+<p>ProcessWindowFunction是Window API中最底层的通用窗口函数接口。之所以说它最底层，是因为除了可以拿到窗口中的所有数据之外，ProcessWindowFunction还可以获取到一个上下文对象Context。这个上下文对象非常强大，不仅能够获取窗口信息，还可以访问当前的时间和状态信息。这里的时间就包括了处理时间和事件时间水位线。这就使得ProcessWindowFunction更加灵活、功能更加丰富。事实上，ProcessWindowFunction是Flink底层API处理函数processfunction中的一员，关于处理函数我们会在后续章节展开讲解。</p>
+<p>当然，这些好处是以牺牲性能和资源为代价的。作为一个全窗口函数，ProcessWindowFunction同样需要将所有数据缓存下来，等到窗口触发计算时才使用。它其实就是一个增强版的WindowFunction。具体使用跟WindowFunction非常类似，我们可以基于WindowedStream调用.process()方法，传入一个ProcessWindowFunction的实现类。</p>
+<p>下面是一个电商网站统计每小时UV的例子，代码见com.study.chapter06.F25_ProcessWindowFunctionTest</p>
+<p>当然，这里我们并没有用到上下文中其他信息，所以其实没有必要使用ProcessWindowFunction。全窗口函数因为运行效率较低，很少直接单独使用，往往会和增量聚合函数结合在一起，共同实现窗口的处理计算。</p>
+<h4 id="3-5-3-增量聚合和全窗口函数的结合使用"><a href="#3-5-3-增量聚合和全窗口函数的结合使用" class="headerlink" title="3.5.3 增量聚合和全窗口函数的结合使用"></a>3.5.3 增量聚合和全窗口函数的结合使用</h4><p>下面我们先来做个简单的总结。增量聚合函数处理计算会更高效。全窗口函数只是把它们收集缓存起来，到了窗口要关闭的时候再一次性计算。而增量聚合只需要保存一个当前和的状态，每个数据到来时就会做一次加法，更新状态，到了要输出结果的时候，只要将当前状态直接拿出来就可以了。增量聚合相当于把计算量均摊到了窗口收集数据的过程中，自然就会比全窗口聚合更加高效、输出更加实时。而全窗口函数的优势在于提供了更多的信息，可以认为是更加通用的窗口操作。它只负责收集数据、提供上下文相关信息，把所有的原材料都准备好，至于拿来做什么我们完全可以任意发挥。这就使得窗口计算更加灵活，功能更加强大。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">env</span><br><span class="line">    .addSource(new ClickGenerate())</span><br><span class="line">    .assignTimestampsAndWatermarks(</span><br><span class="line">        WatermarkStrategy</span><br><span class="line">            .&lt;TestEvent&gt;forBoundedOutOfOrderness(Duration.ZERO)</span><br><span class="line">            .withTimestampAssigner((event,timestamp) -&gt; event.timestamp)</span><br><span class="line">    )</span><br><span class="line">    .keyBy(event -&gt; event.url)</span><br><span class="line">    .window(SlidingEventTimeWindows.of(Time.seconds(10),Time.seconds(5)))</span><br><span class="line">    .aggregate(new UrlViewCountAgg(),new UrlViewCountResult())</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
+
+<p>所以在实际应用中，我们往往希望兼具这两者的优点，把它们结合在一起使用。Flink的Window API就给我们实现了这样的用法。我们之前在调用WindowedStream的.reduce()和.aggregate()方法时，只是简单地直接传入了一个ReduceFunction或AggregateFunction进行增量聚合。除此之外，其实还可以传入第二个参数：一个全窗口函数，可以是WindowFunction或者ProcessWindowFunction。这样调用的处理机制是：基于第一个参数（增量聚合函数）来处理窗口数据，每来一个数据就做一次聚合；等到窗口需要触发计算时，则调用第二个参数（全窗口函数）的处理逻辑输出结果。需要注意的是，这里的全窗口函数就不再缓存所有数据了，而是直接将增量聚合函数的结果拿来当作了Iterable类型的输入。一般情况下，这时的可迭代集合中就只有一个元素了。</p>
+<p>下面我们举一个具体的实例来说明。在网站的各种统计指标中，一个很重要的统计指标就是热门的链接。想要得到热门的url，前提是得到每个链接的热门度。一般情况下，可以用url的浏览量（点击量）表示热门度。我们这里统计10秒钟的url浏览量，每5秒钟更新一次；另外为了更加清晰地展示，还应该把窗口的起始结束时间一起输出。我们可以定义滑动窗口，并结合增量聚合函数和全窗口函数来得到统计结果。代码见com.study.chapter06.F26_WindowAggProcessWindowTest</p>
+<p>窗口处理的主体还是增量聚合，而引入全窗口函数又可以获取到更多的信息包装输出，这样的结合兼具了两种窗口函数的优势，在保证处理性能和实时性的同时支持了更加丰富的应用场景。</p>
+<h3 id="3-6-测试水位线和窗口的使用"><a href="#3-6-测试水位线和窗口的使用" class="headerlink" title="3.6 测试水位线和窗口的使用"></a>3.6 测试水位线和窗口的使用</h3><p>代码见com.study.chapter06.F27_MyWatermarkTest，水位线延迟5s，当15s的数据来的时候，水位线是9.999s，已经到达了窗口[0,10000)的结束时间，所以会触发窗口的闭合计算，然后销毁，之后的迟到数据会被丢弃。关于迟到数据的处理，见下一节。</p>
+<h3 id="3-7-其他API"><a href="#3-7-其他API" class="headerlink" title="3.7 其他API"></a>3.7 其他API</h3><p>对于一个窗口算子而言，<strong>窗口分配器和窗口函数</strong>是必不可少的。除此之外，Flink 还提供了其他一些可选的API，让我们可以更加灵活地控制窗口行为。</p>
+<h4 id="3-7-1-触发器Trigger"><a href="#3-7-1-触发器Trigger" class="headerlink" title="3.7.1 触发器Trigger"></a>3.7.1 触发器Trigger</h4><p>触发器主要是用来控制窗口什么时候触发计算，就是什么时候执行窗口函数。基于WindowedStream调用trigger()方法，就可以传入一个自定义的窗口触发器。</p>
+<p>Trigger是窗口算子的内部属性，每个窗口分配器（WindowAssigner）都会对应一个默认的触发器；对于Flink内置的窗口类型，它们的触发器都已经做了实现。例如，所有事件时间窗口，默认的触发器都是EventTimeTrigger；类似还有ProcessingTimeTrigger和CountTrigger。所以一般情况下是不需要自定义触发器的，不过我们依然有必要了解它的原理。</p>
+<p>Trigger是一个抽象类，自定义时必须实现下面四个抽象方法：</p>
+<ul>
+<li>onElement()：窗口中每到来一个元素，都会调用这个方法</li>
+<li>onEventTime()：当注册的事件时间定时器触发时，将调用这个方法</li>
+<li>onProcessingTime()：当注册的处理时间定时器触发时，将调用这个方法</li>
+<li>clear()：当窗口关闭销毁时，调用这个方法。一般用来清除自定义的状态</li>
+</ul>
+<p>这几个方法的参数中都有一个触发器上下文TriggerContext对象，可以用来注册定时器回调callback。这里提到的定时器Timer，其实就是我们设定的一个闹钟，代表未来某个时间点会执行的事件；当时间进展到设定的值时，就会执行定义好的操作。很明显，对于时间窗口而言，就应该是在窗口的结束时间设定了一个定时器，这样到时间就可以触发窗口的计算输出了。关于定时器的内容，我们在后面讲解处理函数时还会提到。</p>
+<p>上面的前三个方法可以响应事件，那它们又是怎样跟窗口操作联系起来的呢？这就需要了解一下它们的返回值。这三个方法返回类型都是TriggerResult，这是一个枚举类型，其中定义了对窗口进行操作的四种类型。</p>
+<ul>
+<li>CONTINUE：继续，什么都不做</li>
+<li>FIRE：触发计算，输出结果</li>
+<li>PURGE：清空窗口中的所有数据，销毁窗口</li>
+<li>FIRE_AND_PURGE：触发计算输出结果，并清除窗口</li>
+</ul>
+<p>我们可以看到，Trigger除了可以控制触发计算，还可以定义窗口什么时候关闭（销毁）。上面的四种类型，其实也就是这两个操作交叉配对产生的结果。一般我们会认为，到了窗口的结束时间，那么就会触发计算输出结果，然后关闭窗口——似乎这两个操作应该是同时发生的，但TriggerResult的定义告诉我们，两者可以分开。</p>
+<p>下面我们举一个例子。在日常业务场景中，我们经常会开比较大的窗口来计算每个窗口的pv或者uv等数据。但窗口开的太大，会使我们看到计算结果的时间间隔变长。所以我们可以使用触发器，来隔一段时间触发一次窗口计算。我们在代码中计算了每个url在10秒滚动窗口的pv指标，然后设置了触发器，每隔1秒钟触发一次窗口的计算。代码见com.study.chapter06.F28_TriggerTest，<strong>演示失败</strong>。</p>
+<h4 id="3-7-2-移除器Evictor"><a href="#3-7-2-移除器Evictor" class="headerlink" title="3.7.2 移除器Evictor"></a>3.7.2 移除器Evictor</h4><p>好像不常用，知道有这个东西就好，书上也没细说。</p>
+<h4 id="3-7-3-允许迟到时间"><a href="#3-7-3-允许迟到时间" class="headerlink" title="3.7.3 允许迟到时间"></a>3.7.3 允许迟到时间</h4><p>如果窗口关闭之后，又有本属于窗口内的数据姗姗来迟，默认情况下就会被丢弃，因为此时窗口已经销毁了。为了解决<strong>迟到数据</strong>的问题，Flink提供了一个特殊的接口，可以为窗口算子设置一个<strong>允许迟到时间</strong>（AllowedLateness）。也就是说，我们可以设定允许迟到一段时间，<strong>在这段时间内窗口不会销毁，继续到来的数据依然可以进入窗口中并立即触发计算并输出结果</strong>。直到水位线推进到了窗口结束时间+迟到时间，才真正将窗口的内容清空，正式关闭窗口，之后再迟到的数据就会被丢弃了。</p>
+<p>这种情况下，由于大部分乱序数据已经被水位线的延迟等到了，所以往往迟到的数据不会太多。这样会在水位线到达窗口结束时间时，先快速地输出一个近似正确的计算结果，然后保持窗口继续等到延迟数据，每来一条数据，窗口就会再次计算，并将更新后的结果输出。这样就可以逐步修正计算结果，最终得到准确的统计值了。回想流处理的发展过程，这不就是著名的Lambda架构吗？原先需要两套独立的系统来同时保证实时性和结果的最终正确性，如今Flink一套系统就全部搞定了。</p>
+<p>从这里我们就可以看到，窗口的触发计算（Fire）和清除（Purge）操作确实可以分开。不过在默认情况下，允许的延迟是0，这样一旦水位线到达了窗口结束时间就会触发计算并清除窗口，两个操作看起来就是同时发生了。</p>
+<h4 id="3-7-4-将迟到的数据放入侧输出流"><a href="#3-7-4-将迟到的数据放入侧输出流" class="headerlink" title="3.7.4 将迟到的数据放入侧输出流"></a>3.7.4 将迟到的数据放入侧输出流</h4><p>上面还是会丢数据，如果不想丢弃任何一个数据，又该怎么做呢？Flink还提供了另外一种方式处理迟到数据。我们可以将未收入窗口的迟到数据，放入侧输出流sideoutput进行另外的处理。侧输出流就是一条额外的数据流，只不过这里用来放迟到数据。这种方式是最后兜底的方法，只能保证数据不丢失，窗口已经真正关闭，所以是无法基于之前窗口的结果直接做更新的。我们只能将之前的窗口计算结果保存下来，然后获取侧输出流中的迟到数据，判断数据所属的窗口，手动对结果进行合并更新。尽管有些烦琐，实时性也不够强，但能够保证最终结果一定是正确的。</p>
+<p>基于WindowedStream调用sideOutputLateData()方法，就可以实现这个功能。方法需要传入一个输出标签OutputTag，用来标记不同的数据流。因为保存的就是流中的原始数据，所以OutputTag的类型与流中数据类型相同。将迟到数据放入侧输出流之后，还应该可以将它提取出来。基于窗口处理完成之后的DataStream，调用getSideOutput()方法，传入对应的输出标签，就可以获取到迟到数据所在的流了。</p>
+<p>这里注意，getSideOutput()是SingleOutputStreamOperator的方法，获取到的侧输出流数据类型应该和OutputTag指定的泛型类型一致，与窗口聚合之后流中的数据类型可以不同。代码见com.study.chapter06.F29_SlideOutputTest</p>
+<h3 id="3-8-窗口的生命周期"><a href="#3-8-窗口的生命周期" class="headerlink" title="3.8 窗口的生命周期"></a>3.8 窗口的生命周期</h3><p>熟悉了窗口API的使用，我们再回头梳理一下窗口本身的生命周期，这也是对窗口所有操作的一个总结。</p>
+<p><strong>窗口的创建</strong>：窗口的类型和基本信息由窗口分配器（windowassigners）指定，但窗口不会预先创建好，而是由数据驱动创建。当第一个应该属于这个窗口的数据元素到达时，就会创建对应的窗口。</p>
+<p><strong>窗口计算的触发：</strong>除了窗口分配器，每个窗口还会有自己的窗口函数和触发器。窗口函数可以分为增量聚合函数和全窗口函数，主要定义了窗口中计算的逻辑，而触发器则是指定调用窗口函数的条件，Flink预定义的窗口类型都有对应内置的触发器。当我们设置了允许迟到时间，那么如果水位线超过了窗口结束时间，但还没有达到允许迟到时间，这期间内的迟到数据也会触发窗口计算。</p>
+<p><strong>窗口的销毁：</strong>一般情况下，当时间达到了结束点，就会直接触发计算输出结果、进而清除状态销毁窗口。这时窗口的销毁可以认为和触发计算是同一时刻。这里需要注意，Flink中只对时间窗口有销毁机制，由于计数窗口是基于全局窗口实现的，而全局窗口不会清除状态，所以就不会被销毁。在特殊的场景下，窗口的销毁和触发计算会有所不同。事件时间语义下，如果设置了允许迟到时间，那么在水位线到达窗口结束时间时，仍然不会销毁窗口；窗口真正被完全删除的时间点，是窗口的结束时间加上用户指定的允许迟到时间。</p>
+<p><strong>窗口API调用总结</strong>：Window API首先按照是否按键分区分成两类。keyBy之后的KeyedStream，可以调用window()方法声明按键分区窗口，接下来首先是通过window()方法定义窗口分配器，得到WindowedStream，然后通过各种转换方法(reduce&#x2F;aggregate&#x2F;apply&#x2F;process) 结合窗口函数 (ReduceFunction&#x2F;AggregateFunction&#x2F;ProcessWindowFunction)，定义窗口的具体计算处理逻辑，转换之后重新得DataStream。此外在这两者之间，还可以基于WindowedStream调用trigger()自定义触发器，调用evictor()定义移除器，调用allowedLateness()指定允许迟到时间，调用sideOutputLateData()将迟到数据写入侧输出流，这些都是可选的API，一般不需要实现。而如果定义了侧输出流，可以基于窗口聚合之后的DataStream调用getSideOutput()获取侧输出流。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220802000244728.png" alt="image-20220802000244728" style="zoom:80%;" />
+
+<h2 id="4-迟到数据的处理"><a href="#4-迟到数据的处理" class="headerlink" title="4. 迟到数据的处理"></a>4. 迟到数据的处理</h2><p>有了事件时间、水位线和窗口的相关知识，现在就可以系统性地讨论一下怎样处理迟到数据了(处理时间没有迟到的说法)。Flink处理迟到数据有3重保障，事件时间里用来表示时钟进展的就是水位线，对于乱序流，本身就可以设置一个<strong>水位线延迟时间</strong>，而做窗口计算时，我们又可以设置窗口的<strong>允许迟到时间</strong>，另外窗口还有<strong>将迟到数据输出到侧输出流</strong>的用法。</p>
+<p>代码见com.study.chapter06.F29_SlideOutputTest</p>
+<p>课外知识：水位线也是定时器触发的判断标准，时间窗口的操作底层就是靠定时器来控制触发的，定时器是Flink底层API处理函数的重要部分。</p>
+<h2 id="5-本章总结"><a href="#5-本章总结" class="headerlink" title="5. 本章总结"></a>5. 本章总结</h2><p>在流处理中，由于对实时性的要求非常高，同时又要求能够保证窗口操作结果的正确，所以必须引入水位线来描述事件时间。而窗口正是时间相关的最佳应用场景，所以Flink为我们提供了丰富的窗口类型和处理操作；与此同时，在实际应用中很难对乱序流给出一个最佳延迟时间，单独依赖水位线去保证结果正确性是不够的，所以需要结合窗口（Window）处理迟到数据的相关API。本章我们详细了解了Flink中时间语义和水位线的概念、窗口API的用法以及处理迟到数据的相关知识，这些内容对于实时流处理来说非常重要。Flink的时间语义和窗口，主要就是为了处理大规模的乱序数据流时，同时保证低延迟、高吞吐和结果的正确性。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%804%E4%B9%8B%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0&amp;%E5%A4%9A%E6%B5%81%E8%BD%AC%E6%8D%A2&amp;%E7%8A%B6%E6%80%81%E7%BC%96%E7%A8%8B/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/global-warming.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Flink基础4之处理函数&amp;多流转换&amp;状态编程</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%805%E4%B9%8B%E5%AE%B9%E9%94%99%E6%9C%BA%E5%88%B6/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/bored.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Flink基础5之容错机制</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81Flink-%E4%B8%AD%E7%9A%84%E6%97%B6%E9%97%B4%E5%92%8C%E7%AA%97%E5%8F%A3"><span class="toc-text">六、Flink 中的时间和窗口</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%97%B6%E9%97%B4%E8%AF%AD%E4%B9%89"><span class="toc-text">1. 时间语义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%B0%B4%E4%BD%8D%E7%BA%BFWatermark"><span class="toc-text">2. 水位线Watermark</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E4%BA%8B%E4%BB%B6%E6%97%B6%E9%97%B4%E5%92%8C%E7%AA%97%E5%8F%A3"><span class="toc-text">2.1 事件时间和窗口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%B0%B4%E4%BD%8D%E7%BA%BF%E7%9A%84%E6%BC%94%E5%8F%98"><span class="toc-text">2.2 水位线的演变</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E6%B0%B4%E4%BD%8D%E7%BA%BF%E7%9A%84%E7%89%B9%E6%80%A7"><span class="toc-text">2.3 水位线的特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E5%A6%82%E4%BD%95%E7%94%9F%E6%88%90%E6%B0%B4%E4%BD%8D%E7%BA%BF"><span class="toc-text">2.4 如何生成水位线</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-1-%E6%B0%B4%E4%BD%8D%E7%BA%BF%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5"><span class="toc-text">2.4.1 水位线生成策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-2-Flink%E5%86%85%E7%BD%AE%E6%B0%B4%E4%BD%8D%E7%BA%BF%E7%94%9F%E6%88%90%E5%99%A8"><span class="toc-text">2.4.2 Flink内置水位线生成器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-3-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B0%B4%E4%BD%8D%E7%BA%BF%E7%AD%96%E7%95%A5"><span class="toc-text">2.4.3 自定义水位线策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-4-%E5%9C%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE%E6%BA%90%E4%B8%AD%E5%8F%91%E9%80%81%E6%B0%B4%E4%BD%8D%E7%BA%BF"><span class="toc-text">2.4.4 在自定义数据源中发送水位线</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E6%B0%B4%E4%BD%8D%E7%BA%BF%E7%9A%84%E4%BC%A0%E9%80%92"><span class="toc-text">2.5 水位线的传递</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-%E6%B0%B4%E4%BD%8D%E7%BA%BF%E7%9A%84%E6%80%BB%E7%BB%93"><span class="toc-text">2.6 水位线的总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%AA%97%E5%8F%A3Window"><span class="toc-text">3. 窗口Window</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%AA%97%E5%8F%A3%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-text">3.1 窗口的概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E7%AA%97%E5%8F%A3%E7%9A%84%E5%88%86%E7%B1%BB"><span class="toc-text">3.2 窗口的分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E6%8C%89%E9%94%AE%E5%88%86%E5%8C%BA%E5%92%8C%E9%9D%9E%E6%8C%89%E9%94%AE%E5%88%86%E5%8C%BA"><span class="toc-text">3.3 按键分区和非按键分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E7%AA%97%E5%8F%A3%E5%88%86%E9%85%8D%E5%99%A8"><span class="toc-text">3.4 窗口分配器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0"><span class="toc-text">3.5 窗口函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-1-%E5%A2%9E%E9%87%8F%E8%81%9A%E5%90%88%E5%87%BD%E6%95%B0"><span class="toc-text">3.5.1 增量聚合函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-2-%E5%85%A8%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0"><span class="toc-text">3.5.2 全窗口函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-3-%E5%A2%9E%E9%87%8F%E8%81%9A%E5%90%88%E5%92%8C%E5%85%A8%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0%E7%9A%84%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8"><span class="toc-text">3.5.3 增量聚合和全窗口函数的结合使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-%E6%B5%8B%E8%AF%95%E6%B0%B4%E4%BD%8D%E7%BA%BF%E5%92%8C%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">3.6 测试水位线和窗口的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-7-%E5%85%B6%E4%BB%96API"><span class="toc-text">3.7 其他API</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-7-1-%E8%A7%A6%E5%8F%91%E5%99%A8Trigger"><span class="toc-text">3.7.1 触发器Trigger</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-7-2-%E7%A7%BB%E9%99%A4%E5%99%A8Evictor"><span class="toc-text">3.7.2 移除器Evictor</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-7-3-%E5%85%81%E8%AE%B8%E8%BF%9F%E5%88%B0%E6%97%B6%E9%97%B4"><span class="toc-text">3.7.3 允许迟到时间</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-7-4-%E5%B0%86%E8%BF%9F%E5%88%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%94%BE%E5%85%A5%E4%BE%A7%E8%BE%93%E5%87%BA%E6%B5%81"><span class="toc-text">3.7.4 将迟到的数据放入侧输出流</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-8-%E7%AA%97%E5%8F%A3%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-text">3.8 窗口的生命周期</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%BF%9F%E5%88%B0%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-text">4. 迟到数据的处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%9C%AC%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="toc-text">5. 本章总结</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

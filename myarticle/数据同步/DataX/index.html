@@ -1,0 +1,343 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>DataX | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="王昊版，王昊在数仓5.0里用datax做全量同步。 一、DataX简介DataX 是阿里巴巴开源的一个异构数据源离线同步工具，致力于实现包括关系型数据库(MySQL、Oracle等)、HDFS、Hive、ODPS、HBase、FTP等各种异构数据源之间稳定高效的数据同步功能。DataX目前已经有了比较全面的插件体系，主流的RDBMS数据库、NOSQL、大数据计算系统都已经接入。与sqoop的区别就">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DataX">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/DataX/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="王昊版，王昊在数仓5.0里用datax做全量同步。 一、DataX简介DataX 是阿里巴巴开源的一个异构数据源离线同步工具，致力于实现包括关系型数据库(MySQL、Oracle等)、HDFS、Hive、ODPS、HBase、FTP等各种异构数据源之间稳定高效的数据同步功能。DataX目前已经有了比较全面的插件体系，主流的RDBMS数据库、NOSQL、大数据计算系统都已经接入。与sqoop的区别就">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/riding-bicycle.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.757Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/riding-bicycle.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/DataX/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'DataX',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/christmas-4701783.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">DataX</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.757Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/">数据同步</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>12分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="DataX"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>王昊版，王昊在数仓5.0里用datax做全量同步。</p>
+<h1 id="一、DataX简介"><a href="#一、DataX简介" class="headerlink" title="一、DataX简介"></a>一、DataX简介</h1><p>DataX 是<strong>阿里</strong>巴巴<strong>开源</strong>的一个异构数据源<strong>离线同步工具</strong>，致力于实现包括关系型数据库(MySQL、Oracle等)、HDFS、Hive、ODPS、HBase、FTP等各种<strong>异构数据源</strong>之间稳定高效的数据同步功能。DataX目前已经有了比较全面的插件体系，主流的RDBMS数据库、NOSQL、大数据计算系统都已经接入。与sqoop的区别就是比sqoop支持的数据源多，还多了个<strong>流控</strong>的功能。</p>
+<blockquote>
+<p>源码地址：<a target="_blank" rel="noopener" href="https://github.com/alibaba/DataX">https://github.com/alibaba/DataX</a></p>
+</blockquote>
+<h1 id="二、DataX架构原理"><a href="#二、DataX架构原理" class="headerlink" title="二、DataX架构原理"></a>二、DataX架构原理</h1><h2 id="1-DataX设计理念"><a href="#1-DataX设计理念" class="headerlink" title="1. DataX设计理念"></a>1. DataX设计理念</h2><p>为了解决<strong>异构数据源同步</strong>问题，DataX<strong>将复杂的网状的同步链路变成了星型同步链路</strong>，DataX作为中间传输载体负责连接各种数据源。当需要接入一个新的数据源的时候，只需要将此数据源对接到DataX，便能跟已有的数据源做到无缝数据同步。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710213142398.png" alt="image-20220710213142398" style="zoom:50%;" />
+
+<h2 id="2-DataX框架设计"><a href="#2-DataX框架设计" class="headerlink" title="2. DataX框架设计"></a>2. DataX框架设计</h2><p>DataX本身作为离线数据同步框架，采用Framework + plugin架构构建。将数据源读取和写入抽象成为Reader&#x2F;Writer插件，纳入到整个同步框架中。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710213326956.png" alt="image-20220710213326956" style="zoom:67%;" />
+
+<ul>
+<li>Reader：数据采集模块，负责采集数据源的数据，将数据发送给Framework</li>
+<li>Writer：数据写入模块，负责不断从Framework读数据，并将数据写入到目的端</li>
+<li>Framework：用于连接reader和writer，作为两者的数据传输通道，并处理缓冲(读写速率不一致)，流控(控制传输速率)，并发，数据转换等核心技术问题</li>
+</ul>
+<h2 id="3-datax运行流程"><a href="#3-datax运行流程" class="headerlink" title="3. datax运行流程"></a>3. datax运行流程</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710213534462.png" alt="image-20220710213534462" style="zoom:50%;" />
+
+<ul>
+<li>Job：单个数据同步的作业，称为一个Job，一个Job启动一个进程</li>
+<li>Task：根据不同数据源的切分策略，一个Job会切分为多个Task(为了并行)，Task是DataX作业的最小单元，每个Task负责一部分数据的同步工作</li>
+<li>TaskGroup：Scheduler调度模块会对Task进行分组，每个Task组称为一个Task Group。每个Task Group负责以一定的并发度运行其所分得的Task，单个Task Group的并发度默认为5</li>
+<li>Reader-&gt;Channel-&gt;Writer：每个Task启动后，都会固定启动Reader-&gt;Channel-&gt;Writer的线程来完成同步工作</li>
+</ul>
+<h2 id="4-DataX调度决策思路"><a href="#4-DataX调度决策思路" class="headerlink" title="4. DataX调度决策思路"></a>4. DataX调度决策思路</h2><p>datax是怎么切分job怎么划分task组的呢？</p>
+<p>举例来说，用户提交了一个DataX作业，并且配置了总的并发度为20(意思是这个job最多同时运行20个task)，目的是对一个有100张分表的mysql数据源进行同步。DataX的调度决策思路是：</p>
+<ul>
+<li>DataX Job根据分库分表切分策略，将同步工作分成100个Task(1个task一张分表)。</li>
+<li>根据配置的总的并发度20，以及每个Task Group的并发度5，DataX计算共需要分配4个TaskGroup(20&#x2F;5&#x3D;4)。</li>
+<li>4个TaskGroup平分100个Task，每一个TaskGroup负责运行25个Task。</li>
+</ul>
+<h2 id="5-DataX与Sqoop对比"><a href="#5-DataX与Sqoop对比" class="headerlink" title="5. DataX与Sqoop对比"></a>5. DataX与Sqoop对比</h2><table>
+<thead>
+<tr>
+<th><strong>功能</strong></th>
+<th><strong>DataX</strong></th>
+<th><strong>Sqoop</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>运行模式</td>
+<td>单进程多线程，1个job1个进程</td>
+<td>MR</td>
+</tr>
+<tr>
+<td>分布式</td>
+<td>不支持，可以通过调度系统规避</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>流控</td>
+<td>有流控功能</td>
+<td>需要定制</td>
+</tr>
+<tr>
+<td>统计信息</td>
+<td>总共多少条，已经同步了多少条</td>
+<td>没有，分布式的数据收集不方便</td>
+</tr>
+<tr>
+<td>数据校验</td>
+<td>在core部分有校验功能</td>
+<td>没有，分布式的数据收集不方便</td>
+</tr>
+<tr>
+<td>监控</td>
+<td>需要定制</td>
+<td>需要定制</td>
+</tr>
+</tbody></table>
+<h1 id="三、DataX部署"><a href="#三、DataX部署" class="headerlink" title="三、DataX部署"></a>三、DataX部署</h1><p>非常非常非常简单，见软件安装篇。</p>
+<h1 id="四、DataX使用"><a href="#四、DataX使用" class="headerlink" title="四、DataX使用"></a>四、DataX使用</h1><h2 id="1-datax任务的提交"><a href="#1-datax任务的提交" class="headerlink" title="1. datax任务的提交"></a>1. datax任务的提交</h2><p>DataX的使用十分简单，用户只需根据自己同步数据的数据源和目的地选择相应的Reader和Writer，并将Reader和Writer的信息配置在一个json文件中，然后执行如下命令提交数据同步任务即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python bin/datax.py path/to/your/job.json</span><br></pre></td></tr></table></figure>
+
+<p>配置文件格式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python bin/datax.py -r mysqlreader -w hdfswriter</span><br></pre></td></tr></table></figure>
+
+<p>学习datax就是学习如何去编写配置文件，配置文件模板如下，json最外层是一个job，job包含setting和content两部分，其中setting用于对整个job进行配置，content用户配置数据源和目的地。</p>
+<p>Reader和Writer的具体参数可参考官方文档，地址如下：<a target="_blank" rel="noopener" href="https://github.com/alibaba/DataX/blob/master/README.md%EF%BC%8C%E9%98%BF%E9%87%8C%E7%9A%84%EF%BC%8C%E5%85%A8%E4%B8%AD%E6%96%87%EF%BC%8C%E4%BC%9A%E6%89%BE%E5%B0%B1%E8%A1%8C%E3%80%82">https://github.com/alibaba/DataX/blob/master/README.md，阿里的，全中文，会找就行。</a></p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710221048422.png" alt="image-20220710221048422" style="zoom:50%;" />
+
+<h2 id="2-实战：MySQL-gt-HDFS"><a href="#2-实战：MySQL-gt-HDFS" class="headerlink" title="2. 实战：MySQL -&gt; HDFS"></a>2. 实战：MySQL -&gt; HDFS</h2><p><strong>案例要求：</strong>同步project01数据库中base_province表数据到HDFS的&#x2F;base_province目录。</p>
+<p><strong>需求分析：</strong>要实现该功能，需选用MySQLReader和HDFSWriter，MySQLReader具有两种模式分别是<strong>TableMode和QuerySQLMode</strong>，前者使用table，column，where等属性声明需要同步的数据(dataphin用的这个)；后者使用一条SQL查询语句声明需要同步的数据(前置后置语句应该是用这个做的)。</p>
+<h3 id="2-1-TableMode"><a href="#2-1-TableMode" class="headerlink" title="2.1 TableMode"></a>2.1 TableMode</h3><p><strong>reader和writer的配置</strong>如下，详见&#x2F;opt&#x2F;module&#x2F;datax-3.0&#x2F;myjson&#x2F;study&#x2F;base_province.json，编辑完用上面的命令执行即可。注意<strong>datax不会自动创建路径</strong>，hdfs上的路径需要提前创建好，导完数用hadoop fs -cat &#x2F;base_province&#x2F;* | zcat命令可以查看数据。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&quot;reader&quot;: &#123;</span><br><span class="line">    &quot;name&quot;: &quot;mysqlreader&quot;,      -- reader名称，固定写法</span><br><span class="line">    &quot;parameter&quot;: &#123;</span><br><span class="line">        &quot;username&quot;: &quot;root&quot;,      -- MySQL的账号密码</span><br><span class="line">        &quot;password&quot;: &quot;sql_boy&quot;,</span><br><span class="line">        &quot;connection&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;jdbcUrl&quot;: [</span><br><span class="line">                    &quot;jdbc:mysql://hadoop180:3306/project01&quot;</span><br><span class="line">                ],</span><br><span class="line">                &quot;table&quot;: [</span><br><span class="line">                    &quot;base_province&quot;</span><br><span class="line">                ]               -- 这里为什么是个数组？分表时要读多个表</span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        &quot;column&quot;: [             </span><br><span class="line">            &quot;id&quot;,</span><br><span class="line">            &quot;name&quot;,</span><br><span class="line">            &quot;region_id&quot;,</span><br><span class="line">            &quot;area_code&quot;,</span><br><span class="line">            &quot;iso_code&quot;,</span><br><span class="line">            &quot;iso_3166_2&quot;</span><br><span class="line">        ],                      -- 需要同步的列，[&quot;*&quot;]代表所有列</span><br><span class="line">        &quot;where&quot;: &quot;id&gt;=3&quot;,       -- 过滤条件</span><br><span class="line">        &quot;splitPk&quot;: &quot;&quot;           -- 分片字段，如果指定该字段，则DataX会启动多个Task同步数据；若未指定（不提供splitPk或者splitPk值为空），则只会有有单个Task，通常指定主键。该参数只在TableMode下有效，意味着在QuerySQLMode下，只会有单个Task，所以这个模式没人用。具体怎么分片分多少片，这个不知道具体规则，大概是5倍的总并发数，每个数据源的切片规则都不一样，了解即可</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,</span><br><span class="line">&quot;writer&quot;: &#123;</span><br><span class="line">    &quot;name&quot;: &quot;hdfswriter&quot;,           -- writer名称，固定写法</span><br><span class="line">    &quot;parameter&quot;: &#123;</span><br><span class="line">        &quot;column&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;id&quot;,</span><br><span class="line">                &quot;type&quot;: &quot;bigint&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;name&quot;,</span><br><span class="line">                &quot;type&quot;: &quot;string&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;region_id&quot;,</span><br><span class="line">                &quot;type&quot;: &quot;string&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;area_code&quot;,</span><br><span class="line">                &quot;type&quot;: &quot;string&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;iso_code&quot;,</span><br><span class="line">                &quot;type&quot;: &quot;string&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;						-- 文本文件都是用字符串的asc码存储的，这里为什么要指定字段名和类型呢？而且sqoop就不用指定。为了做校验，往hdfs写之前会先尝试将字符串转为目标类型，如果在这里就转换失败了，那说明到hive里也会转换失败。那字段名呢？字段名在这里是不起作用的，hive识别字段是以分隔符识别的。当用orc格式时就不一样了，orc是一种二进制文件，这种情况下字符&#x27;1&#x27;和数字1在二进制中存储的内容就不一样，所以这里必须写字段类型，不然数据就错了，而不是仅仅为了做校验，对于orc来说列名同样重要，orc格式会存储列的一些信息，包括字段名和字段类型，所以hive读orc的时候只用指定文件格式就行，不用指定分隔符</span><br><span class="line">                &quot;name&quot;: &quot;iso_3166_2&quot;,</span><br><span class="line">                &quot;type&quot;: &quot;string&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        ],                          -- 字段名和类型，这里就是hive的字段类型，目前不支持decimal，转为string，hive表中仍设为decimal，会自动转换</span><br><span class="line">        &quot;defaultFS&quot;: &quot;hdfs://hadoop180:8020&quot;,   -- hdfs的nn节点地址</span><br><span class="line">        &quot;path&quot;: &quot;/base_province&quot;,               -- hdfs目标路径</span><br><span class="line">        &quot;fileName&quot;: &quot;base_province&quot;,            -- 文件名前缀，注意不是文件名</span><br><span class="line">        &quot;fileType&quot;: &quot;text&quot;,                     -- 只支持文本文件text和orc(一种列式存储的格式)</span><br><span class="line">        &quot;compress&quot;: &quot;gzip&quot;,                     -- 压缩格式，text文件支持gzip、bzip2，orc文件支持snappy</span><br><span class="line">        &quot;fieldDelimiter&quot;: &quot;\t&quot;,                 -- 文件分隔符</span><br><span class="line">        &quot;writeMode&quot;: &quot;append&quot;                   -- append追加和nonConflict，同前缀报错，其实需要另一种模式：重名时先删除原文件再写入</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&quot;setting&quot;: &#123;</span><br><span class="line">    &quot;speed&quot;: &#123;          -- 传输速度，流控策略有3种，一种基于并发数，一种基于传输字节速度，一种基于传输数据条数</span><br><span class="line">        &quot;channel&quot;: 1    -- 并发数，最终的并发数不一定是该值，这个后面讲优化时细说</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;errorLimit&quot;:&#123;      -- 容错配置，这里就是上面的字段类型校验了，通常不配置这个，代表不允许出错</span><br><span class="line">        &quot;record&quot;:1,</span><br><span class="line">        &quot;percentage&quot;:0.02</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意事项：</strong>HFDS Writer不能自定义<strong>null值</strong>的格式，默认情况下，HFDS Writer会将null值存储为空字符串（’’），而Hive默认的null值存储格式为\N，所以hive就不能正确识别null值了。</p>
+<p>解决该问题的方案有两个，一是修改DataX HDFS Writer的源码，增加自定义null值存储格式的逻辑，可参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/u010834071/article/details/105506580%E3%80%82%E4%BA%8C%E6%98%AF%E5%9C%A8Hive%E4%B8%AD%E5%BB%BA%E8%A1%A8%E6%97%B6%E6%8C%87%E5%AE%9Anull%E5%80%BC%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F%E4%B8%BA%E7%A9%BA%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%88&#39;&#39;%EF%BC%89%EF%BC%8C%E4%BE%8B%E5%A6%82%EF%BC%9A">https://blog.csdn.net/u010834071/article/details/105506580。二是在Hive中建表时指定null值存储格式为空字符串（&#39;&#39;），例如：</a></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE EXTERNAL TABLE base_province</span><br><span class="line">(</span><br><span class="line">    `id`         STRING COMMENT &#x27;编号&#x27;,</span><br><span class="line">    `name`       STRING COMMENT &#x27;省份名称&#x27;,</span><br><span class="line">) COMMENT &#x27;省份表&#x27;</span><br><span class="line">    ROW FORMAT DELIMITED FIELDS TERMINATED BY &#x27;\t&#x27;</span><br><span class="line">    NULL DEFINED AS &#x27;&#x27;		-- 这里</span><br><span class="line">    LOCATION &#x27;/base_province/&#x27;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-QuerySQLMode"><a href="#2-2-QuerySQLMode" class="headerlink" title="2.2 QuerySQLMode"></a>2.2 QuerySQLMode</h3><p>只会有1个task，与TableMode只在connection配置参数不一样，通常在需要join时用它。为什么它不支持并行？因为它可能涉及join，如果这时并行的话会加大设计难度。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&quot;connection&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">        &quot;jdbcUrl&quot;: [&quot;jdbc:mysql://hadoop102:3306/gmall&quot;],</span><br><span class="line">        &quot;querySql&quot;: [&quot;select id,name,region_id,area_code,iso_code,iso_3166_2 from base_province where id&gt;=3&quot;]</span><br><span class="line">    &#125;</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-DataX传参"><a href="#3-DataX传参" class="headerlink" title="3. DataX传参"></a>3. DataX传参</h2><p>这个功能还很常用，在JSON配置文件中使用${param}引用参数，在提交任务时使用-p”-Dparam&#x3D;value”传入参数值即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在上面的base_province.json里改一行</span><br><span class="line">&quot;path&quot;: &quot;/base_province/$&#123;ds&#125;&quot;</span><br><span class="line"></span><br><span class="line">执行以下命令</span><br><span class="line">python bin/datax.py -p&quot;-Dds=20220711&quot; myjson/study/base_province.json </span><br><span class="line"></span><br><span class="line">让人难受的是，/base_province/20220711 这个路径也要提前创建好</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-实战：HDFS-gt-MySQL"><a href="#4-实战：HDFS-gt-MySQL" class="headerlink" title="4. 实战：HDFS -&gt; MySQL"></a>4. 实战：HDFS -&gt; MySQL</h2><p><strong>案例要求：</strong>同步HDFS上的&#x2F;base_province&#x2F;20220711目录下的数据到MySQL的project01数据库下的test_province表。</p>
+<p>在MySQL里创建test_province表，注意replace模式这个表要有主键，然后编写test_province.json文件，然后执行命令即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&quot;reader&quot;: &#123;</span><br><span class="line">    &quot;name&quot;: &quot;hdfsreader&quot;,</span><br><span class="line">    &quot;parameter&quot;: &#123;</span><br><span class="line">        &quot;defaultFS&quot;: &quot;hdfs://hadoop180:8020&quot;,</span><br><span class="line">        &quot;path&quot;: &quot;/base_province/20220711&quot;,</span><br><span class="line">        &quot;column&quot;: [     </span><br><span class="line">            &quot;*&quot;</span><br><span class="line">        ],          -- 需要同步的列，可使用索引选择所需列，例如[&#123;&quot;index&quot;：0，&quot;type&quot;：&quot;long&quot;&#125;，&#123;&quot;index&quot;：1，&quot;type&quot;：&quot;boolean&quot;]标识前两列，[&quot;*&quot;]标识所有列。注意这里的字段类型指定为*时统一按string读取，一般都是写*</span><br><span class="line">        &quot;fileType&quot;: &quot;text&quot;,         -- 这里要和hdfs上的数据保持一致，此外还支持orc</span><br><span class="line">        &quot;compress&quot;: &quot;gzip&quot;,         -- 这里要和hdfs上的数据保持一致，此外还支持snappy、bz2、zip、lzo等</span><br><span class="line">        &quot;encoding&quot;: &quot;UTF-8&quot;,        -- 编码</span><br><span class="line">        &quot;nullFormat&quot;: &quot;\\N&quot;,        -- 空值转换，datax是用java写的，需要对\转义，所以要写两个\\</span><br><span class="line">        &quot;fieldDelimiter&quot;: &quot;\t&quot;,     -- 分隔符</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,</span><br><span class="line">&quot;writer&quot;: &#123;</span><br><span class="line">    &quot;name&quot;: &quot;mysqlwriter&quot;,</span><br><span class="line">    &quot;parameter&quot;: &#123;</span><br><span class="line">        &quot;username&quot;: &quot;root&quot;,</span><br><span class="line">        &quot;password&quot;: &quot;sql_boy&quot;,</span><br><span class="line">        &quot;connection&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;table&quot;: [</span><br><span class="line">                    &quot;test_province&quot;</span><br><span class="line">                ],</span><br><span class="line">                -- 注意这里要指定datax写数据时的字符集</span><br><span class="line">                &quot;jdbcUrl&quot;: &quot;jdbc:mysql://hadoop180:3306/project01?useUnicode=true&amp;characterEncoding=utf-8&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        &quot;column&quot;: [</span><br><span class="line">            &quot;id&quot;,</span><br><span class="line">            &quot;name&quot;,</span><br><span class="line">            &quot;region_id&quot;,</span><br><span class="line">            &quot;area_code&quot;,</span><br><span class="line">            &quot;iso_code&quot;,</span><br><span class="line">            &quot;iso_3166_2&quot;</span><br><span class="line">        ],</span><br><span class="line">        &quot;writeMode&quot;: &quot;replace&quot;  -- insert直接插入，可能会出现重复写入或主键冲突的问题；replace根据主键替换，原理是主键冲突时先删除再插入；update和replace效果一样但原理不同，它的原理是主键冲突时用update...set...语句。注意后两种模式是要求表里有主键的</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="五、DataX优化"><a href="#五、DataX优化" class="headerlink" title="五、DataX优化"></a>五、DataX优化</h1><h2 id="1-速度控制"><a href="#1-速度控制" class="headerlink" title="1. 速度控制"></a>1. 速度控制</h2><p>DataX3.0提供了包括<strong>通道(并发)、记录流、字节流</strong>三种流控模式，可以随意控制你的作业速度，让你的作业在数据库可以承受的范围内达到最佳的同步速度。</p>
+<table>
+<thead>
+<tr>
+<th><strong>参数</strong></th>
+<th><strong>说明</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>job.setting.speed.channel</strong></td>
+<td>总并发数</td>
+</tr>
+<tr>
+<td><strong>job.setting.speed.record</strong></td>
+<td>总record限速</td>
+</tr>
+<tr>
+<td><strong>job.setting.speed.byte</strong></td>
+<td>总byte限速，如果和上面那个都配了，以小的为准</td>
+</tr>
+<tr>
+<td><strong>core.transport.channel.speed.record</strong></td>
+<td>单个channel的record限速，默认值为10000（10000条&#x2F;s）</td>
+</tr>
+<tr>
+<td><strong>core.transport.channel.speed.byte</strong></td>
+<td>单个channel的byte限速，默认值1024*1024（1M&#x2F;s），注意有默认值</td>
+</tr>
+</tbody></table>
+<p><strong>注意：</strong></p>
+<ul>
+<li>若配置了总record限速，则必须配置单个channel的record限速，若配置了总byte限速，则必须配置单个channe的byte限速</li>
+<li>若配置了总record限速和总byte限速，channel并发数参数就会失效。因为配置了总record限速和总byte限速之后，实际channel并发数是通过计算得到的：min(总byte限速&#x2F;单个channle的byte限速，总record限速&#x2F;单个channel的record限速)</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&quot;setting&quot;: &#123;</span><br><span class="line">    &quot;speed&quot;: &#123;</span><br><span class="line">    	&quot;byte&quot; : 5242880 //总byte限速5M/s</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-内存调整"><a href="#2-内存调整" class="headerlink" title="2. 内存调整"></a>2. 内存调整</h2><p>当提升DataX Job内Channel并发数时，内存的占用会显著增加，因为DataX作为数据交换通道，在内存中会缓存较多的数据。例如Channel中会有一个Buffer，作为临时的数据交换的缓冲区，而在部分Reader和Writer的中，也会存在一些Buffer，为了防止OOM等错误，需调大JVM的堆内存。建议将内存设置为4G或者8G，这个也可以根据实际情况来调整。</p>
+<p>调整JVM xms xmx参数的两种方式：一种是直接更改datax.py脚本；另一种是在启动的时候，加上对应的参数，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">python datax/bin/datax.py --jvm=&quot;-Xms8G -Xmx8G&quot; /path/to/your/job.json</span><br></pre></td></tr></table></figure>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/Flume/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/fishing.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Flume</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/Kafka/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/boat.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Kafka</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81DataX%E7%AE%80%E4%BB%8B"><span class="toc-text">一、DataX简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81DataX%E6%9E%B6%E6%9E%84%E5%8E%9F%E7%90%86"><span class="toc-text">二、DataX架构原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-DataX%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="toc-text">1. DataX设计理念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-DataX%E6%A1%86%E6%9E%B6%E8%AE%BE%E8%AE%A1"><span class="toc-text">2. DataX框架设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-datax%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-text">3. datax运行流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-DataX%E8%B0%83%E5%BA%A6%E5%86%B3%E7%AD%96%E6%80%9D%E8%B7%AF"><span class="toc-text">4. DataX调度决策思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-DataX%E4%B8%8ESqoop%E5%AF%B9%E6%AF%94"><span class="toc-text">5. DataX与Sqoop对比</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81DataX%E9%83%A8%E7%BD%B2"><span class="toc-text">三、DataX部署</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81DataX%E4%BD%BF%E7%94%A8"><span class="toc-text">四、DataX使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-datax%E4%BB%BB%E5%8A%A1%E7%9A%84%E6%8F%90%E4%BA%A4"><span class="toc-text">1. datax任务的提交</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%AE%9E%E6%88%98%EF%BC%9AMySQL-gt-HDFS"><span class="toc-text">2. 实战：MySQL -&gt; HDFS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-TableMode"><span class="toc-text">2.1 TableMode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-QuerySQLMode"><span class="toc-text">2.2 QuerySQLMode</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-DataX%E4%BC%A0%E5%8F%82"><span class="toc-text">3. DataX传参</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%9E%E6%88%98%EF%BC%9AHDFS-gt-MySQL"><span class="toc-text">4. 实战：HDFS -&gt; MySQL</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81DataX%E4%BC%98%E5%8C%96"><span class="toc-text">五、DataX优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%80%9F%E5%BA%A6%E6%8E%A7%E5%88%B6"><span class="toc-text">1. 速度控制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%86%85%E5%AD%98%E8%B0%83%E6%95%B4"><span class="toc-text">2. 内存调整</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

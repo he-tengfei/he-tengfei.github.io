@@ -1,0 +1,480 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Flume | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一、Flume概述1. Flume可以做什么？Flume是Cloudera提供的一个高可用的，高可靠的，分布式的海量日志采集、聚合和传输的系统。Flume基于流式架构，灵活简单。分布式不能和集群直接划等号，Flume的分布式不需要搭集群，它的分布式指可以从多个数据源做日志的采集聚合，最终汇聚到一起。  官网：https:&#x2F;&#x2F;flume.apache.org  Flume最主要的作用就是，实时读取服">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flume">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/Flume/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="一、Flume概述1. Flume可以做什么？Flume是Cloudera提供的一个高可用的，高可靠的，分布式的海量日志采集、聚合和传输的系统。Flume基于流式架构，灵活简单。分布式不能和集群直接划等号，Flume的分布式不需要搭集群，它的分布式指可以从多个数据源做日志的采集聚合，最终汇聚到一起。  官网：https:&#x2F;&#x2F;flume.apache.org  Flume最主要的作用就是，实时读取服">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/fishing.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.757Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/fishing.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/Flume/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Flume',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/christmas-4701783.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Flume</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.757Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/">数据同步</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">8.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>31分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Flume"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="一、Flume概述"><a href="#一、Flume概述" class="headerlink" title="一、Flume概述"></a>一、Flume概述</h1><h2 id="1-Flume可以做什么？"><a href="#1-Flume可以做什么？" class="headerlink" title="1. Flume可以做什么？"></a>1. Flume可以做什么？</h2><p>Flume是Cloudera提供的一个<strong>高可用的，高可靠的，分布式的海量日志采集、聚合和传输的系统</strong>。Flume基于流式架构，灵活简单。分布式不能和集群直接划等号，Flume的分布式不需要搭集群，它的分布式指可以从多个数据源做日志的采集聚合，最终汇聚到一起。</p>
+<blockquote>
+<p>官网：<a target="_blank" rel="noopener" href="https://flume.apache.org/">https://flume.apache.org</a></p>
+</blockquote>
+<p>Flume最主要的作用就是，实时读取服务器本地磁盘的数据，将数据写入到HDFS。所以Flume不是搭在大数据服务器上的，它应该搭在日志服务器上，学习阶段就随便搭了。</p>
+<p>下面的爬虫，比如你在京东搜索了华为手机，京东马上给你推荐了华为的其他旗舰手机，这是正常的，那此时你打开淘宝发现淘宝也给你推荐了华为手机，淘宝的数据哪儿来的呢？爬虫爬来的。合理的爬取也是可以的，只要不侵犯别人的正当权益。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220322204126299.png" alt="image-20220322204126299" style="zoom:33%;" />
+
+<h2 id="2-Flume基础架构"><a href="#2-Flume基础架构" class="headerlink" title="2. Flume基础架构"></a>2. Flume基础架构</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220322202645572.png" alt="image-20220322202645572" style="zoom:50%;" />
+
+<h3 id="2-1-Agent"><a href="#2-1-Agent" class="headerlink" title="2.1 Agent"></a>2.1 Agent</h3><p>Agent是一个JVM进程，它以事件的形式将数据从源头送至目的。Agent主要有3个部分组成，<strong>Source、Channel、Sink</strong>。</p>
+<h3 id="2-2-Source"><a href="#2-2-Source" class="headerlink" title="2.2 Source"></a>2.2 Source</h3><p>Source是负责接收数据到Flume Agent的组件。Source组件可以处理各种类型、各种格式的日志数据，常用的source种类有avro、exec、spooling directory、netcat、taildir、kafka。</p>
+<h3 id="2-3-Sink"><a href="#2-3-Sink" class="headerlink" title="2.3 Sink"></a>2.3 Sink</h3><p>Sink不断地轮询Channel中的事件且批量地移除它们，并将这些事件批量写入到存储或索引系统、或者被发送到另一个Flume Agent。</p>
+<p>Sink组件目的地包括hdfs、logger(测试的时候会用，它会把日志打印到控制台)、avro、file roll、HBase、kafka、自定义。</p>
+<h3 id="2-4-Channel"><a href="#2-4-Channel" class="headerlink" title="2.4 Channel"></a>2.4 Channel</h3><p>Channel是位于Source和Sink之间的<strong>缓冲区</strong>，它可以存数据，因此Channel允许Source和Sink运作在不同的速率上。Channel是线程安全的，可以同时处理几个Source的写入操作和几个Sink的读取操作。也就是说，在同一个agent里，可以同时存在多个source多个channel多个sink。</p>
+<p>Flume自带两种Channel：Memory Channel和File Channel，还有一种kafka channel也会用。</p>
+<p>Memory Channel是内存中的队列。Memory Channel在不需要关心数据丢失的情景下适用。如果需要关心数据丢失，那么Memory Channel就不应该使用，因为程序死亡、机器宕机或者重启都会导致数据丢失。</p>
+<p>File Channel将所有事件写到磁盘。因此在程序关闭或机器宕机的情况下不会丢失数据。</p>
+<h3 id="2-5-Event"><a href="#2-5-Event" class="headerlink" title="2.5 Event"></a>2.5 Event</h3><p>传输单元，Flume数据传输的基本单元，以Event的形式将数据从源头送至目的地。Event由<strong>Header</strong>和<strong>Body</strong>两部分组成，Header用来存放该event的一些属性，为K-V结构，<strong>header通常情况下是空的</strong>，一般是用户自己往里写的，<strong>Body用来存放该条数据，形式为字节数组</strong>。数据在整个Flume的传输过程中都是<strong>以event为单位</strong>，但是到了HDFS就是真正的数据了。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220322204612617.png" alt="image-20220322204612617"></p>
+<p>channel选择器、sink组和拦截器后面再说。</p>
+<h1 id="二、Flume入门"><a href="#二、Flume入门" class="headerlink" title="二、Flume入门"></a>二、Flume入门</h1><p>为什么找不到Flume的日志文件？？？</p>
+<p>这里就需要学会使用官网了，Flume的官网写的特别详细，配置参数太多根本记不住也不用去记，直接翻官网就好。</p>
+<h2 id="1-监控端口数据官方案例"><a href="#1-监控端口数据官方案例" class="headerlink" title="1. 监控端口数据官方案例"></a>1. 监控端口数据官方案例</h2><p>需求：使用Flume监听一个端口，收集该端口数据，并打印到控制台。</p>
+<h3 id="1-1-nc的用法"><a href="#1-1-nc的用法" class="headerlink" title="1.1 nc的用法"></a>1.1 nc的用法</h3><p>这里需要用到netcat，如果没有直接yum install -y nc即可</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">监听hadoop180的4444端口</span><br><span class="line">[hetengfei@hadoop180 module]$ nc -l hadoop180 4444</span><br><span class="line"></span><br><span class="line">在hadoop181连接hadoop180的4444端口，并发送hello flume</span><br><span class="line">[hetengfei@hadoop181 ~]$ nc hadoop180 4444</span><br><span class="line">hello flume</span><br><span class="line"></span><br><span class="line">这边马上就能监听到，并打印到控制台</span><br><span class="line">[hetengfei@hadoop180 module]$ </span><br><span class="line">hello flume</span><br><span class="line"></span><br><span class="line">两边都是能互发信息互相监听的</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-Flume监听端口的原理"><a href="#1-2-Flume监听端口的原理" class="headerlink" title="1.2 Flume监听端口的原理"></a>1.2 Flume监听端口的原理</h3><p>netcat source开启一个服务并监听端口，nc连上这个服务，然后发数据，这样Flume就监听到了</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220322215815594.png" alt="image-20220322215815594" style="zoom: 67%;" />
+
+<h3 id="1-3-编写配置文件"><a href="#1-3-编写配置文件" class="headerlink" title="1.3 编写配置文件"></a>1.3 编写配置文件</h3><p>flume-netcat-logger.conf :</p>
+<p>(文件命名：flume-source-sink.conf)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 给agent的各个组件命名</span><br><span class="line"># 同个agent各种组件都可以有多个，所以都加了s</span><br><span class="line">agent1.sources = source1</span><br><span class="line">agent1.channels = channel1</span><br><span class="line">agent1.sinks = sink1 </span><br><span class="line"></span><br><span class="line"># Source</span><br><span class="line">agent1.sources.source1.type = netcat</span><br><span class="line">agent1.sources.source1.bind = hadoop180</span><br><span class="line">agent1.sources.source1.port = 6666</span><br><span class="line"></span><br><span class="line"># Channel</span><br><span class="line">agent1.channels.channel1.type = memory</span><br><span class="line"># channel的容量，channel中可以放多少个event</span><br><span class="line">agent1.channels.channel1.capacity = 10000</span><br><span class="line"># 事务的容量，source或sink每次推送或拉取多少个event</span><br><span class="line">agent1.channels.channel1.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line"># Sink</span><br><span class="line">agent1.sinks.sink1.type = logger</span><br><span class="line"></span><br><span class="line"># Bind</span><br><span class="line"># 说明1个source可以接多个channel，1个channel可以接多个sink，但是一个sink只能接1个channel</span><br><span class="line">agent1.sources.source1.channels = channel1</span><br><span class="line">agent1.sinks.sink1.channel = channel1</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-4-执行命令"><a href="#1-4-执行命令" class="headerlink" title="1.4 执行命令"></a>1.4 执行命令</h3><p>先执行命令开启flume监听端口，然后用nc连接flume监听的端口并发送信息，flume就能监听到了。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">bin/flume-ng agent </span><br><span class="line">    --conf(指定flume框架的配置文件位置) conf </span><br><span class="line">    --conf-file(指定flume执行的配置文件) example.conf </span><br><span class="line">    --name(指定agent的名字) a1</span><br><span class="line">    # 要知道为什么有这个参数，-D是传参，把conf/log4j.properties里的flume.root.logger参数，</span><br><span class="line">    # 改为打印INFO级别，打印到控制台</span><br><span class="line">    # 日志级别包括:log、info、warn、error</span><br><span class="line">    -Dflume.root.logger=INFO,console(主要是用于logger sink)</span><br><span class="line"></span><br><span class="line">命令：</span><br><span class="line">bin/flume-ng agent --conf conf --conf-file myconf/flume-netcat-logger.conf --name agent1 -Dflume.root.logger=INFO,console      </span><br><span class="line">命令简写：</span><br><span class="line">bin/flume-ng agent -c conf -f myconf/flume-netcat-logger.conf -n agent1 -Dflume.root.logger=INFO,console  </span><br><span class="line"></span><br><span class="line">注意打印到控制台的文件格式：以event为单位传输，headers一般为空，数据在body里</span><br><span class="line">Event: &#123; headers:&#123;&#125; body: 68 65 6C 6C 6F 20 66 6C 75 6D 65 hello flume &#125;</span><br><span class="line"></span><br><span class="line">这个命令好像ctrl + c关不掉？只能kill -9？</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-实时监控单个追加文件"><a href="#2-实时监控单个追加文件" class="headerlink" title="2. 实时监控单个追加文件"></a>2. 实时监控单个追加文件</h2><p>需求：实时监控Hive日志，并上传到HDFS中，可以用exec source，exec可以传命令。</p>
+<p>有两点需要注意：</p>
+<ul>
+<li>Flume要想将数据输出到HDFS，依赖Hadoop相关jar包，检查&#x2F;etc&#x2F;profile.d&#x2F;my_env.sh文件，确认Hadoop和Java环境变量配置正确</li>
+<li>下面有用到关于时间的配置，比如是否按照时间滚动文件夹等，在Flume里，<strong>对于所有与时间相关的转义序列，Event Header中必须存在以 “timestamp”的key，除非hdfs.useLocalTimeStamp设置为true，此方法会使用TimestampInterceptor自动添加timestamp</strong></li>
+</ul>
+<p><strong>flume-exec-hdfs.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Named</span><br><span class="line">agent1.sources = source1</span><br><span class="line">agent1.channels = channel1</span><br><span class="line">agent1.sinks = sink1 </span><br><span class="line"></span><br><span class="line"># Source</span><br><span class="line">agent1.sources.source1.type = exec</span><br><span class="line"># exec可以传命令，这里要写绝对路径</span><br><span class="line">agent1.sources.source1.command = tail -f /opt/module/hive-3.1.2/logs/hive.log</span><br><span class="line"></span><br><span class="line"># Channel</span><br><span class="line">agent1.channels.channel1.type = memory</span><br><span class="line"># channel的容量</span><br><span class="line">agent1.channels.channel1.capacity = 10000</span><br><span class="line"># 事务的容量</span><br><span class="line">agent1.channels.channel1.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line"># Sink</span><br><span class="line">agent1.sinks.sink1.type = hdfs</span><br><span class="line">agent1.sinks.sink1.hdfs.path = hdfs://hadoop180:8020/flume/%Y%m%d/%H</span><br><span class="line">#上传文件的前缀</span><br><span class="line">agent1.sinks.sink1.hdfs.filePrefix = logs-</span><br><span class="line">#是否按照时间滚动文件夹</span><br><span class="line">agent1.sinks.sink1.hdfs.round = true</span><br><span class="line">#多少时间单位创建一个新的文件夹</span><br><span class="line">agent1.sinks.sink1.hdfs.roundValue = 1</span><br><span class="line">#重新定义时间单位</span><br><span class="line">agent1.sinks.sink1.hdfs.roundUnit = hour</span><br><span class="line">#是否使用本地时间戳</span><br><span class="line">agent1.sinks.sink1.hdfs.useLocalTimeStamp = true</span><br><span class="line">#积攒多少个Event才flush到HDFS一次</span><br><span class="line">agent1.sinks.sink1.hdfs.batchSize = 100</span><br><span class="line">#设置文件类型，可支持压缩</span><br><span class="line">agent1.sinks.sink1.hdfs.fileType = DataStream</span><br><span class="line">#多久生成一个新的文件，单位秒</span><br><span class="line">agent1.sinks.sink1.hdfs.rollInterval = 60</span><br><span class="line">#设置每个文件的滚动大小</span><br><span class="line">agent1.sinks.sink1.hdfs.rollSize = 134217700</span><br><span class="line">#文件的滚动与Event数量无关</span><br><span class="line">agent1.sinks.sink1.hdfs.rollCount = 0</span><br><span class="line"></span><br><span class="line"># Bind</span><br><span class="line">agent1.sources.source1.channels = channel1</span><br><span class="line">agent1.sinks.sink1.channel = channel1</span><br></pre></td></tr></table></figure>
+
+<p><strong>执行命令</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">这个命令最好还是把-D加上，这样如果启动的时候报错可以在控制台看到</span><br><span class="line">bin/flume-ng agent -c conf -f myconf/flume-exec-hdfs.conf -n agent1 -Dflume.root.logger=INFO,console </span><br></pre></td></tr></table></figure>
+
+<h2 id="3-实时监控目录下多个新文件"><a href="#3-实时监控目录下多个新文件" class="headerlink" title="3. 实时监控目录下多个新文件"></a>3. 实时监控目录下多个新文件</h2><p>Spooling Directory Source，它怎么知道是新文件呢？文件后缀fileSuffix，已经采集完的文件会加个.completed后缀，也就是如果你故意往里面放个my.completed文件，它是不会采集的，，已经采集完的文件如果有新数据追加也是不会采集的，它只会看后缀名来区分是否新文件。它也可以通过正则配置哪些需要采集哪些不需要采集。</p>
+<p>在使用Spooling Directory Source时，不要在监控目录中创建并持续修改文件，上传完成的文件会以.COMPLETED结尾，被监控文件夹每500毫秒扫描一次文件变动。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">只改个source就可以</span><br><span class="line"># Source</span><br><span class="line">agent1.sources.source1.type = spooldir</span><br><span class="line">agent1.sources.source1.spoolDir = /opt/module/flume-1.9.0/datas/spooldir</span><br><span class="line">agent1.sources.source1.fileSuffix = .COMPLETED</span><br><span class="line"># 是否有文件头</span><br><span class="line">agent1.sources.source1.fileHeader = true</span><br><span class="line"># 下面这俩一个包括哪些文件一个排除哪些文件，通过正则表达式匹配</span><br><span class="line">#agent1.sources.source1.includePattern = </span><br><span class="line"># #忽略所有以.tmp结尾的文件，不上传</span><br><span class="line">agent1.sources.source1.ignorePattern = ([^ ]*\.tmp)</span><br></pre></td></tr></table></figure>
+
+<p>用的也不多，就不演示了。</p>
+<h2 id="4-实时监控目录下的多个追加文件"><a href="#4-实时监控目录下的多个追加文件" class="headerlink" title="4. 实时监控目录下的多个追加文件"></a>4. 实时监控目录下的多个追加文件</h2><p><strong>重要！！！</strong></p>
+<p>Exec source适用于监控一个实时追加的文件，不能实现断点续传；Spooldir Source适合用于同步新文件，但不适合对实时追加日志的文件进行监听并同步；而Taildir Source适合用于监听多个实时追加的文件，并且能够实现断点续传。</p>
+<p>支持断点续传的前提是要时刻知道采集到了什么位置，这里它自动维护了个positionFile的json格式的文件，定期的往positionFile中更新每个文件读取到的最新的位置，因此能够实现断点续传。</p>
+<p>需求：使用Flume监听整个目录的实时追加文件，并上传至HDFS</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220324005837780.png" alt="image-20220324005837780" style="zoom:67%;" />
+
+<p><strong>flume-taildir-hdfs.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Named</span><br><span class="line">agent1.sources = source1</span><br><span class="line">agent1.channels = channel1</span><br><span class="line">agent1.sinks = sink1 </span><br><span class="line"></span><br><span class="line"># Source，这里也是只改了source</span><br><span class="line">agent1.sources.source1.type = TAILDIR</span><br><span class="line"># 两个文件组</span><br><span class="line">agent1.sources.source1.filegroups = filegroups1 filegroups2</span><br><span class="line">agent1.sources.source1.filegroups.filegroups1 = /opt/module/flume-1.9.0/test_taildir/data/.*txt</span><br><span class="line">agent1.sources.source1.filegroups.filegroups2 = /opt/module/flume-1.9.0/test_taildir/data/.*log</span><br><span class="line"># 这是Flume自己维护的记录采集位置的文件，json格式的，名字可以自己起</span><br><span class="line"># 不要提前创建，会报错，大数据的框架，有些配置文件需要提前创建，有些又不需要</span><br><span class="line">agent1.sources.source1.positionFile = /opt/module/flume-1.9.0/test_taildir/position.json</span><br><span class="line"></span><br><span class="line"># Channel</span><br><span class="line">agent1.channels.channel1.type = memory</span><br><span class="line"># channel的容量</span><br><span class="line">agent1.channels.channel1.capacity = 10000</span><br><span class="line"># 事务的容量</span><br><span class="line">agent1.channels.channel1.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line"># Sink</span><br><span class="line">agent1.sinks.sink1.type = hdfs</span><br><span class="line">agent1.sinks.sink1.hdfs.path = hdfs://hadoop180:8020/flume/%Y%m%d/%H</span><br><span class="line">#上传文件的前缀</span><br><span class="line">agent1.sinks.sink1.hdfs.filePrefix = logs-</span><br><span class="line">#是否按照时间滚动文件夹</span><br><span class="line">agent1.sinks.sink1.hdfs.round = true</span><br><span class="line">#多少时间单位创建一个新的文件夹</span><br><span class="line">agent1.sinks.sink1.hdfs.roundValue = 1</span><br><span class="line">#重新定义时间单位</span><br><span class="line">agent1.sinks.sink1.hdfs.roundUnit = hour</span><br><span class="line">#是否使用本地时间戳</span><br><span class="line">agent1.sinks.sink1.hdfs.useLocalTimeStamp = true</span><br><span class="line">#积攒多少个Event才flush到HDFS一次</span><br><span class="line">agent1.sinks.sink1.hdfs.batchSize = 100</span><br><span class="line">#设置文件类型，可支持压缩</span><br><span class="line">agent1.sinks.sink1.hdfs.fileType = DataStream</span><br><span class="line">#多久生成一个新的文件</span><br><span class="line">agent1.sinks.sink1.hdfs.rollInterval = 60</span><br><span class="line">#设置每个文件的滚动大小</span><br><span class="line">agent1.sinks.sink1.hdfs.rollSize = 134217700</span><br><span class="line">#文件的滚动与Event数量无关</span><br><span class="line">agent1.sinks.sink1.hdfs.rollCount = 0</span><br><span class="line"></span><br><span class="line"># Bind</span><br><span class="line">agent1.sources.source1.channels = channel1</span><br><span class="line">agent1.sinks.sink1.channel = channel1</span><br></pre></td></tr></table></figure>
+
+<p><strong>执行命令</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">bin/flume-ng agent -c conf -f myconf/flume-taildir-hdfs.conf -n agent1 -Dflume.root.logger=INFO,console </span><br><span class="line"></span><br><span class="line">创建两个文件后，观察position.json文件</span><br><span class="line">[hetengfei@hadoop180 data]$ touch aaa.log</span><br><span class="line">[hetengfei@hadoop180 data]$ touch bbb.txt</span><br><span class="line">[hetengfei@hadoop180 test_taildir]$ cat position.json </span><br><span class="line">[</span><br><span class="line">      &#123;&quot;inode&quot;:3546305,&quot;pos&quot;:0,&quot;file&quot;:&quot;/opt/module/flume-1.9.0/test_taildir/data/bbb.txt&quot;&#125;</span><br><span class="line">    , &#123;&quot;inode&quot;:3546304,&quot;pos&quot;:0,&quot;file&quot;:&quot;/opt/module/flume-1.9.0/test_taildir/data/aaa.log&quot;&#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">追加数据后，再观察position.json文件</span><br><span class="line">[hetengfei@hadoop180 data]$ echo 123 &gt;&gt; aaa.log </span><br><span class="line">[hetengfei@hadoop180 data]$ echo xxx &gt;&gt; bbb.txt </span><br><span class="line">[hetengfei@hadoop180 test_taildir]$ cat position.json </span><br><span class="line">[</span><br><span class="line">      &#123;&quot;inode&quot;:3546305,&quot;pos&quot;:4,&quot;file&quot;:&quot;/opt/module/flume-1.9.0/test_taildir/data/bbb.txt&quot;&#125;</span><br><span class="line">    , &#123;&quot;inode&quot;:3546304,&quot;pos&quot;:4,&quot;file&quot;:&quot;/opt/module/flume-1.9.0/test_taildir/data/aaa.log&quot;&#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">把agent断开，然后再追加数据，再启动agent，会发现Flume会从上次记录的位置继续采集，即断点续传</span><br></pre></td></tr></table></figure>
+
+<p>注：inode是Linux中的概念，Linux中储存文件元数据的区域就叫做inode，每个inode都有一个号码，操作系统用inode号码来识别不同的文件，Unix&#x2F;Linux系统内部不使用文件名，而使用inode号码来识别文件。</p>
+<p><strong>疑问：</strong></p>
+<ul>
+<li><p>如果把position.json文件删了，是不是就得从头开始采集了呢？</p>
+</li>
+<li><p>这里其实并没有用到文件组的概念</p>
+</li>
+</ul>
+<h1 id="三、Flume进阶"><a href="#三、Flume进阶" class="headerlink" title="三、Flume进阶"></a>三、Flume进阶</h1><h2 id="1-Flume事务"><a href="#1-Flume事务" class="headerlink" title="1. Flume事务"></a>1. Flume事务</h2><p>第一次讲事务是在MySQL里，事务主要用来保证数据的一致性，事务的四个特性：原子性、一致性、隔离性、持久性。原子性是说操作不可再分，要么都成功要么都失败，一致性是说数据的同步要保证一致，隔离性是说多个事务之间是互相隔离的，持久性是说数据要持久性存储。</p>
+<p>Flume为什么有事务呢？它的内部有两个数据传输过程，<strong>一个是从source到channel，一个是从channel到sink，Flume中的事务就是保证数据在这两个过程中传输时不会出现问题</strong>。比如当source往channel送数据的时候，channel已经满了，数据就可能丢失，当sink从channel拿完数据后，并没有成功sink到下游(比如hdfs)，这时也可能会出现数据丢失，所以Flume有两个事务，put事务和take事务。</p>
+<p>source会主动把数据put进channel，sink会主动从channel中拉取数据。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220324021144947.png" alt="image-20220324021144947"></p>
+<p><strong>Put事务流程</strong></p>
+<ul>
+<li>doPut：将批数据先写入临时缓冲区putList，攒够一波后推送给channel，这个putList是每个事物都独有的。(source不是一条一条推送的，它拿到数据后不会马上给channel，而是放到缓冲区batch，这个batch本质上就是个list集合，攒够一波后(一波有多少个event是我们自己配置的transactionCapacity，这个就是batch的容量)再推送给channel)</li>
+<li>doCommit：尝试提交数据，检查channe内存队列是否足够合并，如果空间足够就提交成功，不够就回滚</li>
+<li>doRolback：channe内存队列空间不足，回滚数据，它这个回滚不是把数据放回source，而是直接销毁，同时给source报个异常，告诉source这批数据没有提交成功，需要重新采集</li>
+</ul>
+<p><strong>Take事务</strong></p>
+<ul>
+<li>doTake：将数据取到临时缓冲区takeList，并将数据发送到HDFS。(sink也是主动从channel拉取数据，也是有个batch叫takeList，攒够一波后尝试发送给下游)</li>
+<li>doCommit：如果数据全部发送成功，则清除临时缓冲区takeList，并且channel中对应的数据也清空，发送失败的话回滚</li>
+<li>doRollback：数据发送过程中如果出现异常，rollback将临时缓冲区takeList中的数据归还给channel内存队列，只要出现了问题整个批次全部回滚</li>
+<li>所以flume可能造成数据的重复，比如拉取了100个event到缓冲区，然后sink到下游，sink到第50个event的时候出现问题，这时就会回滚，把100个event全还给channel，sink再次拉取的时候不就有50条是重复的了</li>
+<li>sink不是每次都能拉到数据的，比如channel里的数据拉完了，新的还没过来，这时就拉不到数据了</li>
+</ul>
+<p>这里有个疑问是，sink拉取一批数据，把这批数据放到缓冲区后，channel里还有这批数据吗？</p>
+<p>后面自定义source、sink的时候，就会涉及到事务了，从代码的角度看下就知道怎么回事了。</p>
+<p><strong>所以Flume可能丢数据吗？</strong></p>
+<p>如果用的memory channel是可能丢数据的，file channel基本不可能丢数据，但是可能会出现重复数据。</p>
+<h2 id="2-Flume-Agent内部原理"><a href="#2-Flume-Agent内部原理" class="headerlink" title="2. Flume Agent内部原理"></a>2. Flume Agent内部原理</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220324021923541.png" alt="image-20220324021923541" style="zoom: 40%;" />
+
+<p><strong>event：</strong>event是在source里封装的</p>
+<p><strong>拦截器：</strong>拦截器可以写也可以不写，也可以写多个构成拦截器链</p>
+<p><strong>channel选择器：</strong>channel选择器有两种，Replicating Channel Selector(复制，默认)和Multiplexing Channel Selector(多路复用)。Replicating会将source过来的events发往所有channel，而Multiplexing可以通过配置headers来决定发往哪些Channel。headers中的配置一般是在拦截器中加，或者是自定义source时在包装event时加，不过如果用的是Flume提供好的source就只能在拦截器中加了，否则要改源代码。</p>
+<p><strong>sink组：</strong>过了channel后是sink组，sink组来决定每个channel中的event要给到哪些sink，以及怎么给，因为1个sink只能对接1个channel，而1个channel是可以挂多个sink的。SinkProcessor有三种：DefaultSinkProcessor、LoadBalancingSinkProcessor、FailoverSinkProcessor，每种都有其各自的功能。DefaultSinkProcessor对应的是单个的Sink；LoadBalancingSinkProcessor和FailoverSinkProcessor对应的是Sink Group，LoadBalancingSinkProcessor可以实现负载均衡的功能，sink拉取数据时有轮询和随机两种方式；FailoverSinkProcessor有故障恢复的功能，同组同时只能有1个sink在拉取，其他等着，它挂了别的sink再顶上。</p>
+<p><strong>一个event在flume内部的经历：</strong> </p>
+<p>一条Log –&gt; source – event(出生) –&gt; channelprocessor –&gt; interceptors –&gt; channelSelector –&gt;  channel  –&gt;  sinkprocessor –&gt;  sink –&gt; event</p>
+<h2 id="3-Flume拓扑结构"><a href="#3-Flume拓扑结构" class="headerlink" title="3. Flume拓扑结构"></a>3. Flume拓扑结构</h2><p>说是拓扑结构，实际上就是多个agent之间的互相搭配，根据需要爱怎么搭怎么搭，这里只是提供了几种常见搭配。</p>
+<p><strong>简单串联</strong></p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220324024206089.png" alt="image-20220324024206089" style="zoom:50%;" />
+
+<p>这种模式是将多个flume顺序连接起来了，从最初的source开始到最终sink传送的目的存储系统。此模式不建议桥接过多的flume数量， flume数量过多不仅会影响传输速率，而且一旦传输过程中某个节点flume宕机，会影响整个传输系统。flume提供了专门在多个agent之间传输数据的sink和source，即avro，内部实现就是用的netcat socket？</p>
+<p><strong>复制和多路复用</strong></p>
+<p>就是把数据通过多个不同的sink发往多个下游。Flume支持将事件流向一个或者多个目的地。这种模式可以将相同数据复制到多个channel中，或者将不同数据分发到不同的channel中，sink可以选择传送到不同的目的地。</p>
+<p><strong>负载均衡和故障转移</strong></p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220324024639541.png" alt="image-20220324024639541" style="zoom: 50%;" />
+
+<p>Flume支持使用将多个sink逻辑上分到一个sink组，sink组配合不同的SinkProcessor可以实现负载均衡和故障转移的功能。</p>
+<p><strong>聚合</strong></p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220324024825519.png" alt="image-20220324024825519" style="zoom: 50%;" />
+
+<p>就是把多个Flume采集到的日志先聚集到1个Flume上，然后再发送到HDFS。这种模式是我们最常见的，也非常实用，日常web应用通常分布在上百个服务器，大者甚至上千个、上万个服务器。产生的日志，处理起来也非常麻烦。用flume的这种组合方式能很好的解决这一问题，每台服务器部署一个flume采集日志，传送到一个集中收集日志的flume，再由此flume上传到hdfs、hive、hbase等，进行日志分析。</p>
+<h2 id="4-Flume企业开发案例"><a href="#4-Flume企业开发案例" class="headerlink" title="4. Flume企业开发案例"></a>4. Flume企业开发案例</h2><h3 id="4-1-复制和多路复用"><a href="#4-1-复制和多路复用" class="headerlink" title="4.1 复制和多路复用"></a>4.1 复制和多路复用</h3><p>需求：使用Flume1监控文件变动，Flume1将变动内容传递给Flume2，Flume2负责存储到HDFS。同时Flume1将变动内容传递给Flume3，Flume3负责输出到Local FileSystem。</p>
+<p>分析：Flume1肯定需要两个sink，sink想拉取两份同样的数据肯定也需要两个channel，因为1个channel后面跟多个sink的话，要么是负载均衡要么是故障转移，都只能输出一份数据。一个source要想给多个channel发生相同的数据，需要用复制的那个channel选择器。其实写一个agent就可以了，后面用hdfs sink和file roll sink，但是需求上要求写3个agent。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220324183626871.png" alt="image-20220324183626871" style="zoom: 67%;" />
+
+<p>从下游往上游写，好像上游是服务端，下游是客户端，端口号是上游起的，下游去连</p>
+<p><strong>flume1-avro-hdfs.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#name，要写3个conf文件3个agent，agent命名不要重复</span><br><span class="line">agent2.sources = source1</span><br><span class="line">agent2.channels = channel1 </span><br><span class="line">agent2.sinks = sink1 </span><br><span class="line"></span><br><span class="line"># source</span><br><span class="line">agent2.sources.source1.type = avro</span><br><span class="line">agent2.sources.source1.bind = hadoop180</span><br><span class="line"># 注意这个端口号也要错开</span><br><span class="line">agent2.sources.source1.port = 4444</span><br><span class="line"></span><br><span class="line"># channel，参见memory channel</span><br><span class="line"># sink，参见hdfs sink</span><br><span class="line"># bind，同上</span><br></pre></td></tr></table></figure>
+
+<p><strong>flume1-avro-fileroll.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#name</span><br><span class="line"># avro source，注意端口号错开</span><br><span class="line"># memory channel</span><br><span class="line"></span><br><span class="line"># sink</span><br><span class="line">agent3.sinks.sink1.type = file_roll</span><br><span class="line"># 输出的本地目录必须是已经存在的目录，如果该目录不存在，并不会创建新的目录</span><br><span class="line">agent3.sinks.sink1.sink.directory = /opt/module/flume-1.9.0/mydatas/fileroll</span><br><span class="line"># 单位是秒，hdfs sink的滚动是有数据才滚动，这个是时间到就会滚动</span><br><span class="line">agent3.sinks.sink1.sink.rollInterval = 60</span><br><span class="line"></span><br><span class="line"># bind</span><br></pre></td></tr></table></figure>
+
+<p><strong>flume1-exec-avro.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#name</span><br><span class="line">agent1.sources = source1</span><br><span class="line">agent1.channels = channel1 channel2 </span><br><span class="line">agent1.sinks = sink1 sink2 </span><br><span class="line"></span><br><span class="line"># source</span><br><span class="line">agent1.sources.source1.type = exec</span><br><span class="line">agent1.sources.source1.command = tail -f /opt/module/flume-1.9.0/mydatas/test.txt</span><br><span class="line"></span><br><span class="line"># channel </span><br><span class="line">agent1.channels.channel1.type = memory</span><br><span class="line">agent1.channels.channel1.capacity = 1000</span><br><span class="line">agent1.channels.channel1.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line">agent1.channels.channel2.type = memory</span><br><span class="line">agent1.channels.channel2.capacity = 1000</span><br><span class="line">agent1.channels.channel2.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line"># sink </span><br><span class="line">agent1.sinks.sink1.type = avro </span><br><span class="line">agent1.sinks.sink1.hostname = hadoop180</span><br><span class="line">agent1.sinks.sink1.port = 4444</span><br><span class="line"></span><br><span class="line">agent1.sinks.sink2.type = avro </span><br><span class="line">agent1.sinks.sink2.hostname = hadoop180</span><br><span class="line">agent1.sinks.sink2.port = 5555</span><br><span class="line"></span><br><span class="line"># channel selector，默认就是这个，不写也行</span><br><span class="line">agent1.sources.source1.selector.type = replicating</span><br><span class="line"></span><br><span class="line"># bind</span><br><span class="line">agent1.sources.source1.channels = channel1 channel2 </span><br><span class="line">agent1.sinks.sink1.channel = channel1</span><br><span class="line">agent1.sinks.sink2.channel = channel2 </span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-负载均衡和故障转移"><a href="#4-2-负载均衡和故障转移" class="headerlink" title="4.2 负载均衡和故障转移"></a>4.2 负载均衡和故障转移</h3><p>这里说的是sink组，轮询和随机都是sink主动拉取数据，给它机会拉它不一定能拉到数据，所以这里演示不出效果。</p>
+<p>故障转移的时候，优先级高的只要存在就会选择优先级高的，哪怕它是挂掉后重新启动的。</p>
+<p>可以通过jps -ml查看Flume进程。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220324191051879.png" alt="image-20220324191051879" style="zoom:67%;" />
+
+<p><strong>flume2-netcat-avro.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#name</span><br><span class="line">agent1.sources = source1</span><br><span class="line">agent1.channels = channel1 </span><br><span class="line">agent1.sinks = sink1 sink2 </span><br><span class="line"></span><br><span class="line"># source</span><br><span class="line">agent1.sources.source1.type = netcat</span><br><span class="line">agent1.sources.source1.bind = hadoop180</span><br><span class="line">agent1.sources.source1.port = 6666</span><br><span class="line"></span><br><span class="line"># channel </span><br><span class="line">agent1.channels.channel1.type = memory</span><br><span class="line">agent1.channels.channel1.capacity = 1000</span><br><span class="line">agent1.channels.channel1.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line"># sink </span><br><span class="line">agent1.sinks.sink1.type = avro </span><br><span class="line">agent1.sinks.sink1.hostname = hadoop180</span><br><span class="line">agent1.sinks.sink1.port = 4444</span><br><span class="line"></span><br><span class="line">agent1.sinks.sink2.type = avro </span><br><span class="line">agent1.sinks.sink2.hostname = hadoop180</span><br><span class="line">agent1.sinks.sink2.port = 5555</span><br><span class="line"></span><br><span class="line"># sink processor loadbalancing，负载均衡</span><br><span class="line">#agent1.sinkgroups = group1</span><br><span class="line">#agent1.sinkgroups.group1.sinks = sink1 sink2</span><br><span class="line">#agent1.sinkgroups.group1.processor.type = load_balance</span><br><span class="line">#agent1.sinkgroups.group1.processor.selector = round_robin</span><br><span class="line">#惩罚机制或退避机制，当某个sink出问题时会把该sink关进小黑屋，时间指数倍增长</span><br><span class="line">#agent1.sinkgroups.group1.processor.backoff = true</span><br><span class="line"></span><br><span class="line"># sink processor failover，故障转移</span><br><span class="line">agent1.sinkgroups = group1</span><br><span class="line">agent1.sinkgroups.group1.sinks = sink1 sink2</span><br><span class="line">agent1.sinkgroups.group1.processor.type = failover</span><br><span class="line"># 优先级</span><br><span class="line">agent1.sinkgroups.group1.processor.priority.sink1 = 5</span><br><span class="line">agent1.sinkgroups.group1.processor.priority.sink2 = 10</span><br><span class="line"></span><br><span class="line"># bind</span><br><span class="line">agent1.sources.source1.channels = channel1 </span><br><span class="line">agent1.sinks.sink1.channel = channel1</span><br><span class="line">agent1.sinks.sink2.channel = channel1 </span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-聚合"><a href="#4-3-聚合" class="headerlink" title="4.3 聚合"></a>4.3 聚合</h3><p>需求：</p>
+<p>hadoop180上的Flume2监控文件&#x2F;opt&#x2F;module&#x2F;group.log，hadoop181上的Flume3监控某一个端口的数据流，Flume2与Flume3将数据发送给hadoop182上的Flume1，Flume1将最终数据打印到控制台。</p>
+<p>既然在三台服务器上，就不需要区分agent的名字了，注意flume需要分发。 </p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220324201833771.png" alt="image-20220324201833771" style="zoom:67%;" />
+
+<h3 id="4-4-自定义Interceptor"><a href="#4-4-自定义Interceptor" class="headerlink" title="4.4 自定义Interceptor"></a>4.4 自定义Interceptor</h3><p>自定义interceptor还是会写一些的，但是自定义source、自定义sink，基本不会写。<strong>当你想对event做什么操作的时候，就可以用拦截器</strong>。</p>
+<p><strong>需求：</strong>使用Flume采集服务器本地日志，需要按照日志类型的不同，将不同种类的日志发往不同的分析系统。</p>
+<p>在实际的开发中，一台服务器产生的日志类型可能有很多种，不同类型的日志可能需要发送到不同的分析系统。此时会用到Flume拓扑结构中的Multiplexing结构，Multiplexing的原理是，<strong>根据event中Header的某个key的值，将不同的event发送到不同的Channel中，所以我们需要自定义一个Interceptor，为不同类型的event的Header中的key赋予不同的值</strong>。</p>
+<p>在该案例中，我们以端口数据模拟日志，需要自定义interceptor，将字符串根据是否包含atguigu发往不同的分析系统（Channel）。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220325114455244.png" alt="image-20220325114455244" style="zoom:67%;" />
+
+<p>代码参考idea，写完后打包放入flume的lib目录下，注意不要出现命名重复的问题，因为可能以后还会自定义拦截器。</p>
+<p><strong>执行命令</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">bin/flume-ng agent -c conf -f test_interceptor/flume-avro-logger-1.conf -n agent2 -Dflume.root.logger=INFO,console </span><br><span class="line"></span><br><span class="line">bin/flume-ng agent -c conf -f test_interceptor/flume-avro-logger-2.conf -n agent3 -Dflume.root.logger=INFO,console </span><br><span class="line"></span><br><span class="line">bin/flume-ng agent -c conf -f test_interceptor/flume-netcat-avro.conf -n agent1 -Dflume.root.logger=INFO,console </span><br><span class="line"></span><br><span class="line">nc hadoop180 6666</span><br><span class="line">接下来就可以演示效果了</span><br></pre></td></tr></table></figure>
+
+<p><strong>flume-avro-logger-1.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#name</span><br><span class="line">agent2.sources = source1</span><br><span class="line">agent2.channels = channel1 </span><br><span class="line">agent2.sinks = sink1 </span><br><span class="line"></span><br><span class="line"># source</span><br><span class="line">agent2.sources.source1.type = avro</span><br><span class="line">agent2.sources.source1.bind = hadoop180</span><br><span class="line">agent2.sources.source1.port = 4444</span><br><span class="line"></span><br><span class="line"># channel </span><br><span class="line">agent2.channels.channel1.type = memory</span><br><span class="line">agent2.channels.channel1.capacity = 1000</span><br><span class="line">agent2.channels.channel1.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line"># sink</span><br><span class="line">agent2.sinks.sink1.type = logger</span><br><span class="line"></span><br><span class="line"># bind </span><br><span class="line">agent2.sources.source1.channels = channel1 </span><br><span class="line">agent2.sinks.sink1.channel = channel1</span><br></pre></td></tr></table></figure>
+
+<p><strong>flume-avro-logger-2.conf</strong> </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#name</span><br><span class="line">agent3.sources = source1</span><br><span class="line">agent3.channels = channel1 </span><br><span class="line">agent3.sinks = sink1 </span><br><span class="line"></span><br><span class="line"># source</span><br><span class="line">agent3.sources.source1.type = avro</span><br><span class="line">agent3.sources.source1.bind = hadoop180</span><br><span class="line">agent3.sources.source1.port = 5555</span><br><span class="line"></span><br><span class="line"># channel </span><br><span class="line">agent3.channels.channel1.type = memory</span><br><span class="line">agent3.channels.channel1.capacity = 1000</span><br><span class="line">agent3.channels.channel1.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line"># sink</span><br><span class="line">agent3.sinks.sink1.type = logger</span><br><span class="line"></span><br><span class="line"># bind </span><br><span class="line">agent3.sources.source1.channels = channel1 </span><br><span class="line">agent3.sinks.sink1.channel = channel1 </span><br></pre></td></tr></table></figure>
+
+<p><strong>flume-netcat-avro.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#name</span><br><span class="line">agent1.sources = source1</span><br><span class="line">agent1.channels = channel1 channel2 </span><br><span class="line">agent1.sinks = sink1 sink2 </span><br><span class="line"></span><br><span class="line"># source</span><br><span class="line">agent1.sources.source1.type = netcat</span><br><span class="line">agent1.sources.source1.bind = hadoop180</span><br><span class="line">agent1.sources.source1.port = 6666</span><br><span class="line"></span><br><span class="line"># channel </span><br><span class="line">agent1.channels.channel1.type = memory</span><br><span class="line">agent1.channels.channel1.capacity = 1000</span><br><span class="line">agent1.channels.channel1.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line">agent1.channels.channel2.type = memory</span><br><span class="line">agent1.channels.channel2.capacity = 1000</span><br><span class="line">agent1.channels.channel2.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line"># sink </span><br><span class="line">agent1.sinks.sink1.type = avro </span><br><span class="line">agent1.sinks.sink1.hostname = hadoop180</span><br><span class="line">agent1.sinks.sink1.port = 4444</span><br><span class="line"></span><br><span class="line">agent1.sinks.sink2.type = avro </span><br><span class="line">agent1.sinks.sink2.hostname = hadoop180</span><br><span class="line">agent1.sinks.sink2.port = 5555</span><br><span class="line"></span><br><span class="line"># channel selector</span><br><span class="line">agent1.sources.source1.selector.type = multiplexing</span><br><span class="line"># 代码里写的啥这里就配置啥 headers.put(&quot;title&quot;,&quot;atguiguguigu&quot;)</span><br><span class="line">agent1.sources.source1.selector.header = title</span><br><span class="line">agent1.sources.source1.selector.mapping.atguigu = channel1</span><br><span class="line">agent1.sources.source1.selector.mapping.other = channel2 </span><br><span class="line"></span><br><span class="line"># interceptor 拦截器</span><br><span class="line">agent1.sources.source1.interceptors = interceptor1 </span><br><span class="line">agent1.sources.source1.interceptors.interceptor1.type = com.study.interceptor.LogInterceptor$MyBuilder</span><br><span class="line"></span><br><span class="line"># bind</span><br><span class="line">agent1.sources.source1.channels = channel1 channel2 </span><br><span class="line">agent1.sinks.sink1.channel = channel1</span><br><span class="line">agent1.sinks.sink2.channel = channel2 </span><br></pre></td></tr></table></figure>
+
+<h3 id="4-5-自定义Source"><a href="#4-5-自定义Source" class="headerlink" title="4.5 自定义Source"></a>4.5 自定义Source</h3><p>Source是负责接收数据到Flume Agent的组件。Source组件可以处理各种类型、各种格式的日志数据，包括avro、thrift、exec、jms、spooling directory、netcat、sequence generator、syslog、http、legacy。官方提供的source类型已经很多，但是有时候并不能满足实际开发当中的需求，此时我们就需要根据实际需求自定义某些source。</p>
+<p>自定义MySource需要继承AbstractSource类并实现Configurable和PollableSource接口，然后实现相应方法</p>
+<ul>
+<li>getBackOffSleepIncrement()，backoff 步长</li>
+<li>getMaxBackOffSleepInterval()，backoff 最长时间</li>
+<li>configure(Context context)，初始化context（读取配置文件内容）</li>
+<li>process()，获取数据封装成event并写入channel，这个方法将被循环调用</li>
+</ul>
+<p>使用场景：读取MySQL数据或者其他文件系统。</p>
+<p>注意这里的学习应该以代码结构为主，要继承哪些类实现哪些方法等，具体的代码肯定要结合需求来写的，这里知道该怎么写就好。把代码结构写出来，具体往里面填写什么，是个人费点脑子都能写出来。</p>
+<p><strong>需求：</strong>随机生成字符串，并加个可以自定义的前缀</p>
+<p>代码见com.study.source.MySource1，写完打包放到lib目录下</p>
+<p><strong>flume-mysource1-logger.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#name</span><br><span class="line">agent1.sources = source1</span><br><span class="line">agent1.channels = channel1 </span><br><span class="line">agent1.sinks = sink1 </span><br><span class="line"></span><br><span class="line"># source</span><br><span class="line">agent1.sources.source1.type = com.study.source.MySource1</span><br><span class="line"># 这里自定义的前缀</span><br><span class="line">agent1.sources.source1.myprefix = mylog-</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># channel </span><br><span class="line">agent1.channels.channel1.type = memory</span><br><span class="line">agent1.channels.channel1.capacity = 1000</span><br><span class="line">agent1.channels.channel1.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line"># sink</span><br><span class="line">agent1.sinks.sink1.type = logger</span><br><span class="line"></span><br><span class="line"># bind </span><br><span class="line">agent1.sources.source1.channels = channel1 </span><br><span class="line">agent1.sinks.sink1.channel = channel1 </span><br></pre></td></tr></table></figure>
+
+<p><strong>执行命令</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">bin/flume-ng agent -c conf -f mytest/test_mysource/flume-mysource1-logger.conf -n agent1 -Dflume.root.logger=INFO,console </span><br><span class="line"></span><br><span class="line">输出的数据是这样的：</span><br><span class="line">2022-03-29 22:05:21,690 (SinkRunner-PollingRunner-DefaultSinkProcessor) [INFO - org.apache.flume.sink.LoggerSink.process(LoggerSink.java:95)] Event: &#123; headers:&#123;author=hetengfei&#125; body: 6D 79 6C 6F 67 2D 63 66 66 63 63 37 64 63 2D 38 mylog-cffcc7dc-8 &#125;</span><br><span class="line"></span><br><span class="line">注意这里的uuid并没有显示全，想看全的可以在java里写个sout方法测试一下，一会儿自定义个sink，不打印前面的乱七八糟的信息了，只打印uuid</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-6-自定义Sink"><a href="#4-6-自定义Sink" class="headerlink" title="4.6 自定义Sink"></a>4.6 自定义Sink</h3><p>Sink不断地轮询Channel中的事件且批量地移除它们，并将这些事件批量写入到存储或索引系统、或者被发送到另一个Flume Agent。</p>
+<p>Sink是完全事务性的。在从Channel批量删除数据之前，每个Sink用Channel启动一个事务(自定义sink的代码里可见)。批量事件一旦成功写出到存储系统或下一个Flume Agent，Sink就利用Channel提交事务。事务一旦被提交，该Channel从自己的内部缓冲区删除事件。</p>
+<p>Sink组件目的地包括hdfs、logger、avro、thrift、ipc、file、null、HBase、solr、自定义。官方提供的Sink类型已经很多，但是有时候并不能满足实际开发当中的需求，此时我们就需要根据实际需求自定义某些Sink。</p>
+<p>自定义MySink需要继承AbstractSink类并实现Configurable接口，然后实现相应方法</p>
+<ul>
+<li>configure(Context context)：初始化context(读取配置文件内容)</li>
+<li>process()：从Channel读取获取数据(event)，这个方法将被循环调用</li>
+</ul>
+<p><strong>需求：</strong>不打印前面的乱七八糟的信息了，只打印uuid</p>
+<p>代码见com.study.sink.MySink1，先把之前的mysource和myinterceptor删了，因为这个包里本身就包含它俩，避免报jar包冲突。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">bin/flume-ng agent -c conf -f mytest/test_mysink/flume-mysource1-mysink1.conf -n agent1 -Dflume.root.logger=INFO,console </span><br></pre></td></tr></table></figure>
+
+<p><strong>flume-mysource1-mysink1.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># name</span><br><span class="line">agent1.sources = source1 </span><br><span class="line">agent1.channels = channel1 </span><br><span class="line">agent1.sinks = sink1 </span><br><span class="line"></span><br><span class="line"># source</span><br><span class="line">agent1.sources.source1.type = com.study.source.MySource1</span><br><span class="line">agent1.sources.source1.myprefix = mylog-</span><br><span class="line"></span><br><span class="line"># channel </span><br><span class="line">agent1.channels.channel1.type = memory</span><br><span class="line">agent1.channels.channel1.capacity = 1000</span><br><span class="line">agent1.channels.channel1.transactionCapacity = 100</span><br><span class="line"></span><br><span class="line"># sink</span><br><span class="line">agent1.sinks.sink1.type = com.study.sink.MySink1</span><br><span class="line"></span><br><span class="line"># bind </span><br><span class="line">agent1.sources.source1.channels = channel1 </span><br><span class="line">agent1.sinks.sink1.channel = channel1 </span><br></pre></td></tr></table></figure>
+
+<h2 id="5-Flume数据流监控"><a href="#5-Flume数据流监控" class="headerlink" title="5. Flume数据流监控"></a>5. Flume数据流监控</h2><p>Ganglia，它由gmond(监控)、gmetad(数据存储)和gweb(展示)三部分组成。</p>
+<p>gmond（Ganglia Monitoring Daemon）是一种轻量级服务，安装在每台需要收集指标数据的节点主机上。使用gmond，你可以很容易收集很多系统指标数据，如CPU、内存、磁盘、网络和活跃进程的数据等。gmond哪个机器有flume就要在哪个机器装，其他俩装一个就行了。</p>
+<p>gmetad（Ganglia Meta Daemon）整合所有信息，并将其以RRD格式存储至磁盘的服务。</p>
+<p>gweb（Ganglia Web）Ganglia可视化工具，gweb是一种利用浏览器显示gmetad所存储数据的PHP前端。在Web界面中以图表方式展现集群的运行状态下收集的多种不同指标数据。</p>
+<p>它长这样：</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220330002549136.png" alt="image-20220330002549136" style="zoom: 33%;" />
+
+<p>图表部分含义说明：</p>
+<table>
+<thead>
+<tr>
+<th>字段（图表名称）</th>
+<th>字段含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>EventPutAttemptCount</td>
+<td>source尝试写入channel的事件总数量</td>
+</tr>
+<tr>
+<td>EventPutSuccessCount</td>
+<td>成功写入channel且提交的事件总数量</td>
+</tr>
+<tr>
+<td>EventTakeAttemptCount</td>
+<td>sink尝试从channel拉取事件的总数量。</td>
+</tr>
+<tr>
+<td>EventTakeSuccessCount</td>
+<td>sink成功读取的事件的总数量</td>
+</tr>
+<tr>
+<td>StartTime</td>
+<td>channel启动的时间（毫秒）</td>
+</tr>
+<tr>
+<td>StopTime</td>
+<td>channel停止的时间（毫秒）</td>
+</tr>
+<tr>
+<td>ChannelSize</td>
+<td>目前channel中事件的总数量</td>
+</tr>
+<tr>
+<td>ChannelFillPercentage</td>
+<td>channel占用百分比</td>
+</tr>
+<tr>
+<td>ChannelCapacity</td>
+<td>channel的容量</td>
+</tr>
+</tbody></table>
+<h1 id="四、面试题"><a href="#四、面试题" class="headerlink" title="四、面试题"></a>四、面试题</h1><h2 id="1-Flume数据传输的监控"><a href="#1-Flume数据传输的监控" class="headerlink" title="1. Flume数据传输的监控"></a>1. Flume数据传输的监控</h2><p>使用第三方框架Ganglia实时监控Flume</p>
+<h2 id="2-Flume的Source，Sink，Channel的作用？你们Source是什么类型？"><a href="#2-Flume的Source，Sink，Channel的作用？你们Source是什么类型？" class="headerlink" title="2. Flume的Source，Sink，Channel的作用？你们Source是什么类型？"></a>2. Flume的Source，Sink，Channel的作用？你们Source是什么类型？</h2><p>作用</p>
+<ul>
+<li>Source组件是专门用来收集数据的，可以处理各种类型、各种格式的日志数据，包括avro、thrift、exec、jms、spooling directory、netcat、sequence generator、syslog、http、legacy</li>
+<li>Channel组件对采集到的数据进行缓存，可以存放在Memory或File中</li>
+<li>Sink组件是用于把数据发送到目的地的组件，目的地包括Hdfs、Logger、avro、thrift、ipc、file、Hbase、solr、自定义</li>
+</ul>
+<p>我公司采用的Source类型为</p>
+<ul>
+<li>监控后台日志：exec</li>
+<li>监控后台产生日志的端口：netcat</li>
+</ul>
+<h2 id="3-Flume的Channel-Selectors"><a href="#3-Flume的Channel-Selectors" class="headerlink" title="3. Flume的Channel Selectors"></a>3. Flume的Channel Selectors</h2><p>channel选择器，两种，复制和多路复用，后者靠event里的headers进行判断，没有headers怎么办？写个拦截器给它加上。</p>
+<h2 id="4-Flume参数调优"><a href="#4-Flume参数调优" class="headerlink" title="4. Flume参数调优"></a>4. Flume参数调优</h2><p>Source</p>
+<p>增加Source个（使用Tair Dir Source时可增加FileGroups个数）可以增大Source的读取数据的能力。例如：当某一个目录产生的文件过多时需要将这个文件目录拆分成多个文件目录，同时配置好多个Source 以保证Source有足够的能力获取到新产生的数据。</p>
+<p>batchSize参数决定Source一次批量运输到Channel的event条数，适当调大这个参数可以提高Source搬运Event到Channel时的性能。</p>
+<p>有3个大小需要注意，一是source一次put给channel的event条数，二是channel的事务条数，三是channel的最大容量条数，它们仨的大小关系应该依次递增。4个，还有个sink一次take的event条数。</p>
+<p>Channel</p>
+<p>type 选择memory时Channel的性能最好，但是如果Flume进程意外挂掉可能会丢失数据。type选择file时Channel的容错性更好，但是性能上会比memory channel差。</p>
+<p>使用file Channel时dataDirs配置多个不同盘下的目录可以提高性能。</p>
+<p>Capacity 参数决定Channel可容纳最大的event条数。transactionCapacity 参数决定每次Source往channel里面写的最大event条数和每次Sink从channel里面读的最大event条数。<strong>transactionCapacity需要大于Source和Sink的batchSize参数。</strong></p>
+<p>Sink</p>
+<p>增加Sink的个数可以增加Sink消费event的能力。Sink也不是越多越好够用就行，过多的Sink会占用系统资源，造成系统资源不必要的浪费。</p>
+<p>batchSize参数决定Sink一次批量从Channel读取的event条数，适当调大这个参数可以提高Sink从Channel搬出event的性能。</p>
+<h2 id="5-Flume的事务机制"><a href="#5-Flume的事务机制" class="headerlink" title="5. Flume的事务机制"></a>5. Flume的事务机制</h2><p>Flume的事务机制（类似数据库的事务机制）：Flume使用两个独立的事务分别负责从Soucrce到Channel，以及从Channel到Sink的事件传递。比如spooling directory source 为文件的每一行创建一个事件，一旦事务中所有的事件全部传递到Channel且提交成功，那么Soucrce就将该文件标记为完成。同理，事务以类似的方式处理从Channel到Sink的传递过程，如果因为某种原因使得事件无法记录，那么事务将会回滚。且所有的事件都会保持到Channel中，等待重新传递。</p>
+<h2 id="6-Flume采集数据会丢失吗"><a href="#6-Flume采集数据会丢失吗" class="headerlink" title="6. Flume采集数据会丢失吗?"></a>6. Flume采集数据会丢失吗?</h2><p>根据Flume的架构原理，Flume是不可能丢失数据的，其内部有完善的事务机制，Source到Channel是事务性的，Channel到Sink是事务性的，因此这两个环节不会出现数据的丢失，唯一可能丢失数据的情况是Channel采用memoryChannel，agent宕机导致数据丢失，或者Channel存储数据已满，导致Source不再写入，未写入的数据丢失。</p>
+<p>Flume不会丢失数据，但是有可能造成数据的重复，例如数据已经成功由Sink发出，但是没有接收到响应，Sink会再次发送数据，此时可能会导致数据的重复。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E5%B8%B8%E8%A7%81%E6%8A%A5%E9%94%99/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/expenses.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">常见报错</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/DataX/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/riding-bicycle.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">DataX</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81Flume%E6%A6%82%E8%BF%B0"><span class="toc-text">一、Flume概述</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Flume%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">1. Flume可以做什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Flume%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84"><span class="toc-text">2. Flume基础架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-Agent"><span class="toc-text">2.1 Agent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-Source"><span class="toc-text">2.2 Source</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-Sink"><span class="toc-text">2.3 Sink</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-Channel"><span class="toc-text">2.4 Channel</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-Event"><span class="toc-text">2.5 Event</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Flume%E5%85%A5%E9%97%A8"><span class="toc-text">二、Flume入门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%9B%91%E6%8E%A7%E7%AB%AF%E5%8F%A3%E6%95%B0%E6%8D%AE%E5%AE%98%E6%96%B9%E6%A1%88%E4%BE%8B"><span class="toc-text">1. 监控端口数据官方案例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-nc%E7%9A%84%E7%94%A8%E6%B3%95"><span class="toc-text">1.1 nc的用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-Flume%E7%9B%91%E5%90%AC%E7%AB%AF%E5%8F%A3%E7%9A%84%E5%8E%9F%E7%90%86"><span class="toc-text">1.2 Flume监听端口的原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E7%BC%96%E5%86%99%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">1.3 编写配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="toc-text">1.4 执行命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%AE%9E%E6%97%B6%E7%9B%91%E6%8E%A7%E5%8D%95%E4%B8%AA%E8%BF%BD%E5%8A%A0%E6%96%87%E4%BB%B6"><span class="toc-text">2. 实时监控单个追加文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%AE%9E%E6%97%B6%E7%9B%91%E6%8E%A7%E7%9B%AE%E5%BD%95%E4%B8%8B%E5%A4%9A%E4%B8%AA%E6%96%B0%E6%96%87%E4%BB%B6"><span class="toc-text">3. 实时监控目录下多个新文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%9E%E6%97%B6%E7%9B%91%E6%8E%A7%E7%9B%AE%E5%BD%95%E4%B8%8B%E7%9A%84%E5%A4%9A%E4%B8%AA%E8%BF%BD%E5%8A%A0%E6%96%87%E4%BB%B6"><span class="toc-text">4. 实时监控目录下的多个追加文件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81Flume%E8%BF%9B%E9%98%B6"><span class="toc-text">三、Flume进阶</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Flume%E4%BA%8B%E5%8A%A1"><span class="toc-text">1. Flume事务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Flume-Agent%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86"><span class="toc-text">2. Flume Agent内部原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Flume%E6%8B%93%E6%89%91%E7%BB%93%E6%9E%84"><span class="toc-text">3. Flume拓扑结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Flume%E4%BC%81%E4%B8%9A%E5%BC%80%E5%8F%91%E6%A1%88%E4%BE%8B"><span class="toc-text">4. Flume企业开发案例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%A4%8D%E5%88%B6%E5%92%8C%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="toc-text">4.1 复制和多路复用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%92%8C%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB"><span class="toc-text">4.2 负载均衡和故障转移</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E8%81%9A%E5%90%88"><span class="toc-text">4.3 聚合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E8%87%AA%E5%AE%9A%E4%B9%89Interceptor"><span class="toc-text">4.4 自定义Interceptor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-%E8%87%AA%E5%AE%9A%E4%B9%89Source"><span class="toc-text">4.5 自定义Source</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-6-%E8%87%AA%E5%AE%9A%E4%B9%89Sink"><span class="toc-text">4.6 自定义Sink</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Flume%E6%95%B0%E6%8D%AE%E6%B5%81%E7%9B%91%E6%8E%A7"><span class="toc-text">5. Flume数据流监控</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-text">四、面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Flume%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E7%9A%84%E7%9B%91%E6%8E%A7"><span class="toc-text">1. Flume数据传输的监控</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Flume%E7%9A%84Source%EF%BC%8CSink%EF%BC%8CChannel%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9F%E4%BD%A0%E4%BB%ACSource%E6%98%AF%E4%BB%80%E4%B9%88%E7%B1%BB%E5%9E%8B%EF%BC%9F"><span class="toc-text">2. Flume的Source，Sink，Channel的作用？你们Source是什么类型？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Flume%E7%9A%84Channel-Selectors"><span class="toc-text">3. Flume的Channel Selectors</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Flume%E5%8F%82%E6%95%B0%E8%B0%83%E4%BC%98"><span class="toc-text">4. Flume参数调优</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Flume%E7%9A%84%E4%BA%8B%E5%8A%A1%E6%9C%BA%E5%88%B6"><span class="toc-text">5. Flume的事务机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Flume%E9%87%87%E9%9B%86%E6%95%B0%E6%8D%AE%E4%BC%9A%E4%B8%A2%E5%A4%B1%E5%90%97"><span class="toc-text">6. Flume采集数据会丢失吗?</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

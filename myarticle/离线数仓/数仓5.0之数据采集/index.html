@@ -1,0 +1,1540 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>数仓5.0之数据采集 | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="王昊只讲了很少一部分，其余是由刘波讲的，本篇的主要目的是把数据通道打通，也就是把日志和业务数据导入到HDFS，之后才是数仓的建设。 一、数据仓库概念数据仓库（Data Warehouse），是为企业所有决策制定过程，提供所有系统数据支持的战略集合。通过对数据仓库中数据的分析，可以帮助企业，改进业务流程、控制成本、提高产品质量等。数据仓库，并不是数据的最终目的地，而是为数据最终的目的地做好准备。这些">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数仓5.0之数据采集">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/%E6%95%B0%E4%BB%935.0%E4%B9%8B%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="王昊只讲了很少一部分，其余是由刘波讲的，本篇的主要目的是把数据通道打通，也就是把日志和业务数据导入到HDFS，之后才是数仓的建设。 一、数据仓库概念数据仓库（Data Warehouse），是为企业所有决策制定过程，提供所有系统数据支持的战略集合。通过对数据仓库中数据的分析，可以帮助企业，改进业务流程、控制成本、提高产品质量等。数据仓库，并不是数据的最终目的地，而是为数据最终的目的地做好准备。这些">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/airport.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.771Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/airport.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/%E6%95%B0%E4%BB%935.0%E4%B9%8B%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '数仓5.0之数据采集',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/christmas-4701783.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">数仓5.0之数据采集</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.771Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/">离线数仓</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">15.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>57分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="数仓5.0之数据采集"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>王昊只讲了很少一部分，其余是由刘波讲的，本篇的主要目的是把数据通道打通，也就是把日志和业务数据导入到HDFS，之后才是数仓的建设。</p>
+<h1 id="一、数据仓库概念"><a href="#一、数据仓库概念" class="headerlink" title="一、数据仓库概念"></a>一、数据仓库概念</h1><p>数据仓库（Data Warehouse），是为企业所有决策制定过程，提供所有系统数据支持的战略集合。通过对数据仓库中数据的分析，可以帮助企业，改进业务流程、控制成本、提高产品质量等。数据仓库，并不是数据的最终目的地，而是为数据最终的目的地做好准备。这些准备包括对数据的：清洗，转义，分类，重组，合并，拆分，统计等等。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220204194816445.png" alt="image-20220204194816445" style="zoom:50%;" />
+
+<h1 id="二、项目需求及架构设计"><a href="#二、项目需求及架构设计" class="headerlink" title="二、项目需求及架构设计"></a>二、项目需求及架构设计</h1><p>业务数据的主要来源是MySQL，需要把MySQL里的数据导入到HDFS，可以用datax或maxwell，用户行为日志通过flume或logstash导入到kafka？爬虫数据一般用python来做，业务数据、用户行为日志、爬虫数据，都会被送入kafka，这是收集，存储用的就是HDFS，做数据分析的计算引擎用hive或spark。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220206181645690.png" alt="image-20220206181645690" style="zoom:80%;" />
+
+<h2 id="1-项目需求分析"><a href="#1-项目需求分析" class="headerlink" title="1. 项目需求分析"></a>1. 项目需求分析</h2><h3 id="1-1-项目需求"><a href="#1-1-项目需求" class="headerlink" title="1.1 项目需求"></a>1.1 项目需求</h3><blockquote>
+<p>1、用户行为数据采集平台搭建</p>
+<p>2、业务数据采集平台搭建</p>
+<p>3、数据仓库维度建模</p>
+<p>4、分析，设备、会员、商品、地区、活动等电商核心主题，统计的报表指标近100个，完全对比中型公司</p>
+<p>5、采用即席查询工具，随时进行指标分析</p>
+<p>6、对集群性能进行监控，发生异常需要报警</p>
+<p>7、元数据管理</p>
+<p>8、质量监控</p>
+</blockquote>
+<h3 id="1-2-思考"><a href="#1-2-思考" class="headerlink" title="1.2 思考"></a>1.2 思考</h3><blockquote>
+<p>1、项目技术如何选型？</p>
+<p>2、框架版本如何选型（Apache、CDH、HDP）</p>
+<p>3、服务器使用物理机还是云主机？</p>
+<p>4、如何确认集群规模？（假设每台服务器8T硬盘）</p>
+</blockquote>
+<h2 id="2-项目框架"><a href="#2-项目框架" class="headerlink" title="2. 项目框架"></a>2. 项目框架</h2><h3 id="2-1-技术选型"><a href="#2-1-技术选型" class="headerlink" title="2.1 技术选型"></a>2.1 技术选型</h3><p>技术选型主要考虑因素：数据量大小、业务需求、行业内经验、技术成熟度、开发维护成本、总成本预算</p>
+<blockquote>
+<p>数据采集传输：<strong>Flume，Datax，Maxwell，Sqoop，Kafka</strong>(把cannel删了？)</p>
+<p>数据存储：<strong>MySql，HDFS</strong>，HBase，Redis，MongoDB</p>
+<p>数据计算：<strong>Hive</strong>，Tez，<strong>Spark</strong>，<strong>Flink</strong>，Storm</p>
+<p>数据查询：<strong>Presto，Kylin</strong>，Impala，Druid</p>
+<p>数据可视化：<strong>Superset、QuickBI、DataV</strong></p>
+<p>任务调度：DolphinScheduler、Azkaban、Oozie</p>
+<p>集群监控：Zabbix</p>
+<p>元数据管理：Atlas</p>
+</blockquote>
+<h3 id="2-2-系统数据流程设计"><a href="#2-2-系统数据流程设计" class="headerlink" title="2.2 系统数据流程设计"></a>2.2 系统数据流程设计</h3><ul>
+<li><strong>业务交互数据：</strong>业务流程中产生的登录、订单、用户、商品、支付等相关的数据，通常存储在DB中，包括Mysql、Oracle等。</li>
+<li><strong>用户行为数据：</strong>用户在使用产品过程中，与客户端产品交互过程中产生的数据，比如页面浏览、点击、停留、评论、点赞、收藏等。</li>
+</ul>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220204204343377.png" alt="image-20220204204343377" style="zoom:67%;" />
+
+<p>注：我们的工作是从业务数据库和logFile开始的，logFile怎么来的我们插不上手，需要跟前端提需求，注意它只是个文件不是表，这里我们用模拟的方式生成logFile。</p>
+<p><strong>问题一：为什么kafka不能直接传到HDFS呢？还要经过flume？</strong></p>
+<p>用了flume就不用自己写代码了，不用flume就得自己写代码，写个HDFS消费者，两种方式选哪个都行</p>
+<p>kafka和flume看起来很像，但却是完全不一样的两个框架，结构上的相似只是个错觉，kafka本质上是个消息队列，目的是让数据在这里缓存一下，通过缓存达到削峰解耦的目的，kafka的三个组件，生产者producer，服务器broker，消费者consumer，kafka主要做的是broker，producer和consumer其实只是api，不算kafka真正的组件。flume做的是数据采集，数据采集就会有多种数据来源和多种数据去向，它要考虑的是我要从哪个地方采集，采集到哪个地方去，flume的三个组件source、channel、sink，重心在source和sink，flume通过多种多样的source和sink实现了对多种数据源和数据去向的高兼容性。另外kafka是分布式的，而flume是个单进程。这里用flume就是图个省事儿，不用手写kafka的hdfs消费者代码了，有flume就不需要多造轮子解决需求问题了。</p>
+<p><strong>问题二：为什么要加个kafka，直接用flume把logFile采集到HDFS不行吗？</strong></p>
+<p>缓冲削峰？flume的channel也有缓冲削峰的作用。用kafka确实是能提高性能，它读写比flume快(单节点filechannel峰值大概二三十兆每秒，kafka算上压缩的话可以达两三百兆每秒)，但是代价是集群资源上升了，而且logFile是个文件，死文件，把它上传到hdfs根本不需要做削峰，单台flume一天可以写180G，三台就是500G，也能满足需求。在这里加kafka也不是为了高并发，而是为了给Flink做实时用的，既然离线和实时都需要用到这些数据，那我们就把这些数据放到kafka里做缓存好了，不用再单独写个数据采集的通道了</p>
+<p>小知识：一天是86400秒，datax比sqoop的性能要好些</p>
+<h3 id="2-3-框架版本选型"><a href="#2-3-框架版本选型" class="headerlink" title="2.3 框架版本选型"></a>2.3 框架版本选型</h3><p><strong>如何选择Apache&#x2F;CDH&#x2F;HDP版本？</strong></p>
+<ul>
+<li>Apache：运维麻烦，组件间兼容性需要自己调研。（一般大厂使用，技术实力雄厚，有专业的运维人员）（建议使用）</li>
+<li>CDH：国内使用最多的版本，但CM不开源，一个节点1万美金</li>
+<li>HDP：开源，可以进行二次开发，但是没有CDH稳定，国内使用较少</li>
+</ul>
+<p><strong>版本号</strong></p>
+<blockquote>
+<p>产品					版本</p>
+<p>Hadoop			 3.1.3</p>
+<p>Hive					3.1.2</p>
+<p>Flume				1.9.0</p>
+<p>Zookeeper		3.5.7</p>
+<p>Kafka				 2.4.1</p>
+<p>DataX				 3.0</p>
+<p>Maxwell			1.29.2</p>
+<p>注意这里，hadoop的3.1.3和hive的3.1.2存在版本冲突，所以不要直接去官网下，用尚硅谷重编译好的版本</p>
+</blockquote>
+<p>注意事项：框架选型尽量不要选择最新的框架，选择最新框架半年前左右的稳定版。</p>
+<h3 id="2-4-服务器选型"><a href="#2-4-服务器选型" class="headerlink" title="2.4   服务器选型"></a>2.4   服务器选型</h3><p>服务器选择物理机还是云主机？</p>
+<p><strong>物理机：</strong></p>
+<ul>
+<li>以128G内存，20核物理CPU，40线程，8THDD和2TSSD硬盘，戴尔品牌单台报价4W出头。一般物理机寿命5年左右</li>
+<li>需要有专业的运维人员，平均一个月1万，电费也是不少的开销</li>
+</ul>
+<p><strong>云主机：</strong></p>
+<ul>
+<li>以阿里云为例，差不多相同配置，每年5W</li>
+<li>很多运维工作都由阿里云完成，运维相对较轻松</li>
+</ul>
+<p><strong>企业选择：</strong></p>
+<ul>
+<li>金融有钱公司和阿里没有直接冲突的公司选择阿里云</li>
+<li>中小公司、为了融资上市，选择阿里云，拉倒融资后买物理机</li>
+<li>有长期打算，资金比较足，选择物理机</li>
+</ul>
+<h3 id="2-5-集群资源规划设计"><a href="#2-5-集群资源规划设计" class="headerlink" title="2.5 集群资源规划设计"></a>2.5 集群资源规划设计</h3><p><strong>如何确认集群规模？</strong>（假设：每台服务器8T磁盘，128G内存）</p>
+<p>（1）每天日活跃用户100万，每人一天平均100条：100万*100条&#x3D;1亿条</p>
+<p>（2）每条日志1K左右，每天1亿条：100000000&#x2F;1024&#x2F;1024&#x3D;约100G</p>
+<p>（3）半年内不扩容服务器来算：100G*180天&#x3D;约18T</p>
+<p>（4）保存3副本：18T*3&#x3D;54T</p>
+<p>（5）预留20%-30%Buf&#x3D;54T&#x2F;0.7&#x3D;77T</p>
+<p>（6）算到这：约8T*10台服务器</p>
+<p>如果考虑数仓分层？数据采用压缩？需要重新再计算</p>
+<p><strong>测试集群服务器规划</strong></p>
+<table>
+<thead>
+<tr>
+<th>服务名称</th>
+<th align="center">子服务</th>
+<th align="center">hadoop102</th>
+<th align="center">hadoop103</th>
+<th align="center">hadoop104</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HDFS</td>
+<td align="center">NameNode</td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td></td>
+<td align="center">DataNode</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td></td>
+<td align="center">SecondaryNameNode</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td>Yarn</td>
+<td align="center">NodeManager</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td></td>
+<td align="center">Resourcemanager</td>
+<td align="center"></td>
+<td align="center">√</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Zookeeper</td>
+<td align="center">Zookeeper Server</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td>Flume(采集日志)</td>
+<td align="center">Flume</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Kafka</td>
+<td align="center">Kafka</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td>Flume（消费Kafka）</td>
+<td align="center">Flume</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td>Hive</td>
+<td align="center">Hive</td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td align="center">MySQL</td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>DataX</td>
+<td align="center">DataX</td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Maxwell</td>
+<td align="center">Maxwell</td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Presto</td>
+<td align="center">Coordinator</td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td></td>
+<td align="center">Worker</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td>DolphinScheduler</td>
+<td align="center">MasterServer</td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>WorkerServer</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Druid</td>
+<td align="center">Druid</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td>Kylin</td>
+<td align="center"></td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Hbase</td>
+<td align="center">HMaster</td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>HRegionServer</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Superset</td>
+<td align="center"></td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Atlas</td>
+<td align="center"></td>
+<td align="center">√</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Solr</td>
+<td align="center">Jar</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+</tr>
+</tbody></table>
+<p>注意这里没有采用HA架构，它比较吃资源，没必要</p>
+<h1 id="三、行为数据生成模块"><a href="#三、行为数据生成模块" class="headerlink" title="三、行为数据生成模块"></a>三、行为数据生成模块</h1><h2 id="1-目标数据"><a href="#1-目标数据" class="headerlink" title="1. 目标数据"></a>1. 目标数据</h2><p>我们要收集和分析的数据主要包括<strong>页面数据</strong>、<strong>事件数据、曝光数据、启动数据和错误数据。</strong></p>
+<h3 id="1-1-页面数据"><a href="#1-1-页面数据" class="headerlink" title="1.1 页面数据"></a>1.1 页面数据</h3><p>页面数据主要记录一个页面的用户访问情况，包括访问时间、停留时间、页面路径等信息。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220204211019265.png" alt="image-20220204211019265" style="zoom: 50%;" />
+
+
+
+<details>
+  <summary>页面id枚举值</summary>
+  <pre><blockcode> 
+    home("首页"),
+    category("分类页"),
+    discovery("发现页"),
+    top_n("热门排行"),
+    favor("收藏页"),
+    search("搜索页"),
+    good_list("商品列表页"),
+    good_detail("商品详情"),
+    good_spec("商品规格"),
+    comment("评价"),
+    comment_done("评价完成"),
+    comment_list("评价列表"),
+    cart("购物车"),
+    trade("下单结算"),
+    payment("支付页面"),
+    payment_done("支付完成"),
+    orders_all("全部订单"),
+    orders_unpaid("订单待支付"),
+    orders_undelivered("订单待发货"),
+    orders_unreceipted("订单待收货"),
+    orders_wait_comment("订单待评价"),
+    mine("我的"),
+    activity("活动"),
+    login("登录"),
+    register("注册");
+  </blockcode></pre>
+</details>
+
+<details>
+  <summary>页面对象枚举值</summary>
+  <pre><blockcode> 
+    sku_id("商品skuId"),
+    keyword("搜索关键词"),
+    sku_ids("多个商品skuId"),
+    activity_id("活动id"),
+    coupon_id("购物券id");
+  </blockcode></pre>
+</details>
+
+<details>
+  <summary>页面来源枚举值</summary>
+  <pre><blockcode> 
+    promotion("商品推广"),
+    recommend("算法推荐商品"),
+    query("查询结果商品"),
+    activity("促销活动");
+  </blockcode></pre>
+</details>
+
+<h3 id="1-2-事件数据"><a href="#1-2-事件数据" class="headerlink" title="1.2 事件数据"></a>1.2 事件数据</h3><p>事件数据主要记录应用内一个具体操作行为，包括操作类型、操作对象、操作对象描述等信息。一般是指不会引起页面跳转的操作，比如收藏加购等。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220204211727068.png" alt="image-20220204211727068" style="zoom: 50%;" />
+
+
+
+<details>
+  <summary>动作类型枚举值</summary>
+  <pre><blockcode> 
+    favor_add("添加收藏"),
+    favor_canel("取消收藏"),
+    cart_add("添加购物车"),
+    cart_remove("删除购物车"),
+    cart_add_num("增加购物车商品数量"),
+    cart_minus_num("减少购物车商品数量"),
+    trade_add_address("增加收货地址"),
+    get_coupon("领取优惠券");
+  </blockcode></pre>
+</details>
+
+<p>注：对于下单、支付等业务数据，可从业务数据库获取。</p>
+<details>
+  <summary>动作目标类型枚举值</summary>
+  <pre><blockcode> 
+    sku_id("商品"),
+    coupon_id("购物券");
+  </blockcode></pre>
+</details>
+
+<h3 id="1-3-曝光"><a href="#1-3-曝光" class="headerlink" title="1.3 曝光"></a>1.3 曝光</h3><p>前3个都是页面日志，曝光数据主要记录页面所曝光的内容，包括曝光对象，曝光类型等信息。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220206164939040.png" alt="image-20220206164939040" style="zoom: 50%;" />
+
+<details>
+  <summary>曝光类型枚举值</summary>
+  <pre><blockcode> 
+    promotion("商品推广"),
+    recommend("算法推荐商品"),
+    query("查询结果商品"),
+    activity("促销活动");
+  </blockcode></pre>
+</details>
+
+<details>
+  <summary>曝光对象类型枚举值</summary>
+  <pre><blockcode> 
+    sku_id("商品skuId"),
+    activity_id("活动id");
+  </blockcode></pre>
+</details>
+
+<h3 id="1-4-启动"><a href="#1-4-启动" class="headerlink" title="1.4 启动"></a>1.4 启动</h3><p>启动数据记录应用的启动信息。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220206165232794.png" alt="image-20220206165232794" style="zoom: 50%;" />
+
+<details>
+  <summary>启动入口类型枚举值</summary>
+  <pre><blockcode> 
+    icon("图标"),
+    notification("通知"),
+    install("安装后启动");
+  </blockcode></pre>
+</details>
+
+<h3 id="1-5-错误"><a href="#1-5-错误" class="headerlink" title="1.5 错误"></a>1.5 错误</h3><p>错误数据记录应用使用过程中的错误信息，包括错误编号及错误信息。</p>
+<p>上面5种日志是不会进入数据库的，可以通过埋点来获取，一般只有下单、支付这种比较重的操作才会进MySQL。</p>
+<h2 id="2-数据埋点"><a href="#2-数据埋点" class="headerlink" title="2. 数据埋点"></a>2. 数据埋点</h2><h3 id="2-1-主流埋点方式（了解）"><a href="#2-1-主流埋点方式（了解）" class="headerlink" title="2.1 主流埋点方式（了解）"></a>2.1 主流埋点方式（了解）</h3><p>目前主流的埋点方式，有<strong>代码埋点</strong>（前端&#x2F;后端）、<strong>可视化埋点</strong>、<strong>全埋点</strong>三种。埋点这活一般不会让大数据开发参与。</p>
+<p><strong>代码埋点</strong>是通过调用埋点SDK函数，在需要埋点的业务逻辑功能位置调用接口，上报埋点数据。例如，我们对页面中的某个按钮埋点后，当这个按钮被点击时，可以在这个按钮对应的 OnClick 函数里面调用SDK提供的数据发送接口，来发送数据。</p>
+<p><strong>可视化埋点</strong>只需要研发人员集成采集 SDK，不需要写埋点代码，业务人员就可以通过访问分析平台的“圈选”功能，来“圈”出需要对用户行为进行捕捉的控件，并对该事件进行命名。圈选完毕后，这些配置会同步到各个用户的终端上，由采集 SDK 按照圈选的配置自动进行用户行为数据的采集和发送。</p>
+<p><strong>全埋点</strong>是通过在产品中嵌入SDK，前端自动采集页面上的全部用户行为事件，上报埋点数据，相当于做了一个统一的埋点。然后再通过界面配置哪些数据需要在系统里面进行分析。</p>
+<h3 id="2-2-埋点数据日志结构"><a href="#2-2-埋点数据日志结构" class="headerlink" title="2.2 埋点数据日志结构"></a>2.2 埋点数据日志结构</h3><p>我们的日志结构大致可分为两类，一是普通页面埋点日志，二是启动日志。</p>
+<p>普通页面日志结构如下，每条日志包含了，当前页面的页面信息，所有事件（动作）、所有曝光信息以及错误信息。除此之外，还包含了一系列公共信息，包括设备信息，地理位置，应用信息等，即下边的common字段。</p>
+<p>启动日志结构相对简单，主要包含公共信息，启动信息和错误信息。</p>
+<details>
+  <summary>普通页面埋点日志格式</summary>
+  <pre><blockcode> 
+    {
+        "common": {                     -- 公共信息
+            "ar": "230000",                 -- 地区编码
+            "ba": "iPhone",                 -- 手机品牌
+            "ch": "Appstore",               -- 渠道
+            "is_new": "1",                  -- 是否首日使用，首次使用的当日，该字段值为1，过了24:00，该字段置为0
+            "md": "iPhone 8",               -- 手机型号
+            "mid": "YXfhjAYH6As2z9Iq",      -- 设备id
+            "os": "iOS 13.2.9",             -- 操作系统
+            "uid": "485",                   -- 会员id
+            "vc": "v2.1.134"                -- app版本号
+        },
+        "actions": [                    --动作(事件)  
+            {
+                "action_id": "favor_add",       --动作id
+                "item": "3",                    --目标id
+                "item_type": "sku_id",          --目标类型
+                "ts": 1585744376605             --动作时间戳
+            }
+        ],
+        "displays": [
+            {
+                "displayType": "query",         -- 曝光类型
+                "item": "3",                    -- 曝光对象id
+                "item_type": "sku_id",          -- 曝光对象类型
+                "order": 1,                     -- 出现顺序
+                "pos_id": 2                     -- 曝光位置
+            },
+            {
+                "displayType": "promotion",
+                "item": "6",
+                "item_type": "sku_id",
+                "order": 2, 
+                "pos_id": 1
+            },
+            {
+                "displayType": "promotion",
+                "item": "9",
+                "item_type": "sku_id",
+                "order": 3, 
+                "pos_id": 3
+            },
+            {
+                "displayType": "recommend",
+                "item": "6",
+                "item_type": "sku_id",
+                "order": 4, 
+                "pos_id": 2
+            },
+            {
+                "displayType": "query ",
+                "item": "6",
+                "item_type": "sku_id",
+                "order": 5, 
+                "pos_id": 1
+            }
+        ],
+        "page": {                       --页面信息
+            "during_time": 7648,            -- 持续时间毫秒
+            "item": "3",                    -- 目标id
+            "item_type": "sku_id",          -- 目标类型
+            "last_page_id": "login",        -- 上页类型
+            "page_id": "good_detail",       -- 页面ID
+            "sourceType": "promotion"       -- 来源类型
+        },
+        "err":{                         --错误
+            "error_code": "1234",           --错误码
+            "msg": "***********"            --错误信息
+        },
+        "ts": 1585744374423             --跳入时间戳
+    }
+  </blockcode></pre>
+</details>
+
+<details>
+  <summary>启动日志格式</summary>
+  <pre><blockcode> 
+    {
+        "common": {
+            "ar": "370000",
+            "ba": "Honor",
+            "ch": "wandoujia",
+            "is_new": "1",
+            "md": "Honor 20s",
+            "mid": "eQF5boERMJFOujcp",
+            "os": "Android 11.0",
+            "uid": "76",
+            "vc": "v2.1.134"
+        },
+        "start": {   
+            "entry": "icon",            -- icon手机图标  notice 通知   install 安装后启动
+            "loading_time": 18803,      -- 启动加载时间
+            "open_ad_id": 7,            -- 广告页ID
+            "open_ad_ms": 3449,         -- 广告总共播放时间
+            "open_ad_skip_ms": 1989     -- 用户跳过广告时点
+        },
+        "err":{                     --错误
+            "error_code": "1234",       --错误码
+            "msg": "***********"        --错误信息
+        },
+        "ts": 1585744304000
+    }
+  </blockcode></pre>
+</details>
+
+<h3 id="2-3-埋点数据上报时机"><a href="#2-3-埋点数据上报时机" class="headerlink" title="2.3 埋点数据上报时机"></a>2.3 埋点数据上报时机</h3><p>埋点数据上报时机包括两种方式。</p>
+<p>方式一，在离开该页面时，上传在这个页面产生的所有数据（页面、事件、曝光、错误等）。优点：批处理，减少了服务器接收数据压力。缺点：不是特别及时。</p>
+<p>方式二，每个事件、动作、错误等，产生后，立即发送。优点：响应及时。缺点：对服务器接收数据压力比较大。</p>
+<h2 id="3-数据生成"><a href="#3-数据生成" class="headerlink" title="3. 数据生成"></a>3. 数据生成</h2><p>服务器准备：16 + 8 + 8，课件上有阿里云服务器的购买流程，需要的话可以参考。</p>
+<p>生产环境，数据和框架分离，安装包放software，框架放module，数据放data，自己搭的时候没按这个来。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220207001801707.png" alt="image-20220207001801707"></p>
+<p>把生成日志的文件上传到新建的mock01目录：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220706195332366.png" alt="image-20220706195332366"></p>
+<p>path.json用于设置生成日志各种类的比重，application.yml用于指定生成什么日志，logback.xml决定日志生成目录。</p>
+<p><strong>application.yml：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#外部配置打开，如果是log模式的话，需要指定logback.xml文件</span><br><span class="line">logging.config: &quot;./logback.xml&quot;</span><br><span class="line">#业务日期，生成的是哪一天的日志</span><br><span class="line">mock.date: &quot;2020-06-14&quot;</span><br><span class="line"></span><br><span class="line">#模拟数据发送模式</span><br><span class="line">mock.type: &quot;log&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>logback.xml：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!-- 定义log_home，指定日志生成目录</span><br><span class="line">   &lt;property name=&quot;LOG_HOME&quot; value=&quot;/opt/module/mockdata/mock01/log&quot; /&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>日志生成：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">然后执行java -jar就可以看效果了</span><br><span class="line">[hetengfei@hadoop180 mock01]$ java -jar gmall2020-mock-log-2021-10-10.jar </span><br></pre></td></tr></table></figure>
+
+<p>这样每运行一次就只能生成一天的日志，写个脚本封装一下，在规划中<strong>日志是在两台服务器上生成的</strong>，所以这里要写个能在两台机器上同时生成日志的脚本。</p>
+<p><strong>mock01.sh：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">for i in hadoop180 hadoop181</span><br><span class="line">do</span><br><span class="line">    echo &quot;========== $i 开始生成日志 ==========&quot;</span><br><span class="line">	if [ $1 ]</span><br><span class="line">	then</span><br><span class="line">		这里表示如果脚本传入日期的话，就把application.yml里mock.date那行删掉，然后再加一行mock.date</span><br><span class="line">		ssh $i &quot;sed -i &#x27;/mock.date/d&#x27; /opt/module/mockdata/mock01/application.yml&quot;</span><br><span class="line">		ssh $i &quot;echo &#x27;mock.date: \&quot;$1\&quot;&#x27; &gt;&gt; /opt/module/mockdata/mock01/application.yml&quot;</span><br><span class="line">	fi</span><br><span class="line">    ssh $i &quot;cd /opt/module/mockdata/mock01; nohup java -jar gmall2020-mock-log-2021-10-10.jar 1&gt;/dev/null 2&gt;&amp;1 &amp;&quot;</span><br><span class="line">done </span><br></pre></td></tr></table></figure>
+
+<p><strong>脚本解读：</strong>一个程序有标准输入、标准输出、标准错误三个输入输出接口，比如ctrl + c强制结束，这个命令就是通过标准输入进去的，nohup就是告诉程序忽略标准输入，不管标准输入干什么事都不要响应，这个时候程序就不能通过ctrl + c进行结束了。 1代表<strong>标准输出</strong>，&gt;表示让标准输出全部进入&#x2F;dev&#x2F;null里，&#x2F;dev&#x2F;null就是不要了，俗称黑洞，2是<strong>错误输出</strong>，意思是让标准错误进入和标准输出流1相同的里面，最后的&amp;表示后台运行。</p>
+<p>演示脚本前记得把mockdata目录分发。</p>
+<h1 id="四、行为数据采集模块"><a href="#四、行为数据采集模块" class="headerlink" title="四、行为数据采集模块"></a>四、行为数据采集模块</h1><h2 id="1-几个概念"><a href="#1-几个概念" class="headerlink" title="1. 几个概念"></a>1. 几个概念</h2><p>为什么要配置环境变量？为什么flume就可以不配置环境变量？</p>
+<p>PATH让你在任何地方都能找到命令，但这不是配置环境变量的原因，不然配置成下面的错误示范不是更省事。hadoop依赖于java，那hadoop是如何找到java的呢？约定俗成通过JAVA_HOME找java，只能是这个名字，换个名字就找不到。也就是<strong>当某个框架被其他框架依赖的时候，会通过配置环境变量来声明这个框架的位置，以便于其他框架找到它们</strong>。像flume，没框架依赖它，所以就不用配。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#这个JAVA_HOME才是环境变量，PATH只是顺带的</span><br><span class="line">export JAVA_HOME=/opt/module/java</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line"></span><br><span class="line">#错误示范</span><br><span class="line">export PATH=$PATH:/opt/module/java/bin</span><br></pre></td></tr></table></figure>
+
+<p><strong>8020与9870的区别：</strong>一个是rpc端口，一个是http端口，前者是集群内部相互交流用的，后者是给人看的，所以框架之间要配的话都用8020。</p>
+<p><strong>项目经验之HDFS存储多目录：</strong>目的就是挂载多个磁盘，1台服务器挂几十块磁盘都是有可能的，这个参数的目的就是让数据均匀放在各个磁盘上，每台服务器挂载的磁盘不一样，所以每个节点的多目录配置不一致，单独配置即可。注意这里配的是DN不是NN。</p>
+<p><strong>集群数据均衡：</strong>分节点间数据均衡和磁盘间数据均衡，节点间数据均衡就是增加了服务器，这个数据均衡是通过命令实现的。但是扩容不一定要加服务器，还可以加磁盘，这个数据均衡是通过执行计划实现的。</p>
+<p><strong>压缩：</strong>新的框架基本不会采用lzo压缩了，用snappy或zstd，lzo最大的优势是支持切片，但是现在不需要了，没有切片也可以用的很好，lzo要切片的话需要建立索引，操作比较麻烦。</p>
+<h2 id="2-HDFS的安装与压测"><a href="#2-HDFS的安装与压测" class="headerlink" title="2. HDFS的安装与压测"></a>2. HDFS的安装与压测</h2><p><strong>测试HDFS写性能：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hadoop jar /opt/module/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.1.3-tests.jar TestDFSIO -write -nrFiles 10 -fileSize 128MB</span><br><span class="line"></span><br><span class="line">配置不低，为什么写性能这么低？王昊的 % of queue 是98%， % of cluster 也是98%，是不是因为这里的关系？破案了，就是因为设置了队列的关系，把capacity-scheduler.xml文件从安装包里提取出来，然后放入集群并分发就好了。但是这也暴露出另外一个问题，hive队列在闲置，但是它闲置的资源并不能给default队列用，这个可以通过什么配置更改呢</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试HDFS读性能：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hadoop jar /opt/module/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.1.3-tests.jar TestDFSIO -read -nrFiles 10 -fileSize 128MB</span><br><span class="line"></span><br><span class="line">读性能正常，本身HDFS就是个读多写少的框架，所以读性能会比写性能好，但是这个写性能太离谱了</span><br><span class="line"></span><br><span class="line">hadoop jar /opt/module/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.1.3-tests.jar TestDFSIO -clean</span><br><span class="line"></span><br><span class="line">测完把测试的文件删掉</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试排序性能：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">排序的时候会往磁盘上写大量的临时文件，会把磁盘写满然后导致任务失败，总共写了30G的数据，再加上3个备份共90G</span><br><span class="line">-- 这是生成随机数的命令</span><br><span class="line">hadoop jar /opt/module/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar randomwriter random-data</span><br><span class="line"></span><br><span class="line">为什么王昊可以开23个container，占用24G内存去做这个排序呢？我的只开了8个container，占用9G内存</span><br><span class="line"></span><br><span class="line">-- 这是排序的命令</span><br><span class="line">hadoop jar /opt/module/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar randomwriter random-data sorted-data</span><br></pre></td></tr></table></figure>
+
+<p><strong>问题：</strong>数据统计主要用HiveSQL，没有数据倾斜，小文件已经做了合并处理，开启的JVM重用，而且IO没有阻塞，内存用了不到50%。但是还是跑的非常慢，而且数据量洪峰过来时，整个集群都会宕掉。基于这种情况有没有优化方案。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1. 可能开了多个队列</span><br><span class="line">2. YARN参数调优yarn-site.xml，内存利用率不够一般是Yarn的2个配置造成的，单个任务可以申请的最大内存大小，和Hadoop单个节点可用内存大小，调节这两个参数能提高系统内存的利用率</span><br><span class="line">	yarn.nodemanager.resource.memory-mb</span><br><span class="line">	表示该节点上YARN可使用的物理内存总量，默认是8192（MB），注意，如果你的节点内存资源不够8GB，则需要调减小这个值，而YARN不会智能的探测节点的物理内存总量</span><br><span class="line">	yarn.scheduler.maximum-allocation-mb</span><br><span class="line">	单个任务可申请的最多物理内存量，默认是8192（MB）</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-kafka的安装与压测"><a href="#3-kafka的安装与压测" class="headerlink" title="3. kafka的安装与压测"></a>3. kafka的安装与压测</h2><h3 id="2-1-kafka生产压测"><a href="#2-1-kafka生产压测" class="headerlink" title="2.1 kafka生产压测"></a>2.1 kafka生产压测</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">kafka-producer-perf-test.sh  \</span><br><span class="line">--topic test \				#往test里写数据，默认创建的topic都是单分区的</span><br><span class="line">--record-size 100 \			#每条数据100个字节</span><br><span class="line">--num-records 10000000 \	#总共1000万条消息</span><br><span class="line">--throughput -1 \			#每秒多少条信息，设成-1，表示不限流</span><br><span class="line">--producer-props bootstrap.servers=hadoop180:9092,hadoop181:9092,hadoop182:9092</span><br><span class="line"></span><br><span class="line">把默认的test删除，重新创建主题test，并设置为3个分区1个副本，重测后发现吞吐量提升到原来的2倍(58M/s)，再提升分区性能就不会提高太多了，3.0版本默认的ack=-1，目前副本数是1，ack=1和-1效果是一样的</span><br><span class="line"></span><br><span class="line">删除test重新创建，改成3分区3副本，发现吞吐量急剧下降，在上面的基础上增加batch.size和linger.ms，发现吞吐量上升</span><br><span class="line"></span><br><span class="line">在上面的基础上，再加上压缩和acks=1，但是感觉没生效，是消息大小的原因，把消息大小改成1000，速度就上来了，压缩是按照每条消息压缩的，压缩基本能提高大概5倍性能</span><br><span class="line">kafka-producer-perf-test.sh  \</span><br><span class="line">--topic test \</span><br><span class="line">--record-size 10000 \</span><br><span class="line">--num-records 1000000 \</span><br><span class="line">--throughput -1 \</span><br><span class="line">--producer-props bootstrap.servers=hadoop180:9092,hadoop181:9092,hadoop182:9092 batch.size=900000 linger.ms=2 compression.type=zstd acks=1</span><br><span class="line"></span><br><span class="line">一般测试不会这么测，就测个单分区的吞吐量，不会配压缩和其他参数</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-kafka消费压测"><a href="#3-2-kafka消费压测" class="headerlink" title="3.2 kafka消费压测"></a>3.2 kafka消费压测</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">kafka-consumer-perf-test.sh --broker-list hadoop180:9092,hadoop181:9092,hadoop182:9092</span><br><span class="line">--topic test </span><br><span class="line">--fetch-size 10000</span><br><span class="line">--messages 1000000 </span><br><span class="line">--threads 1 #线程数</span><br><span class="line"></span><br><span class="line">王昊的单线程每秒能消费600M，3线程每秒能消费2000M，我的单线程每秒只能消费400M，多线程在3.0被抛弃了。</span><br><span class="line">如果这四个指标（IO，CPU，内存，网络）都不能改变，可以考虑增加分区数来提升性能</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-Kafka机器数量计算"><a href="#3-3-Kafka机器数量计算" class="headerlink" title="3.3 Kafka机器数量计算"></a>3.3 Kafka机器数量计算</h3><p>Kafka机器数量（经验公式）&#x3D;2*（峰值生产速度*副本数&#x2F;100）+1，先拿到峰值生产速度，再根据设定的副本数，就能预估出需要部署Kafka的数量。比如我们的峰值生产速度是50M&#x2F;s，副本数为2，Kafka机器数量&#x3D;2*（50*2&#x2F;100）+ 1&#x3D;3台。</p>
+<h3 id="3-4-Kafka分区数计算"><a href="#3-4-Kafka分区数计算" class="headerlink" title="3.4 Kafka分区数计算"></a>3.4 Kafka分区数计算</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1）创建一个只有1个分区的topic</span><br><span class="line">2）测试这个topic的producer吞吐量和consumer吞吐量。</span><br><span class="line">3）假设他们的值分别是Tp和Tc，单位可以是MB/s。</span><br><span class="line">4）然后假设总的目标吞吐量是Tt，那么分区数=Tt / min（Tp，Tc）</span><br><span class="line">例如：producer吞吐量=20m/s；consumer吞吐量=50m/s，期望吞吐量100m/s；</span><br><span class="line">分区数=100 / 20 =5分区</span><br><span class="line">分区数一般设置为：3-10个</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-阿里云安全组"><a href="#4-阿里云安全组" class="headerlink" title="4. 阿里云安全组"></a>4. 阿里云安全组</h2><p>对于阿里云来说，集群内部是没有防火墙的，阿里云外网到内网之间有个防火墙，称之为安全组，规定了哪些端口能被哪些地址访问</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220709164708275.png" alt="image-20220709164708275" style="zoom:50%;" />
+
+<p>把xshell的上次登录地址复制过去，千万不能把授权对象全开，容易成矿机</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220709164819132.png" alt="image-20220709164819132" style="zoom:50%;" />
+
+<h2 id="5-行为日志采集"><a href="#5-行为日志采集" class="headerlink" title="5. 行为日志采集"></a>5. 行为日志采集</h2><h3 id="5-1-采集链路分析"><a href="#5-1-采集链路分析" class="headerlink" title="5.1 采集链路分析"></a>5.1 采集链路分析</h3><p><strong>flume采集链路：</strong>mock01生成日志文件 –&gt; taidir source –&gt; json拦截器 –&gt; kafka channel –&gt; kafka(log_mock01)<br>flume消费链路：kafka source –&gt; file channel –&gt; hdfs sink</p>
+<p>日志生成的mock01脚本所在服务器是180、181，那么采集日志的脚本也应该在180、181，这里flume的作用是把模拟生成的日志采集到kafka里。exec严格来说是不应该用于生产环境的，spooling directory不能支持文件的更新，只能用taildir source。而且taildir source可以由flume自主控制采集的速度，但是exec、netcat等就不行，channel满了就会回滚，回滚就是清空putlist缓存，就需要source重新采集数据，这种情况对于exec、netcat来说，它是无法重新采集数据的。但是taildir source可以，它基于文件，只要事务不提交，就不会更新offset，就能重新采集。一般是要通过监控等手段保证不能让channel满的。</p>
+<p>不管是行为日志还是业务日志，把数据送往kafka都是由180、181来做的，把数据从kafka送往hdfs都是由182来做的。</p>
+<p>kafka channel，意思是把数据放入kafka，注意一旦把数据放入kafka，就意味着谁都可以过来消费了，kafka channel的使用场景比较灵活，数据放入kafka，就意味着把数据放入了磁盘中。注意在Flume1.7以前，Kafka Channel很少有人使用，因为发现parseAsFlumeEvent这个配置起不了作用。也就是无论parseAsFlumeEvent配置为true还是false，都会转为Flume Event。这样的话，造成的结果是，会始终都把Flume的headers中的信息混合着内容一起写入Kafka的消息中，这显然不是我所需要的，我只是需要把内容写入即可。</p>
+<p>batchSize大小如何设置？Event 1K左右时，500-1000合适（默认为100）</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">kafka channel的使用场景比较灵活</span><br><span class="line">    taildir    --&gt;    kafka channel    --&gt;    sink，这是正常的flume链路</span><br><span class="line">    taildir    --&gt;    kafka channel，到这里为止，把数据放入kafka，谁用谁来拿</span><br><span class="line">    kafka channel    --&gt;    sink，没有source，其他框架往kafka里写的数据，由sink直接写出去</span><br><span class="line">所以把数据写入kafka，就有两种方式</span><br><span class="line">    taildir    --&gt;    kafka channel</span><br><span class="line">    taildir    --&gt;    memory channel    --&gt;    kafka sink</span><br></pre></td></tr></table></figure>
+
+<p>flume的source从上游读数据，不管读到什么数据，都会给包装成event，如果用kafka channel，它就会直接把event而不是真实数据放入kafka，这样下游读到的就都是event对象。真实数据存在event里的body里，下游就必须引用flume的依赖解析这个event对象，把body拿出来才能用这个数据，这样显然是不现实的。所以我们应该把真实数据放入kafka供下游直接读取，而不是把event放进去</p>
+<p>channel配置的时候有个参数parseAsFlumeEvent，默认是true，意思是把数据包装成event，改为false，这样就会把真实数据放入channel，这样的结果是event的结构就丢失了。</p>
+<p>源数据是json格式，json格式对格式要求很严格，如果数据断了一截，就解析不出来了，而前端采集数据的时候很可能会出问题导致传过来的数据不是json格式，所以在这里可以做个json格式校验，把不是json格式的日志过滤掉，可以通过拦截器做这个操作。</p>
+<p>拦截器的代码见：com.study.interceptor.JSONParseInterceptor，打包上传到&#x2F;opt&#x2F;module&#x2F;flume-1.9.0&#x2F;lib文件夹然后分发。</p>
+<h3 id="5-2-拦截器"><a href="#5-2-拦截器" class="headerlink" title="5.2 拦截器"></a>5.2 拦截器</h3><p>拦截器的作用就是对数据进行非常简单的改造或过滤，flume的拦截器在source和channel之间生效，这里只是对不符合json格式的数据进行过滤，初始化和关闭的方法，需要就写不需要就算了，中间那两个intercept方法才是重要的。</p>
+<p>注意在拦截器里过滤数据的方法：单个的返回null，多个的迭代器删除</p>
+<p>还有这里对json串的处理，阿里有个fastjson模块，用的话要另加依赖</p>
+<p>上面说用kafka channel通过配置保存真实数据，在source和interceptor时还是以event形式存在的，到了kafka channel环节就变成真实数据了。</p>
+<h3 id="5-3-fastjson模块"><a href="#5-3-fastjson模块" class="headerlink" title="5.3 fastjson模块"></a>5.3 fastjson模块</h3><p><strong>以后处理json就用这个模块</strong>，它可以解析JSON格式的字符串，支持将Java Bean序列化为JSON字符串，也可以从JSON字符串反序列化到JavaBean。fastjson优点：速度快、使用广泛、使用简单、功能完备、测试完备，以前有很多漏洞，现在没了。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220709233601951.png" alt="image-20220709233601951" style="zoom:80%;" />
+
+<p><strong>速度快的原因：</strong></p>
+<ul>
+<li>自行编写类似StringBuilder的工具类SerializeWriter</li>
+<li>使用ThreadLocal来缓存buf</li>
+<li>使用asm避免反射</li>
+<li>集成jdk实现的一些优化算法</li>
+</ul>
+<p><strong>常用类和方法：</strong></p>
+<ul>
+<li><p>fastjson的使用主要是三个对象：<strong>JSON、JSONObject、JSONArray</strong></p>
+</li>
+<li><p><strong>JSON</strong>这个类主要用于转换，将Java对象序列化为JSON字符串，或将JSON字符串反序列化为Java对象，常用的方法：parseObject、parseArray、toJSONString</p>
+</li>
+<li><p><strong>JSONObject</strong>中的数据都是以key-value形式出现，所以它实现了Map接口，使用起来也很简单，跟使用Map就没多大的区别（因为它底层实际上就是操作Map)，常用的方法：getString(String key)、remove(Object key)</p>
+</li>
+<li><p><strong>JSONArray</strong>则是JSON数组，底层实际上是List，JSON数组对象中存储的是一个个JSON对象，所以类中的方法主要用于直接操作JSON对象，常用的方法：getJSONObject(int index)</p>
+</li>
+</ul>
+<h3 id="5-4-logfile-gt-kafka"><a href="#5-4-logfile-gt-kafka" class="headerlink" title="5.4 logfile -&gt; kafka"></a>5.4 logfile -&gt; kafka</h3><p>创建flume采集日志到kafka的配置文件<strong>flume-taildir-kafka.conf：</strong></p>
+<details>
+  <summary>coding</summary>
+  <pre><blockcode> 
+    #为各组件命名
+    a1.sources = r1
+    a1.channels = c1
+    #####################################################
+    #描述source
+    a1.sources.r1.type = TAILDIR
+    a1.sources.r1.filegroups = f1
+    a1.sources.r1.filegroups.f1 = /opt/module/mockdata/mock01/log/app.*
+    a1.sources.r1.positionFile = /opt/module/flume-1.9.0/mytest/project01_conf/flume01/taildir_position.json
+    a1.sources.r1.interceptors =  i1
+    a1.sources.r1.interceptors.i1.type = com.study.interceptor.JSONParseInterceptor$JSONParseBuilder
+    #####################################################
+    #描述channel
+    a1.channels.c1.type = org.apache.flume.channel.kafka.KafkaChannel
+    a1.channels.c1.kafka.bootstrap.servers = hadoop180:9092,hadoop181:9092
+    #如果需要自定义topic参数的话就提前创建，这里让它自动创建topic就行
+    a1.channels.c1.kafka.topic = log_mock01
+    #这里很关键
+    a1.channels.c1.parseAsFlumeEvent = false
+    #####################################################
+    #配置kafka参数的方法，比如配置压缩，知道可以配就行，用的时候翻视频
+    a1.channels.c1.kafka.producer.compression.type=snappy
+    #####################################################
+    #绑定source和channel以及sink和channel的关系
+    a1.sources.r1.channels = c1
+  </blockcode></pre>
+</details>
+
+<p>这个组件对于kafka来说是个生产者，站在kafka的角度也是有很多参数可以配置的，比如压缩，<strong>知道可以配就行，用的时候翻视频</strong>。如果配置了压缩，消费的时候会自动解压吗？</p>
+<p><strong>测试：</strong>先启动flume，然后开启消费者，开启日志生成脚本</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[hetengfei@hadoop180 ~]$ /opt/module/flume-1.9.0/bin/flume-ng agent -n a1 -c /opt/module/flume-1.9.0/conf/ -f /opt/module/flume-1.9.0/mytest/project01_conf/flume-taildir-kafka.conf -Dflume.root.logger=INFO,console</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-5-封装logfile-gt-kafka采集脚本"><a href="#5-5-封装logfile-gt-kafka采集脚本" class="headerlink" title="5.5 封装logfile -&gt; kafka采集脚本"></a>5.5 封装logfile -&gt; kafka采集脚本</h3><p>上面就写了一个flume配置文件，一个拦截器，<strong>测试成功后封装行为日志采集脚本flume-kafka.sh：</strong></p>
+<details>
+  <summary>coding</summary>
+  <pre><blockcode> 
+    #!/bin/bash
+    #####################################################
+    FLUEM_PATH=/opt/module/flume-1.9.0
+    FILE_PATH=/opt/module/flume-1.9.0/mytest/project01_conf/flume01
+    #####################################################
+    case $1 in
+    "start"){
+        for i in hadoop180 hadoop181
+        do
+            echo " --------启动 $i 采集flume-------"
+            ssh $i "nohup $FLUEM_PATH/bin/flume-ng agent -n a1 -c $FLUEM_PATH/conf/ -f $FILE_PATH/flume-taildir-kafka.conf -Dflume.root.logger=INFO,console 1>$FILE_PATH/error.log 2>&1 &"
+        done
+    };; 
+    "stop"){
+        for i in hadoop180 hadoop181
+        do
+            echo " --------停止 $i 采集flume-------"
+            #获取flume的进程号，然后杀死
+            ssh $i "ps -ef | grep flume-taildir-kafka | grep -v grep |awk '{print \$2}' | xargs -n1 kill -9 "
+        done
+    };;
+    esac
+  </blockcode></pre>
+</details>
+
+<p>到这里为止，先启动kafka消费者消费log_mock01的数据，然后启动flume采集脚本，然后启动生成日志脚本，此时消费者应该能消费到数据。</p>
+<p><strong>1个小问题：</strong>这里是生成日志文件的命名规则，原来是当天的日志命名为app.log，到了明天会被重命名为app.昨天的日期.log，可是重命名之后的文件就会被认为是新文件，会再次被taildir采集，实际上当它名为app.log的时候就已经被采集过了，所以要把日志的命名规则改下。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710021906198.png" alt="image-20220710021906198"></p>
+<h3 id="5-5-报错"><a href="#5-5-报错" class="headerlink" title="5.5 报错"></a>5.5 报错</h3><p>这里有个问题，就是打包的时候，依赖没有打进去，网上搜了一下，用maven-assembly-plugin这个插件可以打包，把下面依赖放入父工程的插件里即可，刷新后子工程会继承，然后双击 assembly:assembly 按钮即可，但是我们并不想把所有依赖都打入jar包，在父工程里加个scope即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;build&gt;</span><br><span class="line">    &lt;plugins&gt;</span><br><span class="line">        &lt;plugin&gt;</span><br><span class="line">            &lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;</span><br><span class="line">            &lt;configuration&gt;</span><br><span class="line">                &lt;descriptorRefs&gt;</span><br><span class="line">                    &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;</span><br><span class="line">                &lt;/descriptorRefs&gt;</span><br><span class="line">            &lt;/configuration&gt;</span><br><span class="line">        &lt;/plugin&gt;</span><br><span class="line">    &lt;/plugins&gt;</span><br><span class="line">&lt;/build&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-6-kafka-gt-hdfs"><a href="#5-6-kafka-gt-hdfs" class="headerlink" title="5.6 kafka -&gt; hdfs"></a>5.6 kafka -&gt; hdfs</h3><p>好了现在数据已经在kafka了，如何把数据搬运到hdfs呢？不是说必须用flume，它作为一个成熟的日志传输框架，你不用也行，就得写java代码。这里有两种方式可以选择，看起来方式一架构更简单，但实际得<strong>选方式二</strong>。</p>
+<p><strong>零点漂移：</strong>hdfs sink可以在写数据的时候滚动目录，可以实现把每天的日志放入一个文件夹，具体目录怎么滚动是按headers里的时间戳来区分的，当时配的是hdfs.useLocalTimeStamp &#x3D; true，意思是以flume sink的处理时间为准进行滚动。这里就有个<strong>零点漂移</strong>的问题，某天23:59:50时发生的事件，在flume处理时，时间可能就变成了第二天的00:00:30，显然我们想用的语义是事件时间而不是处理时间。flume会自动识别event的headers里面的timestamp属性，可以设置hdfs.useLocalTimeStamp &#x3D; false，<strong>再次利用拦截器</strong>把日志里的timestamp放到event里的headers里面来解决零点漂移的问题，而<strong>拦截器必须得有source</strong>。</p>
+<p><strong>file channel的效率够用吗：</strong>生产环境为了安全起见用的都是file channel。file channel的性能大概在20M&#x2F;s，只要下游能在一天内以20M&#x2F;s的速度把数据消费完，就不会有问题，这个数据量是很大的，如果实在消费不完，用消费者组。传输的是普通日志信息（京东内部一天丢100万-200万条，这是非常正常的），也可以选择MemoryChannel。也可以通过配置dataDirs指向多个路径，每个路径对应不同的硬盘，来缓解硬盘的写数据压力，从而增大Flume吞吐量。</p>
+<p><strong>另一种解决问题的想法：</strong>这里必须再写个拦截器吗？刚刚不是写过了一个？把这个拦截器和刚刚那个放一起形成拦截器链行吗？<strong>不行</strong>，<strong>上游的目的是把真实数据放入kafka</strong>，而不是把event放入kafka。但是我猜想，，，猜想是错的，flink不需要event，直接读真实数据里的ts就行。</p>
+<p><strong>只有flume才有拦截器吗：</strong>不是，任何一个流式框架都是有拦截器的，kafka也有拦截器，它的生产和消费都有拦截器，可以利用consumer的拦截器加时间戳然后再用flume进行sink，这就是方式一了，为什么最终没用方式一呢？因为kafka的拦截器写起代码来极其麻烦。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">方式一：kafka channel + hdfs sink</span><br><span class="line">方式二：kafka source + file channel + hdfs sink</span><br></pre></td></tr></table></figure>
+
+<p><strong>flume会不会往hdfs上写小文件：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">小文件的影响：</span><br><span class="line">    元数据层面：每个小文件都有一份元数据，其中包括文件路径，文件名，所有者，所属组，权限，创建时间等，这些信息都保存在Namenode内存中。所以小文件过多，会占用Namenode服务器大量内存，影响Namenode性能和使用寿命</span><br><span class="line">    计算层面：默认情况下MR会对每个小文件启用一个Map任务计算，非常影响计算性能。同时也影响磁盘寻址时间。</span><br><span class="line"></span><br><span class="line">flume如何避免往hdfs写小文件：</span><br><span class="line">    官方默认的这三个参数配置写入HDFS后会产生小文件，hdfs.rollInterval、hdfs.rollSize、hdfs.rollCount</span><br><span class="line">    基于以上hdfs.rollInterval=3600，hdfs.rollSize=134217728，hdfs.rollCount =0几个参数综合作用，效果如下：</span><br><span class="line">    1.文件在达到128M时会滚动生成新文件</span><br><span class="line">    2.文件创建超3600秒时会滚动生成新文件</span><br></pre></td></tr></table></figure>
+
+<p>时间戳的拦截器代码见：com.study.interceptor.TimestampInterceptor，打包后上传分发，这个拦截器主要是给182用的。</p>
+<p>封装flume采集脚本flume-kafka-hdfs.conf：</p>
+<details>
+  <summary>coding</summary>
+  <pre><blockcode> 
+    # 组件
+    a1.sources=r1
+    a1.channels=c1
+    a1.sinks=k1
+    #####################################################
+    # source1
+    a1.sources.r1.type = org.apache.flume.source.kafka.KafkaSource
+    a1.sources.r1.batchSize = 5000
+    a1.sources.r1.batchDurationMillis = 2000
+    a1.sources.r1.kafka.bootstrap.servers = hadoop180:9092,hadoop181:9092,hadoop182:9092
+    a1.sources.r1.kafka.topics=log_mock01
+    a1.sources.r1.interceptors = i1
+    a1.sources.r1.interceptors.i1.type = com.study.interceptor.TimestampInterceptor$TimestampBuilder
+    #####################################################
+    # channel1
+    a1.channels.c1.type = file
+    a1.channels.c1.checkpointDir = /opt/module/flume-1.9.0/mytest/project01_conf/flume02/checkpoint/behavior1
+    a1.channels.c1.dataDirs = /opt/module/flume-1.9.0/mytest/project01_conf/flume02/data/behavior1
+    a1.channels.c1.maxFileSize = 2146435071
+    a1.channels.c1.capacity = 1000000
+    a1.channels.c1.keep-alive = 6
+    #####################################################
+    # sink1
+    a1.sinks.k1.type = hdfs
+    a1.sinks.k1.hdfs.path = /project01_origin_data/mock01/log_mock01/%Y%m%d
+    a1.sinks.k1.hdfs.filePrefix = log-
+    a1.sinks.k1.hdfs.useLocalTimeStamp = false
+    #####################################################
+    a1.sinks.k1.hdfs.rollInterval = 20
+    a1.sinks.k1.hdfs.rollSize = 134217728
+    a1.sinks.k1.hdfs.rollCount = 0
+    #####################################################
+    # 控制输出文件是原生文件
+    a1.sinks.k1.hdfs.fileType = CompressedStream
+    a1.sinks.k1.hdfs.codeC = gzip
+    #####################################################
+    # 拼装
+    a1.sources.r1.channels = c1
+    a1.sinks.k1.channel= c1
+  </blockcode></pre>
+</details>
+
+<h3 id="5-7-封装kafka-gt-hdfs采集脚本"><a href="#5-7-封装kafka-gt-hdfs采集脚本" class="headerlink" title="5.7 封装kafka -&gt; hdfs采集脚本"></a>5.7 封装kafka -&gt; hdfs采集脚本</h3><p><strong>kafka-hdfs-log.sh</strong> ，在脚本里可以自定义function，可以在脚本里多次调用方法，需要的时候可以写。</p>
+<details>
+  <summary>coding</summary>
+  <pre><blockcode> 
+    #!/bin/bash
+    #####################################################
+    FLUEM_PATH=/opt/module/flume-1.9.0
+    FILE_PATH=/opt/module/flume-1.9.0/mytest/project01_conf/flume02
+    #####################################################
+    case $1 in
+    "start"){
+        for i in hadoop182
+        do
+            echo " --------启动 $i 采集flume-------"
+            ssh $i "nohup $FLUEM_PATH/bin/flume-ng agent -n a1 -c $FLUEM_PATH/conf/ -f $FILE_PATH/flume-kafka-hdfs.conf -Dflume.root.logger=INFO,console 1>$FILE_PATH/error.log 2>&1 &"
+        done
+    };; 
+    "stop"){
+        for i in hadoop182
+        do
+            echo " --------停止 $i 采集flume-------"
+            #获取flume的进程号，然后杀死
+            ssh $i "ps -ef | grep flume-kafka-hdfs | grep -v grep |awk '{print \$2}' | xargs -n1 kill -9 "
+        done
+    };;
+    esac
+  </blockcode></pre>
+</details>
+
+<h3 id="5-7-两个报错"><a href="#5-7-两个报错" class="headerlink" title="5.7 两个报错"></a>5.7 两个报错</h3><p><strong>jar包冲突：</strong></p>
+<p>NoSuchMethodError，一般这个错就是jar包冲突，这个是因为安装flume时没有删除guava包。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710163847011.png" alt="image-20220710163847011" style="zoom:50%;" />
+
+<p><strong>内存溢出：</strong></p>
+<p>为什么会内存溢出？通过以下命令可以看出，flume启动时只占用了20M的堆内存，在生产环境是一定会溢出的，给它调大，所有调运行环境的参数全都在flume-env.sh文件里。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710172934160.png" alt="image-20220710172934160"></p>
+<p>进入配置文件，把这个打开即可。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710173312778.png" alt="image-20220710173312778" style="zoom:50%;" />
+
+<p>注意：JVM heap一般设置为4G或更高，-Xmx与-Xms最好设置一致，减少内存抖动带来的性能影响，如果设置不一致容易导致频繁fullgc。</p>
+<h3 id="5-8-最终效果"><a href="#5-8-最终效果" class="headerlink" title="5.8 最终效果"></a>5.8 最终效果</h3><p>这里有两个flume的配置文件</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710172226221.png" alt="image-20220710172226221" style="zoom:50%;" />
+
+<p>这里编写了3个脚本，执行这些脚本后</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710171944803.png" alt="image-20220710171944803" style="zoom:50%;" />
+
+<p>hadoop上要有这个生成</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710172359902.png" alt="image-20220710172359902" style="zoom:50%;" />
+
+<p>行为日志采集结束，快照虚拟机。</p>
+<h1 id="五、业务数据生成模块"><a href="#五、业务数据生成模块" class="headerlink" title="五、业务数据生成模块"></a>五、业务数据生成模块</h1><h2 id="1-业务日志分析"><a href="#1-业务日志分析" class="headerlink" title="1. 业务日志分析"></a>1. 业务日志分析</h2><p><strong>spu与sku：</strong>iPhoneX手机就是SPU，一台银色、128G内存的、支持联通网络的iPhoneX，就是SKU</p>
+<p>安装MySQL，创建project01数据库，编码为utf8，然后<strong>把数据导入MySQL</strong>。一共28张表，15张全量同步，13张增量同步。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710201301468.png" alt="image-20220710201301468" style="zoom:50%;" />
+
+<details>
+  <summary>表名</summary>
+  <pre><blockcode> 
+    活动信息表(activity_info)
+    活动规则表(activity_rule)
+    活动商品关联表(activity_sku)
+    平台属性表(base_attr_info)
+    平台属性值表(base_attr_value)
+    一级分类表(base_category1)
+    二级分类表(base_category2)
+    三级分类表(base_category3)
+    字典表(base_dic)
+    省份表(base_province)
+    地区表(base_region)
+    品牌表(base_trademark)
+    购物车表(cart_info)
+    评价表(comment_info)
+    优惠券信息表(coupon_info)
+    优惠券优惠范围表(coupon_range)
+    优惠券领用表(coupon_use)
+    收藏表(favor_info)
+    订单明细表(order_detail)
+    订单明细活动关联表(order_detail_activity)
+    订单明细优惠券关联表(order_detail_coupon)
+    订单表(order_info)
+    退单表(order_refund_info)
+    订单状态流水表(order_status_log)
+    支付表(payment_info)
+    退款表(refund_payment)
+    SKU平台属性值表(sku_attr_value)
+    SKU信息表(sku_info)
+    SKU销售属性表(sku_sale_attr_value)
+    SPU信息表(spu_info)
+    SPU销售属性表(spu_sale_attr)
+    SPU销售属性值表(spu_sale_attr_value)
+    用户地址表(user_address)
+    用户信息表(user_info)
+  </blockcode></pre>
+</details>
+注意里面有张订单状态流水表，用来记录这个订单的所有状态，订单表里看不到中间状态。
+
+<h2 id="2-业务数据梳理工具"><a href="#2-业务数据梳理工具" class="headerlink" title="2. 业务数据梳理工具"></a>2. 业务数据梳理工具</h2><p>可借助<strong>EZDML</strong>这款数据库设计工具，来辅助我们梳理复杂的业务表关系。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710202929898.png" alt="image-20220710202929898" style="zoom:50%;" />
+
+<h2 id="3-业务数据生成"><a href="#3-业务数据生成" class="headerlink" title="3. 业务数据生成"></a>3. 业务数据生成</h2><p>上传生成业务数据的mock到mock02目录，执行命令后，<strong>在数据库里能看到数据算成功</strong>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220710203400352.png" alt="image-20220710203400352"></p>
+<h1 id="六、业务数据同步"><a href="#六、业务数据同步" class="headerlink" title="六、业务数据同步"></a>六、业务数据同步</h1><h2 id="1-数据同步方式"><a href="#1-数据同步方式" class="headerlink" title="1. 数据同步方式"></a>1. 数据同步方式</h2><p>数据同步分全量同步和增量同步，周期的话离线一般是天，但是也有些表要求每小时同步一次，然后每小时计算出结果。注意增量同步同步的是新增和变化，它第一次同步的时候得是全量同步。</p>
+<p>增量上云的时候不容易拿到最新的数据，比如mid为001的用户名是张三，过两天改成了李四，云上就会既保留张三也保留李四，用的时候想拿最新的数据就不好拿。有个可行的办法是，增量上云，然后在dataphin上给它合并成全量表，结果表里也是每天都存全量的最新数据，注意这种方式是永远无法删除注销数据的，只能再去关联。而增量导出的时候也有个问题，比如今天把001导过去了，过两天001注销了，业务又不想看注销用户的数据，那就要考虑在增量的情况下如何把001删除。像上述两个问题在全量同步的情况下都是不存在的，但是全量同步在数据量大的情况下很慢。</p>
+<p>现在存储的代价很低了，无非就是多加几块磁盘，尽量优先全量同步。</p>
+<p>注意这里有张加购表，既用了全量同步又用了增量同步，后续会说原因。</p>
+<h2 id="2-数据同步工具"><a href="#2-数据同步工具" class="headerlink" title="2. 数据同步工具"></a>2. 数据同步工具</h2><p>数据同步工具种类繁多，大致可分为两类，一类是以DataX、Sqoop为代表的基于Select查询的离线、批量同步工具，另一类是以Maxwell、Canal为代表的基于数据库数据变更日志的实时流式同步工具(例如MySQL的binlog，其会实时记录所有的insert、update以及delete操作)。全量同步通常使用DataX、Sqoop等基于查询的离线同步工具。而增量同步既可以使用DataX、Sqoop等工具，也可使用Maxwell、Canal等工具，下面对增量同步不同方案进行简要对比。</p>
+<p>sqoop的底层原理：需要传数据库的地址用户名密码，然后传给它一个SQL，sqoop拿到这些信息后，会通过jdbc的方式连接数据库，然后执行SQL将所需的数据抽取出来，然后再把数据写入hdfs。它跑的是个没有reduce的MR。</p>
+<p>DataX&#x2F;Sqoop：原理是基于查询，故若想通过select查询获取新增及变化数据，就要求数据表中存在create_time、update_time等字段，然后根据这些字段获取变更数据。由于是离线批量同步，故若一条数据在一天中变化多次，该方案只能获取最后一个状态，中间状态无法获取。</p>
+<p>Maxwell&#x2F;Canal：要求数据库记录变更操作，例如MySQL需开启binlog，由于是实时获取所有的数据变更操作，所以可以获取变更数据的所有<strong>中间状态</strong>，有时候中间状态还是挺重要的，比如订单的中间状态。</p>
+<p><strong>本项目中，全量同步采用DataX，增量同步采用Maxwell。</strong>maxwell最大的优点就是部署简单，但是只支持json，灵活性不如canal，详细教程见datax和maxwell篇。</p>
+<h2 id="3-全量表数据同步"><a href="#3-全量表数据同步" class="headerlink" title="3. 全量表数据同步"></a>3. 全量表数据同步</h2><h3 id="3-1-datax配置文件的自动生成"><a href="#3-1-datax配置文件的自动生成" class="headerlink" title="3.1 datax配置文件的自动生成"></a>3.1 datax配置文件的自动生成</h3><p>MySQL -&gt;DataX -&gt; HDFS时注意数据在HDFS上的存储形式，一张表一个目录，一个分区一个目录</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&quot;writer&quot;: &#123;</span><br><span class="line">    &quot;compress&quot;: &quot;gzip&quot;,			-- 为什么不用snappy？</span><br><span class="line">    &quot;fieldDelimiter&quot;: &quot;\t&quot;,		-- hive建表时的分隔符要和这里保持一致</span><br><span class="line">    &quot;path&quot;: &quot;$&#123;targetdir&#125;&quot;,		-- 动态传参，每天一个路径</span><br><span class="line">    &quot;writeMode&quot;: &quot;append&quot;		-- 还有一种nonConflict，两种都不太好，要手动实现这样的效果：如果路径不存在，创建路径并写入数据，如果路径已存在，清空数据，为了保证可重复刷数，俗称幂等性</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>15张表，就要有15个配置文件，15个配置文件不一样的地方只有表名、字段名、字段类型不一样，方便起见，此处提供了<strong>DataX配置文件批量生成脚本</strong>，脚本内容及使用方式如下。</p>
+<p>import_json_generate.py，传入库名和表名就能自动生成导数的json配置文件</p>
+<details>
+  <summary>导入json生成脚本</summary>
+  <pre><blockcode> 
+    # coding=utf-8
+    import json
+    import getopt
+    import os
+    import sys
+    import MySQLdb
+    #####################################################
+    #MySQL相关配置，需根据实际情况作出修改
+    mysql_host = "hadoop180"
+    mysql_port = "3306"
+    mysql_user = "root"
+    mysql_passwd = "sql_boy"
+    #####################################################
+    #HDFS NameNode相关配置，需根据实际情况作出修改
+    hdfs_nn_host = "hadoop180"
+    hdfs_nn_port = "8020"
+    #####################################################
+    #生成配置文件的目标路径，可根据实际情况作出修改
+    json_output_path = "/opt/module/datax-3.0/myjson/project01/import"
+    #####################################################
+    #####################################################
+    def get_connection():
+        return MySQLdb.connect(host=mysql_host, port=int(mysql_port), user=mysql_user, passwd=mysql_passwd)
+    #####################################################
+    #####################################################
+    def get_mysql_meta(database, table):
+        connection = get_connection()
+        cursor = connection.cursor()
+        sql = "SELECT COLUMN_NAME,DATA_TYPE from information_schema.COLUMNS WHERE TABLE_SCHEMA=%s AND TABLE_NAME=%s ORDER BY ORDINAL_POSITION"
+        cursor.execute(sql, [database, table])
+        fetchall = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return fetchall
+    #####################################################
+    #####################################################
+    def get_mysql_columns(database, table):
+        return map(lambda x: x[0], get_mysql_meta(database, table))
+    #####################################################
+    #####################################################
+    def get_hive_columns(database, table):
+        def type_mapping(mysql_type):
+            mappings = {
+                "bigint": "bigint",
+                "int": "bigint",
+                "smallint": "bigint",
+                "tinyint": "bigint",
+                "decimal": "string",
+                "double": "double",
+                "float": "float",
+                "binary": "string",
+                "char": "string",
+                "varchar": "string",
+                "datetime": "string",
+                "time": "string",
+                "timestamp": "string",
+                "date": "string",
+                "text": "string"
+            }
+            return mappings[mysql_type]
+        meta = get_mysql_meta(database, table)
+        return map(lambda x: {"name": x[0], "type": type_mapping(x[1].lower())}, meta)
+    #####################################################
+    #####################################################
+    def generate_json(source_database, source_table):
+        job = {
+            "job": {
+                "setting": {
+                    "speed": {
+                        "channel": 3
+                    },
+                    "errorLimit": {
+                        "record": 0,
+                        "percentage": 0.02
+                    }
+                },
+                "content": [{
+                    "reader": {
+                        "name": "mysqlreader",
+                        "parameter": {
+                            "username": mysql_user,
+                            "password": mysql_passwd,
+                            "column": get_mysql_columns(source_database, source_table),
+                            "splitPk": "",
+                            "connection": [{
+                                "table": [source_table],
+                                "jdbcUrl": ["jdbc:mysql://" + mysql_host + ":" + mysql_port + "/" + source_database]
+                            }]
+                        }
+                    },
+                    "writer": {
+                        "name": "hdfswriter",
+                        "parameter": {
+                            "defaultFS": "hdfs://" + hdfs_nn_host + ":" + hdfs_nn_port,
+                            "fileType": "text",
+                            "path": "${targetdir}",
+                            "fileName": source_table,
+                            "column": get_hive_columns(source_database, source_table),
+                            "writeMode": "append",
+                            "fieldDelimiter": "\t",
+                            "compress": "gzip"
+                        }
+                    }
+                }]
+            }
+        }
+        # 判断路径是否存在，不存在就创建
+        if not os.path.exists(json_output_path):
+            os.makedirs(json_output_path)
+        with open(os.path.join(json_output_path, ".".join([source_database, source_table, "json"])), "w") as f:
+            json.dump(job, f)
+    #####################################################
+    #####################################################
+    def main(args):
+        source_database = ""
+        source_table = ""
+    #####################################################
+        options, arguments = getopt.getopt(args, '-d:-t:', ['sourcedb=', 'sourcetbl='])
+        for opt_name, opt_value in options:
+            if opt_name in ('-d', '--sourcedb'):
+                source_database = opt_value
+            if opt_name in ('-t', '--sourcetbl'):
+                source_table = opt_value
+    #####################################################
+        generate_json(source_database, source_table)
+    #####################################################
+    #####################################################
+    if __name__ == '__main__':
+        main(sys.argv[1:])
+  </blockcode></pre>
+</details>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 安装相关的包</span><br><span class="line">sudo yum install MySQL-python</span><br><span class="line"># 执行命令</span><br><span class="line">python import_json_generate.py -d project01 -t activity_info</span><br><span class="line"># 会在指定目录生成配置文件</span><br><span class="line">/opt/module/datax-3.0/myjson/project01/import</span><br><span class="line"># 可以测试下自动生成的脚本是否可用，这里就不测了</span><br></pre></td></tr></table></figure>
+
+<p>可是这样每次只能生成一个json配置文件，而需要全量同步的表有15个，于是再写个脚本调用上面那个脚本，里面的内容也是简单粗暴。import_json_generate.sh，注意和上面那个只有后缀名不一样。</p>
+<details>
+  <summary>导入json生成脚本全</summary>
+  <pre><blockcode> 
+    #!/bin/bash
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t activity_info
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t activity_rule
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t base_category1
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t base_category2
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t base_category3
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t base_dic
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t base_province
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t base_region
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t base_trademark
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t cart_info
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t coupon_info
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t sku_attr_value
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t sku_info
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t sku_sale_attr_value
+    python /home/hetengfei/bin/project01/import_json_generate.py -d project01 -t spu_info
+  </blockcode></pre>
+</details>
+### 3.2 扩展：getopt模块
+
+<p>在运行程序时，可能需要拿到命令行输入的参数，在Python中提供了getopt模块很好的实现了对这种用法的支持，而且使用简单。</p>
+<p><strong>3个概念：</strong></p>
+<ul>
+<li><strong>options：</strong>分析出的格式信息，它是一个两元组的列表。每个元素为：(选项串, 附加参数)，比如命令行里自己输入的–help、-v就是选项串，如果没有附加参数，附加参数则为空串’’</li>
+<li><strong>arguments：</strong>不属于格式信息的剩余的命令行参数</li>
+<li><strong>args：</strong>指的是当前脚本接收的参数，它是一个列表，可以通过sys.argv获得</li>
+</ul>
+<p><strong>基本介绍：</strong></p>
+<ul>
+<li>下面定义了’-h-f:-v’，在-f后面多了一个”:”，这个”:”代表了当前参数是有值的，是一个参数名+参数值的参数</li>
+<li>短参数使用的时候是参数名[空格]参数值，比如：-f test</li>
+<li>长参数使用的时候是参数名&#x3D;参数值，比如：–filename&#x3D;test</li>
+</ul>
+<p><strong>传参方式：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    # 为啥我传入sys.argv[1:]？</span><br><span class="line">    # 因为sys.argv里的argv[0]是当前脚本的文件名，不需要它去参与</span><br><span class="line">    main(sys.argv[1:])</span><br></pre></td></tr></table></figure>
+
+<details>
+  <summary>测试一</summary>
+  <pre><blockcode> 
+    -- 测试一：
+    options,arguments = getopt.getopt(sys.argv[1:],'-h-f:-v',['help','filename=','version'])
+    for opt_name,opt_value in options:
+        if opt_name in ('-h','--help'):
+            print("[*] Help info")
+            exit()
+        if opt_name in ('-v','--version'):
+            print("[*] Version is 0.01 ")
+            exit()
+        if opt_name in ('-f','--filename'):
+            fileName = opt_value
+            print("[*] Filename is ",fileName)
+            # do something
+            exit()
+    -- 测试结果：
+    root@Kali:~/python# python3.5 test.py --filename=test
+    [*] Filename is  test
+    root@Kali:~/python# python3.5 test.py --filename=
+    [*] Filename is  
+    root@Kali:~/python# python3.5 test.py --help
+    [*] Help info
+    root@Kali:~/python# python3.5 test.py --version
+    [*] Version is 0.01 
+    root@Kali:~/python# python3.5 test.py -v
+    [*] Version is 0.01 
+    root@Kali:~/python# python3.5 test.py -f test
+    [*] Filename is  test
+  </blockcode></pre>
+</details>
+
+<details>
+  <summary>测试二</summary>
+  <pre><blockcode> 
+    -- 测试二：
+    list=['-t','192.168.26.216','-r',256,'-p',80]
+    args=['-h','-o','file','--help','--output=out','file1','file2']
+    options, arg = getopt.getopt(args, "ho:", ["help", "output="])     #"ho:"也可以写成'-h-o:'
+    print(options)
+    print(arg)
+    -- 测试结果：
+    E:\testPython\venv\Scripts\python.exe E:/testPython/a111/test1.py
+    [('-h', ''), ('-o', 'file'), ('--help', ''), ('--output', 'out')]
+    ['file1', 'file2']
+  </blockcode></pre>
+</details>
+
+<h3 id="3-3-全量表同步脚本的生成"><a href="#3-3-全量表同步脚本的生成" class="headerlink" title="3.3 全量表同步脚本的生成"></a>3.3 全量表同步脚本的生成</h3><p>这个脚本不写不行，datax不会自动创建路径，每张表每天一个分区，手动创建路径的话创建不过来。</p>
+<p><strong>mysql_to_hdfs_df.sh</strong>，将来会给这个脚本传俩参数，表名和日期，但是正常调度的时候，就不会加日期了</p>
+<details>
+  <summary>全量同步脚本</summary>
+  <pre><blockcode> 
+    #!/bin/bash
+    #####################################################
+    DATAX_HOME=/opt/module/datax-3.0
+    # 如果传入日期则ds等于传入的日期，否则等于前一天日期
+    # 判断第二个参数是否为空，将来会给这个脚本传俩参数，表名和日期
+    if [ -n "$2" ] ;then
+        ds=$2
+    else
+        ds=`date -d "-1 day" +%Y%m%d`
+    fi
+    #####################################################
+    #处理目标路径，此处的处理逻辑是，如果目标路径不存在，则创建；若存在，则清空，目的是保证同步任务可重复执行
+    handle_targetdir() {
+        # -e判断是否存在，存在返回0，不存在返回1
+        # 注意这个$1不是执行脚本命令时传来的表名，而是调用方法时传来的路径，
+        # 指$target_dir，也就是/project01_origin_data/mock02/activity_info_df/$ds
+        hadoop fs -test -e $1
+        # $? 拿到最后命令的结束代码，0代表没有错误，其他值代表有错误
+        if [[ $? -eq 1 ]]; then
+            echo "路径$1不存在，正在创建......"
+            hadoop fs -mkdir -p $1
+        else
+            echo "路径$1已经存在"
+            # $()和``的效果是一样的，执行命令并返回结果
+            fs_count=$(hadoop fs -count $1)
+            # -count返回 目录数，文件数，字节数，这里取出字节数，为0代表空，注意取的方法
+            content_size=$(echo $fs_count | awk '{print $3}')
+            if [[ $content_size -eq 0 ]]; then
+            echo "路径$1为空"
+            else
+            echo "路径$1不为空，正在清空......"
+            hadoop fs -rm -r -f $1/*
+            fi
+        fi
+    }
+    #####################################################
+    #####################################################
+    #数据同步
+    import_data() {
+        # 这里的$1指 /opt/module/datax-3.0/myjson/project01/import/project01.activity_info.json
+        # $2指 /project01_origin_data/mock02/activity_info_df/$ds
+        datax_config=$1
+        target_dir=$2
+        handle_targetdir $target_dir
+        # 这是核心命令
+        python $DATAX_HOME/bin/datax.py -p"-Dtargetdir=$target_dir" $datax_config
+    }
+    #####################################################
+    #####################################################
+    # 这个$1才是执行命令时的第一个参数
+    case $1 in
+    "activity_info")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.activity_info.json /project01_origin_data/mock02/activity_info_df/$ds
+    ;;
+    "activity_rule")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.activity_rule.json /project01_origin_data/mock02/activity_rule_df/$ds
+    ;;
+    "base_category1")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_category1.json /project01_origin_data/mock02/base_category1_df/$ds
+    ;;
+    "base_category2")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_category2.json /project01_origin_data/mock02/base_category2_df/$ds
+    ;;
+    "base_category3")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_category3.json /project01_origin_data/mock02/base_category3_df/$ds
+    ;;
+    "base_dic")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_dic.json /project01_origin_data/mock02/base_dic_df/$ds
+    ;;
+    "base_province")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_province.json /project01_origin_data/mock02/base_province_df/$ds
+    ;;
+    "base_region")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_region.json /project01_origin_data/mock02/base_region_df/$ds
+    ;;
+    "base_trademark")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_trademark.json /project01_origin_data/mock02/base_trademark_df/$ds
+    ;;
+    "cart_info")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.cart_info.json /project01_origin_data/mock02/cart_info_df/$ds
+    ;;
+    "coupon_info")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.coupon_info.json /project01_origin_data/mock02/coupon_info_df/$ds
+    ;;
+    "sku_attr_value")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.sku_attr_value.json /project01_origin_data/mock02/sku_attr_value_df/$ds
+    ;;
+    "sku_info")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.sku_info.json /project01_origin_data/mock02/sku_info_df/$ds
+    ;;
+    "sku_sale_attr_value")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.sku_sale_attr_value.json /project01_origin_data/mock02/sku_sale_attr_value_df/$ds
+    ;;
+    "spu_info")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.spu_info.json /project01_origin_data/mock02/spu_info_df/$ds
+    ;;
+    "all")
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.activity_info.json /project01_origin_data/mock02/activity_info_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.activity_rule.json /project01_origin_data/mock02/activity_rule_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_category1.json /project01_origin_data/mock02/base_category1_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_category2.json /project01_origin_data/mock02/base_category2_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_category3.json /project01_origin_data/mock02/base_category3_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_dic.json /project01_origin_data/mock02/base_dic_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_province.json /project01_origin_data/mock02/base_province_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_region.json /project01_origin_data/mock02/base_region_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.base_trademark.json /project01_origin_data/mock02/base_trademark_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.cart_info.json /project01_origin_data/mock02/cart_info_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.coupon_info.json /project01_origin_data/mock02/coupon_info_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.sku_attr_value.json /project01_origin_data/mock02/sku_attr_value_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.sku_info.json /project01_origin_data/mock02/sku_info_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.sku_sale_attr_value.json /project01_origin_data/mock02/sku_sale_attr_value_df/$ds
+    import_data /opt/module/datax-3.0/myjson/project01/import/project01.spu_info.json /project01_origin_data/mock02/spu_info_df/$ds
+    ;;
+    esac
+  </blockcode></pre>
+</details>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">这个命令执行完，下图的位置应该有15张表，全量表数据同步完成。</span><br><span class="line">./mysql_to_hdfs_df.sh all</span><br></pre></td></tr></table></figure>
+
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220713220231979.png" alt="image-20220713220231979" style="zoom:50%;" />
+
+<h2 id="4-增量表数据同步"><a href="#4-增量表数据同步" class="headerlink" title="4. 增量表数据同步"></a>4. 增量表数据同步</h2><p>增量表同步，需要在首日进行一次全量同步，后续每日才是增量同步。首日进行全量同步时，需先启动数据通道，包括Maxwell、Kafka、Flume，然后执行增量表首日同步脚本mysql_to_kafka_inc_init.sh进行同步。后续每日只需保证采集通道正常运行即可，Maxwell便会实时将变动数据发往Kafka。</p>
+<p>增量表数据同步用maxwell监控MySQL的binlog，然后把数据传入kafka，每张表在kafka里都有一个主题，注意主题的命名前缀一定要加个数据库名(project01)，然后通过flume传入hdfs。</p>
+<p><strong>难点一：</strong>如何用maxwell把13张表的数据发往13个不同的topic</p>
+<p><strong>难点二：</strong>如何用1个flume采集13个topic的数据，并把数据发往hdfs的不同目录</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220713221252097.png" alt="image-20220713221252097" style="zoom: 25%;" />
+
+<h3 id="4-1-MySQL-gt-kafka"><a href="#4-1-MySQL-gt-kafka" class="headerlink" title="4.1 MySQL -&gt; kafka"></a>4.1 MySQL -&gt; kafka</h3><p><strong>改配置：</strong></p>
+<p>按照规划，有cart_info、comment_info等共计13张表需进行增量同步，默认情况下，Maxwell会同步binlog中的所有表的数据变更记录，因此我们需要对Maxwell进行配置，令其只同步这特定的13张表。另外，为方便下游使用数据，还需对Maxwell进行配置，另其将不同表的数据发往不同的Kafka Topic。Maxwell最终配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">修改Maxwell配置文件config.properties</span><br><span class="line"></span><br><span class="line"># 目标Kafka topic，可静态配置，例如:maxwell，也可动态配置，例如：%&#123;database&#125;_%&#123;table&#125;，通常情况下都是一张表一个topic</span><br><span class="line">kafka_topic=%&#123;database&#125;_%&#123;table&#125;</span><br><span class="line"># 表过滤，只同步特定的13张表，甚至能只同步某张表的某个字段？好像不能</span><br><span class="line">filter=include:project01.cart_info,include:project01.comment_info,include:project01.coupon_use,include:project01.favor_info,include:project01.order_detail,include:project01.order_detail_activity,include:project01.order_detail_coupon,include:project01.order_info,include:project01.order_refund_info,include:project01.order_status_log,include:project01.payment_info,include:project01.refund_payment,include:project01.user_info</span><br><span class="line"></span><br><span class="line"># 注意过滤器里的黑名单可不敢瞎用，用exclude而不是blacklist</span><br><span class="line"></span><br><span class="line">重新启动Maxwell</span><br><span class="line">./mymaxw.sh restart</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">启动kafka消费者，这里为了方便让分区自动创建了，实际开发中分区数和副本数都要手动指定</span><br><span class="line">kafka-console-consumer.sh --bootstrap-server hadoop180:9092 --topic project01_cart_info</span><br><span class="line"></span><br><span class="line">开启maxwell</span><br><span class="line">./mymaxw.sh start</span><br><span class="line"></span><br><span class="line">执行业务数据生成脚本</span><br><span class="line">java -jar gmall2020-mock-db-2021-10-10.jar </span><br><span class="line"></span><br><span class="line">查看kafka里的topic</span><br><span class="line">kafka-topics.sh --bootstrap-server hadoop180:9092 --list</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-kafka-gt-hdfs"><a href="#4-2-kafka-gt-hdfs" class="headerlink" title="4.2 kafka -&gt; hdfs"></a>4.2 kafka -&gt; hdfs</h3><p>flume用1个source、1个channel、1个sink就能从13个topic里采集数据，并发往13个hdfs路径。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-- source：kafka source支持订阅多个topic</span><br><span class="line">a1.sources.r1.kafka.topics = project01_cart_info,project01_comment_info,project01_coupon_use,project01_favor_info,project01_order_detail_activity,project01_order_detail_coupon,project01_order_detail,project01_order_info,project01_order_refund_info,project01_order_status_log,project01_payment_info,project01_refund_payment,project01_user_info</span><br><span class="line"></span><br><span class="line">-- sink：hdfs_sink可以根据event的headers里的key为topic的value值来发送数据，后面的日期可以根据时间戳生成，也就是拦截器需要在headers里加2个kv对，topic和timestamp，这里要注意，maxwell生成的ts是10位的，以秒为单位，flume需要的时间戳是13位的，以毫秒为单位</span><br><span class="line">-- 不用拦截器能不能加topic呢？能，让kafka source帮忙加，里面有俩参数：setTopicHeader = true和topicHeader = topic，但是时间戳要写拦截器加</span><br><span class="line">-- path中的这两个路径的转义，叫自定义转义序列和时间转义序列</span><br><span class="line">a1.sinks.k1.hdfs.path = /project01_origin_data/mock02/%&#123;topic&#125;_di/%Y%m%d</span><br></pre></td></tr></table></figure>
+
+<p><strong>编写脚本：****flume03&#x2F;flume-kafka-hdfs.conf</strong>，这个flume也是放到hadoop182运行</p>
+<details>
+  <summary>coding</summary>
+  <pre><blockcode> 
+    a1.sources = r1
+    a1.channels = c1
+    a1.sinks = k1
+    #####################################################
+    a1.sources.r1.type = org.apache.flume.source.kafka.KafkaSource
+    a1.sources.r1.batchSize = 5000
+    a1.sources.r1.batchDurationMillis = 2000
+    a1.sources.r1.kafka.bootstrap.servers = hadoop180:9092,hadoop181:9092
+    a1.sources.r1.kafka.topics = project01_cart_info,project01_comment_info,project01_coupon_use,project01_favor_info,project01_order_detail_activity,project01_order_detail_coupon,project01_order_detail,project01_order_info,project01_order_refund_info,project01_order_status_log,project01_payment_info,project01_refund_payment,project01_user_info
+    # 消费者组，可以不写，默认值就是flume
+    a1.sources.r1.kafka.consumer.group.id = flume
+    # 下面这俩参数主要是为了帮助用户区分数据来自哪个topic的，taildir也有类似的功能，这里用的拦截器，没用这俩
+    -- a1.sources.r1.setTopicHeader = true
+    -- a1.sources.r1.topicHeader = topic
+    a1.sources.r1.interceptors = i1
+    a1.sources.r1.interceptors.i1.type = com.study.interceptor.TopicAndTimestampInterceptor$TopicAndTimestampBuilder
+    #####################################################
+    a1.channels.c1.type = file
+    a1.channels.c1.checkpointDir = /opt/module/flume-1.9.0/mytest/project01_conf/flume03/checkpoint/behavior3
+    a1.channels.c1.dataDirs = /opt/module/flume-1.9.0/mytest/project01_conf/flume03/data/behavior3
+    a1.channels.c1.maxFileSize = 2146435071
+    a1.channels.c1.capacity = 1000000
+    a1.channels.c1.keep-alive = 6
+    #####################################################
+    a1.sinks.k1.type = hdfs
+    a1.sinks.k1.hdfs.path = /project01_origin_data/mock02/%{topic}_di/%Y%m%d
+    a1.sinks.k1.hdfs.filePrefix = db
+    a1.sinks.k1.hdfs.round = false
+    a1.sinks.k1.hdfs.rollInterval = 10
+    a1.sinks.k1.hdfs.rollSize = 134217728
+    a1.sinks.k1.hdfs.rollCount = 0
+    a1.sinks.k1.hdfs.fileType = CompressedStream
+    a1.sinks.k1.hdfs.codeC = gzip
+    #####################################################
+    a1.sources.r1.channels = c1
+    a1.sinks.k1.channel= c1
+  </blockcode></pre>
+</details>
+
+<p><strong>测试：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">先在182上启动刚写好的flume03/flume-kafka-hdfs.conf</span><br><span class="line">bin/flume-ng agent -n a1 -c conf/ -f mytest/project01_conf/flume03/flume-kafka-hdfs.conf -Dflume.root.logger=info,console</span><br><span class="line"></span><br><span class="line">启动kafka消费者，这里为了方便让分区自动创建了，实际开发中分区数和副本数都要手动指定</span><br><span class="line">并且要注意，新的消费者启动会从最新数据开始消费，老的消费者保存的有上次的offset，啥时候启动都能保证消费到最新数据</span><br><span class="line">kafka-console-consumer.sh --bootstrap-server hadoop180:9092 --topic project01_cart_info</span><br><span class="line"></span><br><span class="line">开启maxwell</span><br><span class="line">./mymaxw.sh start</span><br><span class="line"></span><br><span class="line">执行业务数据生成脚本，若HDFS上的目标路径已有增量表的数据出现了，就证明数据通道已经打通。</span><br><span class="line">java -jar gmall2020-mock-db-2021-10-10.jar </span><br><span class="line"></span><br><span class="line">注意观察到效果后不要关，下面还有</span><br></pre></td></tr></table></figure>
+
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220713235957694.png" alt="image-20220713235957694" style="zoom:50%;" />
+
+<h3 id="4-3-教学版maxwell"><a href="#4-3-教学版maxwell" class="headerlink" title="4.3 教学版maxwell"></a>4.3 教学版maxwell</h3><p>仔细观察，会发现目标路径中的日期，并非模拟数据的业务日期，而是当前日期。这是由于Maxwell输出的JSON字符串中的ts字段的值，是数据的变动日期。而真实场景下，数据的业务日期与变动日期应当是一致的。此处为了模拟真实环境，对Maxwell源码进行了改动，增加了一个参数mock_date，该参数的作用就是指定Maxwell输出JSON字符串的ts时间戳的日期，接下来进行测试。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">修改Maxwell配置文件config.properties，增加mock_date参数，该日期须和application.properties中的mock.date参数保持一致</span><br><span class="line">mock_date=2020-06-14</span><br><span class="line"></span><br><span class="line">重启Maxwell</span><br><span class="line">./mymaxw.sh restart</span><br><span class="line"></span><br><span class="line">重新生成模拟数据，观察HDFS目标路径是否有20200614的目录</span><br><span class="line">java -jar gmall2020-mock-db-2021-10-10.jar </span><br></pre></td></tr></table></figure>
+
+<h3 id="4-4-编写flume启停脚本"><a href="#4-4-编写flume启停脚本" class="headerlink" title="4.4 编写flume启停脚本"></a>4.4 编写flume启停脚本</h3><p>kafka-hdfs-db.sh，直接复制kafka-hdfs-log.sh，然后把路径由flume02改成flume03即可。</p>
+<h3 id="4-5-增量表首日全量同步"><a href="#4-5-增量表首日全量同步" class="headerlink" title="4.5 增量表首日全量同步"></a>4.5 增量表首日全量同步</h3><p>通常情况下，增量表需要在首日进行一次全量同步，后续每日再进行增量同步，首日全量同步可以使用Maxwell的bootstrap功能，方便起见，下面编写一个增量表首日全量同步脚本。</p>
+<p><strong>编写脚本：</strong>mysql_to_kafka_di_init.sh，该脚本的作用是初始化所有的增量表，只需执行一次</p>
+<details>
+  <summary>coding</summary>
+  <pre><blockcode> 
+    #!/bin/bash
+    #####################################################
+    MAXWELL_HOME=/opt/module/maxwell-1.29.2
+    #####################################################
+    import_data() {
+        $MAXWELL_HOME/bin/maxwell-bootstrap --database project01 --table $1 --config $MAXWELL_HOME/config.properties
+    }
+    #####################################################
+    case $1 in
+    "cart_info")
+    import_data cart_info
+    ;;
+    "comment_info")
+    import_data comment_info
+    ;;
+    "coupon_use")
+    import_data coupon_use
+    ;;
+    "favor_info")
+    import_data favor_info
+    ;;
+    "order_detail")
+    import_data order_detail
+    ;;
+    "order_detail_activity")
+    import_data order_detail_activity
+    ;;
+    "order_detail_coupon")
+    import_data order_detail_coupon
+    ;;
+    "order_info")
+    import_data order_info
+    ;;
+    "order_refund_info")
+    import_data order_refund_info
+    ;;
+    "order_status_log")
+    import_data order_status_log
+    ;;
+    "payment_info")
+    import_data payment_info
+    ;;
+    "refund_payment")
+    import_data refund_payment
+    ;;
+    "user_info")
+    import_data user_info
+    ;;
+    "all")
+    import_data cart_info
+    import_data comment_info
+    import_data coupon_use
+    import_data favor_info
+    import_data order_detail
+    import_data order_detail_activity
+    import_data order_detail_coupon
+    import_data order_info
+    import_data order_refund_info
+    import_data order_status_log
+    import_data payment_info
+    import_data refund_payment
+    import_data user_info
+    ;;
+    esac
+  </blockcode></pre>
+</details>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">执行脚本前，先执行这行命令把数据删除</span><br><span class="line">hadoop fs -ls /project01_origin_data/mock02 | grep _di | awk &#x27;&#123;print $8&#125;&#x27; | xargs hadoop fs -rm -r -f</span><br></pre></td></tr></table></figure>
+
+<p>数据采集篇完。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6&amp;%E8%A1%80%E7%BC%98%E4%BE%9D%E8%B5%96&amp;%E9%9B%86%E7%BE%A4%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/goal.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">任务调度&amp;血缘依赖&amp;集群性能监控</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/%E6%95%B0%E6%8D%AE%E5%BB%BA%E6%A8%A1/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/chores-washing-dishes.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">数据建模</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E6%A6%82%E5%BF%B5"><span class="toc-text">一、数据仓库概念</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%A1%B9%E7%9B%AE%E9%9C%80%E6%B1%82%E5%8F%8A%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-text">二、项目需求及架构设计</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%A1%B9%E7%9B%AE%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90"><span class="toc-text">1. 项目需求分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E9%A1%B9%E7%9B%AE%E9%9C%80%E6%B1%82"><span class="toc-text">1.1 项目需求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%80%9D%E8%80%83"><span class="toc-text">1.2 思考</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E9%A1%B9%E7%9B%AE%E6%A1%86%E6%9E%B6"><span class="toc-text">2. 项目框架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B"><span class="toc-text">2.1 技术选型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B%E8%AE%BE%E8%AE%A1"><span class="toc-text">2.2 系统数据流程设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E6%A1%86%E6%9E%B6%E7%89%88%E6%9C%AC%E9%80%89%E5%9E%8B"><span class="toc-text">2.3 框架版本选型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%80%89%E5%9E%8B"><span class="toc-text">2.4   服务器选型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E9%9B%86%E7%BE%A4%E8%B5%84%E6%BA%90%E8%A7%84%E5%88%92%E8%AE%BE%E8%AE%A1"><span class="toc-text">2.5 集群资源规划设计</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E8%A1%8C%E4%B8%BA%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90%E6%A8%A1%E5%9D%97"><span class="toc-text">三、行为数据生成模块</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%9B%AE%E6%A0%87%E6%95%B0%E6%8D%AE"><span class="toc-text">1. 目标数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E9%A1%B5%E9%9D%A2%E6%95%B0%E6%8D%AE"><span class="toc-text">1.1 页面数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E4%BA%8B%E4%BB%B6%E6%95%B0%E6%8D%AE"><span class="toc-text">1.2 事件数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%9B%9D%E5%85%89"><span class="toc-text">1.3 曝光</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-%E5%90%AF%E5%8A%A8"><span class="toc-text">1.4 启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-%E9%94%99%E8%AF%AF"><span class="toc-text">1.5 错误</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%B0%E6%8D%AE%E5%9F%8B%E7%82%B9"><span class="toc-text">2. 数据埋点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E4%B8%BB%E6%B5%81%E5%9F%8B%E7%82%B9%E6%96%B9%E5%BC%8F%EF%BC%88%E4%BA%86%E8%A7%A3%EF%BC%89"><span class="toc-text">2.1 主流埋点方式（了解）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%9F%8B%E7%82%B9%E6%95%B0%E6%8D%AE%E6%97%A5%E5%BF%97%E7%BB%93%E6%9E%84"><span class="toc-text">2.2 埋点数据日志结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%9F%8B%E7%82%B9%E6%95%B0%E6%8D%AE%E4%B8%8A%E6%8A%A5%E6%97%B6%E6%9C%BA"><span class="toc-text">2.3 埋点数据上报时机</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90"><span class="toc-text">3. 数据生成</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E8%A1%8C%E4%B8%BA%E6%95%B0%E6%8D%AE%E9%87%87%E9%9B%86%E6%A8%A1%E5%9D%97"><span class="toc-text">四、行为数据采集模块</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5"><span class="toc-text">1. 几个概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-HDFS%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%8E%E5%8E%8B%E6%B5%8B"><span class="toc-text">2. HDFS的安装与压测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-kafka%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%8E%E5%8E%8B%E6%B5%8B"><span class="toc-text">3. kafka的安装与压测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-kafka%E7%94%9F%E4%BA%A7%E5%8E%8B%E6%B5%8B"><span class="toc-text">2.1 kafka生产压测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-kafka%E6%B6%88%E8%B4%B9%E5%8E%8B%E6%B5%8B"><span class="toc-text">3.2 kafka消费压测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Kafka%E6%9C%BA%E5%99%A8%E6%95%B0%E9%87%8F%E8%AE%A1%E7%AE%97"><span class="toc-text">3.3 Kafka机器数量计算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-Kafka%E5%88%86%E5%8C%BA%E6%95%B0%E8%AE%A1%E7%AE%97"><span class="toc-text">3.4 Kafka分区数计算</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%98%BF%E9%87%8C%E4%BA%91%E5%AE%89%E5%85%A8%E7%BB%84"><span class="toc-text">4. 阿里云安全组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%A1%8C%E4%B8%BA%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86"><span class="toc-text">5. 行为日志采集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E9%87%87%E9%9B%86%E9%93%BE%E8%B7%AF%E5%88%86%E6%9E%90"><span class="toc-text">5.1 采集链路分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E6%8B%A6%E6%88%AA%E5%99%A8"><span class="toc-text">5.2 拦截器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-fastjson%E6%A8%A1%E5%9D%97"><span class="toc-text">5.3 fastjson模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-logfile-gt-kafka"><span class="toc-text">5.4 logfile -&gt; kafka</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-%E5%B0%81%E8%A3%85logfile-gt-kafka%E9%87%87%E9%9B%86%E8%84%9A%E6%9C%AC"><span class="toc-text">5.5 封装logfile -&gt; kafka采集脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-%E6%8A%A5%E9%94%99"><span class="toc-text">5.5 报错</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-6-kafka-gt-hdfs"><span class="toc-text">5.6 kafka -&gt; hdfs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-%E5%B0%81%E8%A3%85kafka-gt-hdfs%E9%87%87%E9%9B%86%E8%84%9A%E6%9C%AC"><span class="toc-text">5.7 封装kafka -&gt; hdfs采集脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-%E4%B8%A4%E4%B8%AA%E6%8A%A5%E9%94%99"><span class="toc-text">5.7 两个报错</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-8-%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C"><span class="toc-text">5.8 最终效果</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%B8%9A%E5%8A%A1%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90%E6%A8%A1%E5%9D%97"><span class="toc-text">五、业务数据生成模块</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%9A%E5%8A%A1%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90"><span class="toc-text">1. 业务日志分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%9A%E5%8A%A1%E6%95%B0%E6%8D%AE%E6%A2%B3%E7%90%86%E5%B7%A5%E5%85%B7"><span class="toc-text">2. 业务数据梳理工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%B8%9A%E5%8A%A1%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90"><span class="toc-text">3. 业务数据生成</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E4%B8%9A%E5%8A%A1%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5"><span class="toc-text">六、业务数据同步</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E6%96%B9%E5%BC%8F"><span class="toc-text">1. 数据同步方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%B7%A5%E5%85%B7"><span class="toc-text">2. 数据同步工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%85%A8%E9%87%8F%E8%A1%A8%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5"><span class="toc-text">3. 全量表数据同步</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-datax%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90"><span class="toc-text">3.1 datax配置文件的自动生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%85%A8%E9%87%8F%E8%A1%A8%E5%90%8C%E6%AD%A5%E8%84%9A%E6%9C%AC%E7%9A%84%E7%94%9F%E6%88%90"><span class="toc-text">3.3 全量表同步脚本的生成</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%A2%9E%E9%87%8F%E8%A1%A8%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5"><span class="toc-text">4. 增量表数据同步</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-MySQL-gt-kafka"><span class="toc-text">4.1 MySQL -&gt; kafka</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-kafka-gt-hdfs"><span class="toc-text">4.2 kafka -&gt; hdfs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E6%95%99%E5%AD%A6%E7%89%88maxwell"><span class="toc-text">4.3 教学版maxwell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E7%BC%96%E5%86%99flume%E5%90%AF%E5%81%9C%E8%84%9A%E6%9C%AC"><span class="toc-text">4.4 编写flume启停脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-%E5%A2%9E%E9%87%8F%E8%A1%A8%E9%A6%96%E6%97%A5%E5%85%A8%E9%87%8F%E5%90%8C%E6%AD%A5"><span class="toc-text">4.5 增量表首日全量同步</span></a></li></ol></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

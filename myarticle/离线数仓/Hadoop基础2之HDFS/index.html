@@ -1,0 +1,392 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Hadoop基础2之HDFS | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一、HDFS概述下面7章细说HDFS 1. HDFS的产生背景随着数据量越来越大，在一个操作系统存不下所有的数据，那么就分配到更多的操作系统管理的盘中，但是不方便管理和维护。比如一份文件拆成了三份放到不同的机器，当我需要查看这个文件的时候怎么把这三份文件拼成一份文件呢？这时就迫切需要一种系统来管理多台机器上的文件，这就是分布式文件管理系统，HDFS只是分布式文件管理系统中的一种。 2. HDFS定">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop基础2之HDFS">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/Hadoop%E5%9F%BA%E7%A1%802%E4%B9%8BHDFS/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="一、HDFS概述下面7章细说HDFS 1. HDFS的产生背景随着数据量越来越大，在一个操作系统存不下所有的数据，那么就分配到更多的操作系统管理的盘中，但是不方便管理和维护。比如一份文件拆成了三份放到不同的机器，当我需要查看这个文件的时候怎么把这三份文件拼成一份文件呢？这时就迫切需要一种系统来管理多台机器上的文件，这就是分布式文件管理系统，HDFS只是分布式文件管理系统中的一种。 2. HDFS定">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/freelancer.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.766Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/freelancer.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/Hadoop%E5%9F%BA%E7%A1%802%E4%B9%8BHDFS/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Hadoop基础2之HDFS',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/christmas-4701783.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Hadoop基础2之HDFS</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.766Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/">离线数仓</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">8.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>28分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Hadoop基础2之HDFS"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="一、HDFS概述"><a href="#一、HDFS概述" class="headerlink" title="一、HDFS概述"></a>一、HDFS概述</h1><p><strong>下面7章细说HDFS</strong></p>
+<h2 id="1-HDFS的产生背景"><a href="#1-HDFS的产生背景" class="headerlink" title="1. HDFS的产生背景"></a>1. HDFS的产生背景</h2><p>随着数据量越来越大，在一个操作系统存不下所有的数据，那么就分配到更多的操作系统管理的盘中，但是不方便管理和维护。比如一份文件拆成了三份放到不同的机器，当我需要查看这个文件的时候怎么把这三份文件拼成一份文件呢？这时就<strong>迫切需要一种系统来管理多台机器上的文件，这就是分布式文件管理系统，HDFS只是分布式文件管理系统中的一种。</strong></p>
+<h2 id="2-HDFS定义"><a href="#2-HDFS定义" class="headerlink" title="2. HDFS定义"></a>2. HDFS定义</h2><p>HDFS（Hadoop Distributed File System），它是一个文件系统，用于存储文件，通过目录树来定位文件；其次，它是分布式的，由很多服务器联合起来实现其功能，集群中的服务器有各自的角色。</p>
+<p><strong>HDFS的使用场景：适合一次写入，多次读出的场景，且不支持文件的随机修改。</strong>适合用来做数据分析，并不适合用来做网盘应用。这里的随机修改指，想对某个文件的某一行做修改。</p>
+<h2 id="3-优缺点"><a href="#3-优缺点" class="headerlink" title="3. 优缺点"></a>3. 优缺点</h2><p><strong>优点</strong></p>
+<ul>
+<li><strong>高容错性</strong><ul>
+<li>数据自动保存多个副本。它通过增加副本的形式，提高容错性。当某一个副本丢失以后，它可以自动恢复。比如你有5台机器，A文件存了3个副本，你不小心破坏了其中1个副本，NN会检测到A文件只剩下2个副本了，然后就会自动再备份1个副本</li>
+</ul>
+</li>
+<li><strong>适合处理大数据</strong><ul>
+<li>数据规模：能够处理数据规模达到GB、TB、甚至PB级别的数据</li>
+<li>文件规模：能够处理百万规模以上的文件数量，数量相当之大</li>
+</ul>
+</li>
+<li><strong>可构建在廉价机器上，通过多副本机制，提高可靠性</strong></li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li><p><strong>不适合低延时数据访问</strong>，比如毫秒级的存储数据，是做不到的</p>
+</li>
+<li><p><strong>无法高效的对大量小文件进行存储</strong></p>
+<ul>
+<li>存储大量小文件的话，它<strong>会占用NameNode大量的内存</strong>来存储文件目录和块信息。这样是不可取的，因为NameNode的内存总是有限的。NN存1000个100M的大文件和1000个1M的小文件占用的内存是差不多相同的，但是储存量却差了100倍。元数据不管大小字节基本都是150个字节</li>
+<li>整个hadoop都害怕小文件，存的时候怕，算的时候也怕，因为NN是运行在内存里的</li>
+<li><strong>小文件存储的寻址时间会超过读取时间</strong>，它违反了HDFS的设计目标</li>
+<li>小文件就存MySQL就行，HDFS设计的初衷就是大数据</li>
+</ul>
+</li>
+<li><p><strong>不支持并发写入、文件随机修改</strong></p>
+<ul>
+<li>一个文件只能有一个写，<strong>不允许多个线程同时写</strong></li>
+<li><strong>仅支持数据append（追加）</strong>，不支持文件的随机修改</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-HDFS组成架构"><a href="#4-HDFS组成架构" class="headerlink" title="4. HDFS组成架构"></a>4. HDFS组成架构</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220222004638144.png" alt="image-20220222004638144" style="zoom: 33%;" />
+
+<p>metadata元数据，rack机架，block块</p>
+<p><strong>NameNode：</strong>就是Master，它是一个主管、管理者</p>
+<ul>
+<li>管理HDFS的名称空间</li>
+<li>配置副本策略</li>
+<li>管理数据块（Block）映射信息</li>
+<li>处理客户端读写请求</li>
+</ul>
+<p><strong>DataNode：</strong>就是Slaver，NameNode下达命令，DataNode执行实际的操作</p>
+<ul>
+<li>存储实际的数据块</li>
+<li>执行数据块的读&#x2F;写操作</li>
+</ul>
+<p><strong>Client：</strong>就是客户端，严格来说并不是HDFS架构里面的</p>
+<ul>
+<li>文件切分，文件上传HDFS的时候，Client将文件切分成一个一个的Block，然后进行上传</li>
+<li>与NameNode交互，获取文件的位置信息</li>
+<li>与DataNode交互，读取或者写入数据</li>
+<li>Client提供一些命令来管理HDFS，比如NameNode格式化</li>
+<li>Client可以通过一些命令来访问HDFS，比如对HDFS增删查改操作</li>
+<li><strong>关于客户端的理解，命令行里敲的命令就是客户端启动的</strong>，在Linux里敲命令shell是客户端，在java代码里敲命令java就是客户端</li>
+</ul>
+<p><strong>Secondary NameNode：</strong>并非NameNode的热备。当NameNode挂掉的时候，它<strong>并不能</strong>马上替换NameNode并提供服务</p>
+<ul>
+<li>辅助NameNode，分担其工作量，比如定期合并Fsimage和Edits，并推送给NameNode</li>
+<li>在紧急情况下，可辅助恢复NameNode</li>
+<li>热备是指，主节点挂了从节点能马上顶上</li>
+</ul>
+<h2 id="5-HDFS文件块大小"><a href="#5-HDFS文件块大小" class="headerlink" title="5. HDFS文件块大小"></a>5. HDFS文件块大小</h2><p>上传文件时，会真正的把文件切分成块，然后再上传，在3.1.3版本默认是128M，可以修改。<strong>同个文件多个块的上传下载都是串行的</strong>。</p>
+<p><strong>为什么默认是128M？</strong></p>
+<ul>
+<li>2的n次方</li>
+<li>有人统计过，寻址时间为传输时间的1%为最佳状态，假设寻址时间10ms，传输时间就是1s，普通磁盘传输速度按100M&#x2F;s算，块大小就是100M，接近128M。但实际固态硬盘的速度已经远远超过100M&#x2F;s了，生产环境中块大小往往调到256M，甚至512M都是有可能的</li>
+</ul>
+<p><strong>为什么块的大小不能设置太小，也不能设置太大？</strong></p>
+<ul>
+<li><p>HDFS的块设置太小，会增加寻址时间，程序一直在找块的开始位置</p>
+</li>
+<li><p>如果块设置的太大，从磁盘传输数据的时间会明显大于定位这个块开始位置所需的时间。导致程序在处理这块数据时，会非常慢</p>
+</li>
+<li><p>总结：HDFS块的大小设置主要取决于网盘传输速率</p>
+</li>
+</ul>
+<h1 id="二、HDFS的Shell操作（开发重点）"><a href="#二、HDFS的Shell操作（开发重点）" class="headerlink" title="二、HDFS的Shell操作（开发重点）"></a>二、HDFS的Shell操作（开发重点）</h1><p><strong>语法：hadoop fs 具体命令</strong></p>
+<p>当你不知道hadoop fs后面跟什么的时候，直接回车，会有用法介绍。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">帮助命令</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -help rm</span><br><span class="line"></span><br><span class="line">显示目录信息，注意hadoop的文件系统和Linux的文件系统是完全的两个东西，hadoop的用户组和Linux的操作很像但不是一回事儿</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -ls /</span><br><span class="line"></span><br><span class="line">在HDFS上创建目录，多级目录加-p</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -mkdir -p /sanguo/shuguo</span><br><span class="line"></span><br><span class="line">从本地剪切粘贴到HDFS</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs  -moveFromLocal  ./kongming.txt  /sanguo</span><br><span class="line"></span><br><span class="line">追加一个文件到已经存在的文件末尾，只能追加不能修改，基本不用</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -appendToFile liubei.txt /sanguo/kongming.txt</span><br><span class="line"></span><br><span class="line">显示文件内容</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -cat /sanguo/kongming.txt</span><br><span class="line"></span><br><span class="line">-chgrp 、-chmod、-chown：Linux文件系统中的用法一样，修改文件所属权限</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs  -chmod  666  /sanguo/kongming.txt</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs  -chown  atguigu:atguigu   /sanguo/kongming.txt</span><br><span class="line"></span><br><span class="line">从本地文件系统中拷贝文件到HDFS路径去</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -copyFromLocal README.txt /</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -put README.txt /</span><br><span class="line"></span><br><span class="line">从HDFS拷贝到本地</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -copyToLocal /sanguo/kongming.txt ./</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -get /sanguo/kongming.txt ./</span><br><span class="line"></span><br><span class="line">从HDFS的一个路径拷贝到HDFS的另一个路径，可以改名？</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -cp /sanguo/kongming.txt /zhuge.txt</span><br><span class="line"></span><br><span class="line">在HDFS目录中移动文件，也有改名的功能，注意如果不写路径，默认会移动到/user/atguigu/目录下</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -mv /zhuge.txt /sanguo/</span><br><span class="line"></span><br><span class="line">合并下载多个文件，比如HDFS的目录 /user/atguigu/test下有多个文件:log.1, log.2,log.3,...</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -getmerge /user/atguigu/test/* ./zaiyiqi.txt</span><br><span class="line"></span><br><span class="line">显示一个文件的末尾</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -tail /sanguo/shuguo/kongming.txt</span><br><span class="line"></span><br><span class="line">删除文件或文件夹，-r递归</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -rm -r /user/atguigu/test/jinlian2.txt</span><br><span class="line"></span><br><span class="line">删除空目录</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -rmdir /test</span><br><span class="line"></span><br><span class="line">统计文件夹的大小信息，-h换算单位，-s按文件夹汇总</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -du -s -h /user/atguigu/test</span><br><span class="line">    2.7 K  /user/atguigu/test</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -du  -h /user/atguigu/test</span><br><span class="line">    1.3 K  /user/atguigu/test/README.txt</span><br><span class="line">    15     /user/atguigu/test/jinlian.txt</span><br><span class="line">    1.4 K  /user/atguigu/test/zaiyiqi.txt</span><br><span class="line"></span><br><span class="line">设置HDFS中文件的副本数量，这里设置的副本数只是记录在NameNode的元数据中，是否真的会有这么多副本，还得看DataNode的数量。因为目前只有3台设备，最多也就3个副本，只有节点数的增加到至少5台时，副本数才能达到5。而且多改副本的话后面老师演示的会报错，所以最好不要多改</span><br><span class="line">[atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -setrep 5 /README.txt</span><br></pre></td></tr></table></figure>
+
+<h1 id="三、HDFS客户端操作（开发重点）"><a href="#三、HDFS客户端操作（开发重点）" class="headerlink" title="三、HDFS客户端操作（开发重点）"></a>三、HDFS客户端操作（开发重点）</h1><h2 id="1-HDFS客户端环境准备"><a href="#1-HDFS客户端环境准备" class="headerlink" title="1. HDFS客户端环境准备"></a>1. HDFS客户端环境准备</h2><p>见大数据框架安装文档</p>
+<h2 id="2-测试参数优先级"><a href="#2-测试参数优先级" class="headerlink" title="2. 测试参数优先级"></a>2. 测试参数优先级</h2><p>在项目的resources中新建hdfs-site.xml文件，并将如下内容拷贝进去，再次上传文件看看有几个副本？</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;configuration.xsl&quot;?&gt;</span><br><span class="line"></span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.replication&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;2&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<p>加入下面两行代码，再看下几个副本？</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conf = new Configuration();</span><br><span class="line">conf.set(&quot;dfs.replication&quot;,&quot;1&quot;);</span><br></pre></td></tr></table></figure>
+
+<p><strong>优先级顺序：客户端代码中设置的值  &gt; ClassPath下的用户自定义配置文件 &gt; 服务器的自定义配置(xxx-site.xml) &gt; 服务器的默认配置(xxx-default.xml)</strong></p>
+<h2 id="3-HDFS-API"><a href="#3-HDFS-API" class="headerlink" title="3. HDFS API"></a>3. HDFS API</h2><p>见代码，很简单，用的概率很低，都是直接用框架完成大数据的数据传输。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 什么是fs？</span><br><span class="line">@Test</span><br><span class="line">public void test1()&#123;</span><br><span class="line">    System.out.println(fs.getClass().getName());</span><br><span class="line">    // org.apache.hadoop.hdfs.DistributedFileSystem</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// HDFS地址的完整写法</span><br><span class="line">new Path(&quot;hdfs://hadoop180:8020/testhdfs&quot;)</span><br><span class="line">但是我们一般这样写：new Path(&quot;/testhdfs&quot;)，因为创建URI的时候已经配过地址了</span><br><span class="line">uri = URI.create(&quot;hdfs://hadoop180:8020&quot;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-HDFS里的IO流"><a href="#4-HDFS里的IO流" class="headerlink" title="4. HDFS里的IO流"></a>4. HDFS里的IO流</h2><p>数据的上传下载用的都是IO流，只不过以后用到的工具封装的越来越好，看起来很高大上，实际底层都是IO流。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">    /**</span><br><span class="line">     * 问题: 文件的上传和下载是如何实现的？</span><br><span class="line">     *</span><br><span class="line">     * 文件上传: 基于IO流把数据从本地写到HDFS</span><br><span class="line">     * 文件下载: 基于IO流把数据从HDFS写到本地</span><br><span class="line">     */</span><br><span class="line">    @Test</span><br><span class="line">    public void testIODownload() throws IOException &#123;</span><br><span class="line">        //待下载的文件</span><br><span class="line">        String srcFile = &quot;/bigdata0523/qiangge.txt&quot;;</span><br><span class="line">        //目标文件</span><br><span class="line">        String destFile = &quot;e:\\asource\\qiangge.txt&quot;;</span><br><span class="line"></span><br><span class="line">        //输入流</span><br><span class="line">        FSDataInputStream fis = fs.open(new Path(srcFile));</span><br><span class="line"></span><br><span class="line">        //输出流</span><br><span class="line">        FileOutputStream fos = new FileOutputStream(new File(destFile));</span><br><span class="line"></span><br><span class="line">        //流的对拷</span><br><span class="line">        IOUtils.copyBytes(fis,fos,conf);</span><br><span class="line"></span><br><span class="line">        //关闭</span><br><span class="line">        IOUtils.closeStream(fis);</span><br><span class="line">        IOUtils.closeStream(fos);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Test</span><br><span class="line">    public void testIOUpdate() throws IOException &#123;</span><br><span class="line">        //待上传的文件</span><br><span class="line">        String srcFile = &quot;e:\\asource\\Hadoop从入门到精通.txt&quot;;</span><br><span class="line">        //目标文件</span><br><span class="line">        String destFile = &quot;/Hadoop从入门到精通.txt&quot; ;</span><br><span class="line"></span><br><span class="line">        //输入流</span><br><span class="line">        FileInputStream fis = new FileInputStream(new File(srcFile));</span><br><span class="line"></span><br><span class="line">        //输出流</span><br><span class="line">        FSDataOutputStream fos = fs.create(new Path(destFile));</span><br><span class="line"></span><br><span class="line">        //流的对拷</span><br><span class="line">        //一个字节一个字节的拷贝</span><br><span class="line">//        int i ;</span><br><span class="line">//        while((i = fis.read(buffer))!=-1)&#123;</span><br><span class="line">//            fos.write(i);</span><br><span class="line">//        &#125;</span><br><span class="line">        //加个小推车</span><br><span class="line">//        int i ;</span><br><span class="line">//        byte [] buffer  = new byte[1024];</span><br><span class="line">//        while((i = fis.read(buffer))!=-1)&#123;</span><br><span class="line">//            fos.write(buffer,0,i);</span><br><span class="line">//        &#125;</span><br><span class="line">        //hadoop底层封装好的工具类</span><br><span class="line">        IOUtils.copyBytes(fis,fos,conf);</span><br><span class="line"></span><br><span class="line">        //关闭流</span><br><span class="line">        IOUtils.closeStream(fis);</span><br><span class="line">        IOUtils.closeStream(fos);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、HDFS的数据流"><a href="#四、HDFS的数据流" class="headerlink" title="四、HDFS的数据流"></a>四、HDFS的数据流</h1><h2 id="1-HDFS写数据流程"><a href="#1-HDFS写数据流程" class="headerlink" title="1. HDFS写数据流程"></a>1. HDFS写数据流程</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220223003638411.png" alt="image-20220223003638411" style="zoom: 50%;" />
+
+<p>关于通道pipeline的建立，客户端会从返回的3个节点中选择一个最近的，后面会说。传输数据的时候也不是一次性把128M全传过去，而是以packet为单位，大概64kb。块儿数大于1的话，从3开始循环。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">客户端通过Distributed FileSystem模块向NameNode请求上传文件，NameNode检查目标文件是否已存在，父目录是否存在</span><br><span class="line">NameNode返回是否可以上传</span><br><span class="line">客户端请求第一个 Block上传到哪几个DataNode服务器上</span><br><span class="line">NameNode返回3个DataNode节点，分别为dn1、dn2、dn3</span><br><span class="line">客户端通过FSDataOutputStream模块请求dn1上传数据，dn1收到请求会继续调用dn2，然后dn2调用dn3，将这个通信管道建立完成。</span><br><span class="line">dn1、dn2、dn3逐级应答客户端</span><br><span class="line">客户端开始往dn1上传第一个Block（先从磁盘读取数据放到一个本地内存缓存），以Packet为单位，dn1收到一个Packet就会传给dn2，dn2传给dn3；dn1每传一个packet会放入一个应答队列等待应答</span><br><span class="line">当一个Block传输完成之后，客户端再次请求NameNode上传第二个Block的服务器。（重复执行3-7步）</span><br></pre></td></tr></table></figure>
+
+<p>假设有3个副本，NN返回3个节点，写的过程中有个节点挂了怎么办？挂不挂写不说，NN怎么知道这3个副本都写成功了呢？2.7.2的DFSOutputStream类的注释说明了这个问题，一是会有ACK机制，如果只有两个响应了ACK，会把没响应的剔除出去，重新建立管道，少的那个副本NN后面会补上。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">DFSOutputStream creates files from a stream of bytes. The client application writes data that is cached internally by this stream. Data is broken up into packets, each packet is typically 64K in size. A packet comprises of chunks. Each chunk is typically 512 bytes and has an associated checksum with it. When a client application fills up the currentPacket, it is enqueued into dataQueue. The DataStreamer thread picks up packets from the dataQueue, sends it to the first datanode in the pipeline and moves it from the dataQueue to the ackQueue. The ResponseProcessor receives acks from the datanodes. When an successful ack for a packet is received from all datanodes, the ResponseProcessor removes the corresponding packet from the ackQueue. In case of error, all outstanding packets and moved from ackQueue. A new pipeline is setup by eliminating the bad datanode from the original pipeline. The DataStreamer now starts sending packets from the dataQueue.</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-网络拓扑-节点距离计算"><a href="#2-网络拓扑-节点距离计算" class="headerlink" title="2. 网络拓扑-节点距离计算"></a>2. 网络拓扑-节点距离计算</h2><p>在HDFS写数据的过程中，NN会选择最近距离的DN接收数据，那么这个最近距离怎么计算呢？<strong>节点距离：两个节点到达最近的共同祖先的距离总和。</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220223011633599.png" alt="image-20220223011633599"></p>
+<h2 id="3-副本存储节点选择"><a href="#3-副本存储节点选择" class="headerlink" title="3. 副本存储节点选择"></a>3. 副本存储节点选择</h2><p>第一个副本在Client所处的节点上，如果客户端在集群外，随机选一个。第二个副本在另一个机架的随机一个节点，第三个副本在第二个副本所在机架的随机节点。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220223011933369.png" alt="image-20220223011933369" style="zoom: 33%;" />
+
+<h2 id="4-HDFS读数据流程"><a href="#4-HDFS读数据流程" class="headerlink" title="4. HDFS读数据流程"></a>4. HDFS读数据流程</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220223003228994.png" alt="image-20220223003228994"></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">客户端通过Distributed FileSystem向NameNode请求下载文件，NameNode通过查询元数据，找到文件块所在的DataNode地址</span><br><span class="line">挑选一台DataNode（就近原则，然后随机）服务器，请求读取数据</span><br><span class="line">DataNode开始传输数据给客户端（从磁盘里面读取数据输入流，以Packet为单位来做校验）</span><br><span class="line">客户端以Packet为单位接收，先在本地缓存，然后写入目标文件</span><br><span class="line">不管读哪个块，都是找最近的</span><br></pre></td></tr></table></figure>
+
+<h1 id="五、NN和2NN的工作机制"><a href="#五、NN和2NN的工作机制" class="headerlink" title="五、NN和2NN的工作机制"></a>五、NN和2NN的工作机制</h1><h2 id="1-NN和2NN的工作机制"><a href="#1-NN和2NN的工作机制" class="headerlink" title="1. NN和2NN的工作机制"></a>1. NN和2NN的工作机制</h2><p><strong>NN元数据信息维护到哪里？</strong></p>
+<p>对HDFS的数据修改(比如经常需要进行随机访问，还有响应客户请求)就一定会涉及到对元数据的修改，如果考虑数据的可靠性，需要将元数据维护到磁盘，带来的问题是对磁盘的数据修改效率低。如果考虑数据访问和修改的效率，需要将元数据维护到内存(只要对磁盘的修改就要走IO，而IO性能损耗非常严重，直接操作内存就不需要走磁盘了，效率很高)，但是带来的问题是数据不可靠。所以综合考虑就是<strong>元数据放在内存，并且产生在磁盘中备份元数据的镜像文件fsimage</strong>。</p>
+<p><strong>如何保证内存和磁盘的数据同步？</strong></p>
+<p>采用磁盘+内存的话，那发生数据更改时，是改内存还是改磁盘呢？如果两个都改就又绕回了第一个问题，如果只改一个，如何保证两者之间的数据同步呢？Hadoop提供了这么一个方案：在内存中维护元数据，且在磁盘中通过镜像文件fsimage来维护元数据，并通过编辑日志文件<strong>edits记录对元数据的修改操作，记录的方式为文件末尾追加操作</strong>(这个效率是很高的，kafka也有类似的机制)。这样就解决了磁盘修改的效率问题，如果内存挂掉了，可以以镜像文件fsimage为基础，再把日志文件edits里记录的操作做一遍，就恢复到了内存挂掉之前元数据的样子。</p>
+<p><strong>edits文件记录的操作越来越多怎么办？</strong></p>
+<p>但是又带来了新的问题，edits文件记录的操作越来越多，文件越来越大，一旦断点，恢复数据的时间就会越来越长。这时就需要<strong>定时的将fsimage文件和edits文件进行合并</strong>，旧fsimage + edits &#x3D; 新fsimage，旧edits就可以不用了，这样就不会导致edits文件越来越大。</p>
+<p><strong>由谁来做合并呢？</strong></p>
+<p>让NN来做是非常合适的，毕竟元数据就是它管理的，但是NN工作压力很大，就找个<strong>秘书2NN来做</strong>。大概的过程就是，当满足要合并的条件后，2NN会将NN中的fsimage和当前正在使用的edits文件拉取过来，将fsimage和edits在2NN的内存中进行合并，合并完后生成一个新的fsimage文件，再将新的fsimage文件推送给NN，替换NN中旧的fsimage文件。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220223234955987.png" alt="image-20220223234955987"></p>
+<p>这个机制的目的只有一个，就是保证<strong>内存中的元数据 &#x3D; fsimage.chkpoint + edits_inprogress</strong></p>
+<p><strong>第一阶段：NN启动</strong></p>
+<p>第一次启动NN格式化后，创建Fsimage和Edits文件。如果不是第一次启动，直接加载编辑日志和镜像文件到内存进行合并，以保证磁盘和内存中的数据同步。当接收客户端对元数据进行增删改的请求后，NN先记录操作日志，然后在内存中对元数据进行增删改。</p>
+<p><strong>第二阶段：2NN工作</strong></p>
+<p>2NN会定时询问(1分钟问一次)NN是否需要CheckPoint，如果满足触发条件，2NN会请求执行CheckPoint。这时NN会滚动正在写的Edits日志文件，然后将滚动前的编辑日志和镜像文件拷贝到2NN。2NN加载编辑日志和镜像文件到内存，并合并生成新的镜像文件fsimage.chkpoint。然后拷贝fsimage.chkpoint到NN，NN将fsimage.chkpoint重新命名成fsimage，把原来的替换掉。</p>
+<p><strong>checkpoint触发条件：</strong>定时时间到(1个小时)，或者edits中记录的操作达到100万次。设定两个触发条件的原因是为了防止10个小时就做5次操作或者5分钟就做了100万次操作这种情况。</p>
+<p>NN和2NN工作机制详解：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Fsimage文件：HDFS文件系统元数据的一个永久性的检查点，其中包含HDFS文件系统的所有目录和文件inode的序列化信息。NameNode内存中元数据序列化后生成。</span><br><span class="line">Edits文件：存放HDFS文件系统的所有更新操作的路径，文件系统客户端执行的所有写操作首先会被记录到Edits文件中，可通过Edits运算出元数据。</span><br><span class="line"></span><br><span class="line">NameNode启动时，先滚动Edits并生成一个空的edits.inprogress，然后加载Edits和Fsimage到内存中，此时NameNode内存就持有最新的元数据信息。Client开始对NameNode发送元数据的增删改的请求，这些请求的操作首先会被记录到edits.inprogress中(查询元数据的操作不会被记录在Edits中，因为查询操作不会更改元数据信息)，如果此时NameNode挂掉，重启后会从Edits中读取元数据的信息。然后NameNode会在内存中执行元数据的增删改的操作。</span><br><span class="line"></span><br><span class="line">由于Edits中记录的操作会越来越多，Edits文件会越来越大，导致NameNode在启动加载Edits时会很慢，所以需要对Edits和Fsimage进行合并(所谓合并，就是将Edits和Fsimage加载到内存中，照着Edits中的操作一步步执行，最终形成新的Fsimage)。SecondaryNameNode的作用就是帮助NameNode进行Edits和Fsimage的合并工作。</span><br><span class="line"></span><br><span class="line">SecondaryNameNode首先会询问NameNode是否需要CheckPoint(触发CheckPoint需要满足两个条件中的任意一个，定时时间到和Edits中数据写满了)。直接带回NameNode是否检查结果。SecondaryNameNode执行CheckPoint操作，首先会让NameNode滚动Edits并生成一个空的edits.inprogress，滚动Edits的目的是给Edits打个标记，以后所有新的操作都写入edits.inprogress，其他未合并的Edits和Fsimage会拷贝到SecondaryNameNode的本地，然后将拷贝的Edits和Fsimage加载到内存中进行合并，生成fsimage.chkpoint，然后将fsimage.chkpoint拷贝给NameNode，重命名为Fsimage后替换掉原来的Fsimage。NameNode在启动时就只需要加载之前未合并的Edits和Fsimage即可，因为合并过的Edits中的元数据信息已经被记录在Fsimage中。</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-Fsimage和Edits解析-了解"><a href="#2-Fsimage和Edits解析-了解" class="headerlink" title="2. Fsimage和Edits解析(了解)"></a>2. Fsimage和Edits解析(了解)</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[kuyehen@hadoop180 ~]$ cd /opt/module/hadoop-3.1.3/data/name/current/</span><br><span class="line">[kuyehen@hadoop180 current]$ ll</span><br><span class="line">总用量 10320</span><br><span class="line">     42 2月  20 16:45 edits_0000000000000000001-0000000000000000002</span><br><span class="line">1048576 2月  20 16:45 edits_0000000000000000003-0000000000000000003</span><br><span class="line">-- 默认大小，说明没有进行过操作</span><br><span class="line">1048576 2月  20 20:33 edits_0000000000000000004-0000000000000000004</span><br><span class="line">1048576 2月  20 21:08 edits_0000000000000000005-0000000000000000005</span><br><span class="line">     42 2月  20 21:27 edits_0000000000000000006-0000000000000000007</span><br><span class="line">    651 2月  20 22:27 edits_0000000000000000008-0000000000000000016</span><br><span class="line">     42 2月  20 23:27 edits_0000000000000000017-0000000000000000018</span><br><span class="line">-- 这才是做过操作的大小，操作数 = 117 - 19</span><br><span class="line">  12481 2月  21 00:27 edits_0000000000000000019-0000000000000000117</span><br><span class="line">1048576 2月  21 00:27 edits_0000000000000000118-0000000000000000118</span><br><span class="line">   1398 2月  21 01:19 edits_0000000000000000119-0000000000000000128</span><br><span class="line">    457 2月  22 23:59 edits_0000000000000000261-0000000000000000267</span><br><span class="line">     42 2月  23 00:59 edits_0000000000000000268-0000000000000000269</span><br><span class="line">-- 正在写这个，还没写所以是默认大小</span><br><span class="line">1048576 2月  23 00:59 edits_inprogress_0000000000000000270</span><br><span class="line">-- 为了安全，保留了两个版本，最新的和上次的</span><br><span class="line">   2759 2月  22 23:59 fsimage_0000000000000000267</span><br><span class="line">-- 这个是md5校验文件，下面DN说校验和的时候就是在说这个</span><br><span class="line">     62 2月  22 23:59 fsimage_0000000000000000267.md5</span><br><span class="line">   2759 2月  23 00:59 fsimage_0000000000000000269</span><br><span class="line">     62 2月  23 00:59 fsimage_0000000000000000269.md5</span><br><span class="line">-- 版本号，里面就一个数字270，代表正在写的版本号</span><br><span class="line">      4 2月  23 00:59 seen_txid</span><br><span class="line">    219 2月  22 21:58 VERSION</span><br></pre></td></tr></table></figure>
+
+<p>fsimage和edits文件都是可以通过命令转化成xml文件进行查看的，edits文件记录的就是操作就不看了，下面是fsimage记录的信息。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220224002609027.png" alt="image-20220224002609027"></p>
+<p>思考：可以看出，Fsimage中没有记录块所对应DataNode，为什么？</p>
+<p>磁盘中没有记录但是内存里有，因为在集群启动后，DataNode会主动上报数据块信息，并间隔一段时间后再次上报。比如DN会主动告诉NN我这边有一个块id是16586，这样NN就知道块对应的NN是哪个了。</p>
+<p>思考：NameNode如何确定下次开机启动的时候合并哪些Edits？</p>
+<p>seen_txid文件里记录的有最新的版本号。</p>
+<h2 id="3-CheckPoint时间设置"><a href="#3-CheckPoint时间设置" class="headerlink" title="3. CheckPoint时间设置"></a>3. CheckPoint时间设置</h2><p>下面这些参数都可以通过配置文件进行修改，这里略过。</p>
+<ul>
+<li>通常情况下，SecondaryNameNode每隔一小时执行一次</li>
+<li>当操作次数达到1百万时，SecondaryNameNode执行一次</li>
+<li>一分钟检查一次操作次数</li>
+</ul>
+<h2 id="4-NameNode故障处理-扩展"><a href="#4-NameNode故障处理-扩展" class="headerlink" title="4. NameNode故障处理(扩展)"></a>4. NameNode故障处理(扩展)</h2><p>这里主要讲的是，当NN挂掉了，如何用2NN恢复<strong>部分</strong>NN数据。2NN是有部分数据的，因为做checkpoint的时候，2NN会拉取fsimage和edits文件。但是这种情况在生产环境是不会用的，生产环境都是用HA，所以这里略过。</p>
+<h2 id="5-集群安全模式"><a href="#5-集群安全模式" class="headerlink" title="5. 集群安全模式"></a>5. 集群安全模式</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1、NameNode启动</span><br><span class="line">NameNode启动时，首先将镜像文件（Fsimage）载入内存，并执行编辑日志（Edits）中的各项操作。一旦在内存中成功建立文件系统元数据的映像，则创建一个新的Fsimage文件和一个空的编辑日志。此时，NameNode开始监听DataNode请求。这个过程期间，NameNode一直运行在安全模式，即NameNode的文件系统对于客户端来说是只读的。</span><br><span class="line">2、DataNode启动</span><br><span class="line">系统中的数据块的位置并不是由NameNode维护的，而是以块列表的形式存情在DataNode中。在系统的正常操作期间，NameNode会在内存中保留所有块位置的映射信息。在安全模式下，各个DataNode会向NameNode发送最新的块列表信息，NameNode了解到足够多的块位置信息之后，即可高效运行文件系统。</span><br><span class="line">3、安全模式退出判断</span><br><span class="line">如果满足“最小副本条件”，NameNode会在30秒钟之后就退出安全模式。所谓的最小副本条件指的是在整个文件系统中99.9%的块满足最小副本级别（默认值：dfs.replication.min=1）。满足最小级别就行，因为如果要等所有副本都判断完成，时间会比较长。在启动一个刚刚格式化的HDFS集群时，因为系统中还没有任何块，所以NameNode不会进入安全模式。</span><br><span class="line"></span><br><span class="line">集群处于安全模式，不能执行重要操作（写操作）。集群启动完成后，自动退出安全模式。</span><br><span class="line">    bin/hdfs dfsadmin -safemode get		查看安全模式状态</span><br><span class="line">    bin/hdfs dfsadmin -safemode enter  	进入安全模式状态</span><br><span class="line">    bin/hdfs dfsadmin -safemode leave	离开安全模式状态</span><br><span class="line">    bin/hdfs dfsadmin -safemode wait	等待安全模式状态</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-NameNode多目录配置"><a href="#6-NameNode多目录配置" class="headerlink" title="6. NameNode多目录配置"></a>6. NameNode多目录配置</h2><p>NameNode的本地目录可以配置成多个，且每个目录存放内容相同，增加了可靠性。比如说hadoop180上有两个目录name1和name2，Linux是运行这两个目录挂载到不同的磁盘的，只有这个时候多目录配置才有意义，否则在同一个磁盘存两份相同的数据是没有意义的。而且这些是要在NN格式化的时候规划好的。</p>
+<p>生产环境用不到，略过。</p>
+<h1 id="六、DN的工作机制"><a href="#六、DN的工作机制" class="headerlink" title="六、DN的工作机制"></a>六、DN的工作机制</h1><h2 id="1-DN的工作机制"><a href="#1-DN的工作机制" class="headerlink" title="1. DN的工作机制"></a>1. DN的工作机制</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220224012756881.png" alt="image-20220224012756881"></p>
+<p>一个数据块在DataNode上以文件形式存储在磁盘上，包括两个文件，一个是数据本身，一个是元数据包括数据块的长度，块数据的校验和，以及时间戳。</p>
+<p>DataNode启动后向NameNode注册，通过后，周期性（现版本是6小时，PPT上写错了）的向NameNode上报所有的块信息。</p>
+<p>心跳(就是通信)是每3秒一次，心跳的目的是告诉NN自己工作状态正常，并返回结果带有NameNode给该DataNode的命令，如复制块数据到另一台机器，或删除某个数据块。如果超过10分钟没有收到某个DataNode的心跳，则认为该节点不可用。</p>
+<p>集群运行中可以安全加入和退出一些机器。</p>
+<h2 id="2-数据完整性"><a href="#2-数据完整性" class="headerlink" title="2. 数据完整性"></a>2. 数据完整性</h2><p>思考：如果电脑磁盘里面存储的数据是控制高铁信号灯的红灯信号（1）和绿灯信号（0），但是存储该数据的磁盘坏了，一直显示是绿灯，是否很危险？同理DataNode节点上的数据损坏了，却没有发现，是否也很危险，那么如何解决呢？</p>
+<p>如下是DataNode节点保证数据完整性的方法：</p>
+<p><strong>自校验的过程：</strong>当DataNode读取Block的时候，它会计算CheckSum，如果计算后的<strong>校验和CheckSum</strong>，与Block创建时值不一样，说明Block已经损坏，DN会主动把这个损坏的块删掉，每6个小时DN会给NN上报块信息，然后NN就会发现这个文件只剩两个副本，NN就会告诉别的有副本的DN再增加一个副本。DataNode在其文件创建后也会周期验证CheckSum。</p>
+<p><strong>读取的过程：</strong>发现校验和不一样，Client就读取其他DataNode上的Block。</p>
+<p>大意就是说，块创建的时候有个checksum1，块上传后有个checksum2，如果checksum1 &#x3D; checksum2说明文件没有损坏。</p>
+<p>有很多种校验算法，比如crc、md5、sha1等等。</p>
+<h2 id="3-掉线时限参数设置"><a href="#3-掉线时限参数设置" class="headerlink" title="3. 掉线时限参数设置"></a>3. 掉线时限参数设置</h2><p>上面说了3秒钟心跳，比如可能由于网络原因3秒钟没有收到心跳，肯定不能认为相应的DN就挂了，默认10分30秒后还没有收到心跳就认为DN挂了，这段时间成为超时时长timeout，可以设置。</p>
+<h2 id="4-服役新数据节点"><a href="#4-服役新数据节点" class="headerlink" title="4. 服役新数据节点"></a>4. 服役新数据节点</h2><p>随着公司业务的增长，数据量越来越大，原有的数据节点的容量已经不能满足存储数据的需求，需要在原有集群基础上动态添加新的数据节点。一般在大促销比如双十一的时候会进行服务器扩容，之后再退役。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在hadoop104主机上再克隆一台hadoop105主机</span><br><span class="line">修改IP地址和主机名称</span><br><span class="line">删除原来HDFS文件系统留存的文件（/opt/module/hadoop-3.1.3/data和log）</span><br><span class="line">source一下配置文件</span><br><span class="line">    [atguigu@hadoop105 hadoop-3.1.3]$ source /etc/profile</span><br><span class="line">直接启动DataNode，即可关联到集群</span><br><span class="line">    [atguigu@hadoop105 hadoop-3.1.3]$ hdfs --daemon start datanode</span><br><span class="line">    [atguigu@hadoop105 hadoop-3.1.3]$ yarn -–daemon start nodemanager</span><br><span class="line">如果数据不均衡，可以用命令实现集群的再平衡</span><br><span class="line">    [atguigu@hadoop102 hadoop-3.1.3]$ sbin/start-balancer.sh</span><br></pre></td></tr></table></figure>
+
+<p>注意改完ip和主机名称，删完data和log文件后，原主机上的东西不会对集群产生影响，比如原来104上有2NN，新105上就不会有，因为104上有2NN是因为2NN的配置文件里配置了104，而不是有了配置文件才有了2NN，这个配置文件每台机器都有。</p>
+<h2 id="5-退役旧数据节点"><a href="#5-退役旧数据节点" class="headerlink" title="5. 退役旧数据节点"></a>5. 退役旧数据节点</h2><p>添加到白名单的主机节点，都允许访问NameNode，不在白名单的主机节点，都会被直接退出(会发生数据丢失)。添加到<strong>黑名单</strong>的主机节点，不允许访问NameNode，<strong>会在数据迁移后退出</strong>。实际情况下，白名单用于确定允许访问NameNode的DataNode节点，内容配置一般与workers文件内容一致， <strong>黑名单用于在集群运行过程中退役DataNode节点</strong>。这俩名单要在搭建集群的时候就规划好，这里略过，用的时候翻文档。</p>
+<h2 id="6-Datanode多目录配置"><a href="#6-Datanode多目录配置" class="headerlink" title="6. Datanode多目录配置"></a>6. Datanode多目录配置</h2><p>DataNode也可以配置成多个目录，每个目录存储的数据不一样。即：数据不是副本。</p>
+<h1 id="七、Hadoop新特性"><a href="#七、Hadoop新特性" class="headerlink" title="七、Hadoop新特性"></a>七、Hadoop新特性</h1><h2 id="1-Hadoop2-x新特性"><a href="#1-Hadoop2-x新特性" class="headerlink" title="1. Hadoop2.x新特性"></a>1. Hadoop2.x新特性</h2><h3 id="1-1-小文件存档"><a href="#1-1-小文件存档" class="headerlink" title="1.1 小文件存档"></a>1.1 小文件存档</h3><p><strong>解决存储小文件办法之一</strong></p>
+<p>HDFS存档文件或HAR文件，是一个更高效的文件存档工具，它将文件存入HDFS块，在减少NameNode内存使用的同时，允许对文件进行透明的访问。具体说来，<strong>HAR文件看似是个打包以后的文件，实际上我们是可以看到里面是有多少个小文件的，HDFS存档文件对内还是一个一个独立文件，对NN而言却是一个整体，减少了NN的内存</strong>。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220225004854025.png" alt="image-20220225004854025" style="zoom: 33%;" />
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">需要启动YARN进程</span><br><span class="line">    [atguigu@hadoop102 hadoop-3.1.3]$ start-yarn.sh</span><br><span class="line">归档文件，把/user/atguigu/input目录里面的所有文件归档成一个叫input.har的归档文件，并把归档后文件存储到/user/atguigu/output路径下</span><br><span class="line">    [atguigu@hadoop102 hadoop-3.1.3]$ bin/hadoop archive -archiveName input.har –p  /user/atguigu/input   /user/atguigu/output</span><br><span class="line">查看归档</span><br><span class="line">    [atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -lsr /user/atguigu/output/input.har</span><br><span class="line">    [atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -lsr har:///user/atguigu/output/input.har</span><br><span class="line">解归档文件，算的时候需要先解压，那岂不是很麻烦？</span><br><span class="line">    [atguigu@hadoop102 hadoop-3.1.3]$ hadoop fs -cp har:///user/atguigu/output/input.har/* /user/atguigu</span><br></pre></td></tr></table></figure>
+
+<p>下面这个就是打包后的har文件，它是个目录，不管3个还是300个小文件，打包成har文件后生成的都是下面4个东西，对于HDFS来说，整个har文件就是一个整体，是一个文件，我们看的话要通过lsr命令。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220225005130159.png" alt="image-20220225005130159" style="zoom:50%;" />
+
+<p><strong>解决存储小文件办法之二</strong></p>
+<p>减少小文件的生成，比如日志文件一个小时滚动一次，改成一天滚动一次。</p>
+<h3 id="1-2-回收站trash"><a href="#1-2-回收站trash" class="headerlink" title="1.2 回收站trash"></a>1.2 回收站trash</h3><p>开启回收站功能，可以将删除的文件在不超时的情况下，恢复原数据，起到防止误删除、备份等作用。</p>
+<p>通过程序删除的文件不会经过回收站，需要调用moveToTrash()才进入回收站。</p>
+<h3 id="1-3-集群间数据拷贝"><a href="#1-3-集群间数据拷贝" class="headerlink" title="1.3 集群间数据拷贝"></a>1.3 集群间数据拷贝</h3><p>采用distcp命令实现两个Hadoop集群之间的递归数据复制。</p>
+<h2 id="2-Hadoop3-x新特性"><a href="#2-Hadoop3-x新特性" class="headerlink" title="2. Hadoop3.x新特性"></a>2. Hadoop3.x新特性</h2><p><strong>纠删码机制：</strong></p>
+<p><strong>主要解决了hadoop存储数据时的数据冗余问题</strong>，与默认三个副本机制相比， EC策略可以节省约50％左右的存储空间。</p>
+<p>但不可忽略的是<strong>编解码的运算会消耗CPU资源</strong>。纠删码的编解码性能对其在HDFS中的应用起着至关重要的作用，如果不利用硬件方面的优化就很难得到理想的性能。英特尔的智能存储加速库（ISA-L）提供了对纠删码编解码的优化，极大的提升了其性能。</p>
+<p> 纠删码是hadoop3.x新加入的功能，之前的hdfs都是采用副本方式容错，默认情况下，一个文件有3个副本，可以容忍任意2个副本（datanode）不可用，这样提高了数据的可用性，但也带来了2倍的冗余开销。例如3TB的空间，只能存储1TB的有效数据。而纠删码则可以在同等可用性的情况下，节省更多的空间，以RS-6-3-1024K这种纠删码策略为例子，**6份原始数据，编码后生成3份校验数据，一共9份数据，只要最终有6份数据存在，就可以得到原始数据，它可以容忍任意3份数据不可用(6份原始数据用3副本存的话就要存18份)**。</p>
+<p>HDFS篇完。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/Hadoop%E5%9F%BA%E7%A1%803%E4%B9%8BMR/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/crowdfunding.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Hadoop基础3之MR</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/Hadoop%E5%9F%BA%E7%A1%804%E4%B9%8BYARN/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/bored.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hadoop基础4之YARN</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81HDFS%E6%A6%82%E8%BF%B0"><span class="toc-text">一、HDFS概述</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-HDFS%E7%9A%84%E4%BA%A7%E7%94%9F%E8%83%8C%E6%99%AF"><span class="toc-text">1. HDFS的产生背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-HDFS%E5%AE%9A%E4%B9%89"><span class="toc-text">2. HDFS定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-text">3. 优缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-HDFS%E7%BB%84%E6%88%90%E6%9E%B6%E6%9E%84"><span class="toc-text">4. HDFS组成架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-HDFS%E6%96%87%E4%BB%B6%E5%9D%97%E5%A4%A7%E5%B0%8F"><span class="toc-text">5. HDFS文件块大小</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81HDFS%E7%9A%84Shell%E6%93%8D%E4%BD%9C%EF%BC%88%E5%BC%80%E5%8F%91%E9%87%8D%E7%82%B9%EF%BC%89"><span class="toc-text">二、HDFS的Shell操作（开发重点）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81HDFS%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%93%8D%E4%BD%9C%EF%BC%88%E5%BC%80%E5%8F%91%E9%87%8D%E7%82%B9%EF%BC%89"><span class="toc-text">三、HDFS客户端操作（开发重点）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-HDFS%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-text">1. HDFS客户端环境准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%B5%8B%E8%AF%95%E5%8F%82%E6%95%B0%E4%BC%98%E5%85%88%E7%BA%A7"><span class="toc-text">2. 测试参数优先级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-HDFS-API"><span class="toc-text">3. HDFS API</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-HDFS%E9%87%8C%E7%9A%84IO%E6%B5%81"><span class="toc-text">4. HDFS里的IO流</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81HDFS%E7%9A%84%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-text">四、HDFS的数据流</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-HDFS%E5%86%99%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B"><span class="toc-text">1. HDFS写数据流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%BD%91%E7%BB%9C%E6%8B%93%E6%89%91-%E8%8A%82%E7%82%B9%E8%B7%9D%E7%A6%BB%E8%AE%A1%E7%AE%97"><span class="toc-text">2. 网络拓扑-节点距离计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%89%AF%E6%9C%AC%E5%AD%98%E5%82%A8%E8%8A%82%E7%82%B9%E9%80%89%E6%8B%A9"><span class="toc-text">3. 副本存储节点选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-HDFS%E8%AF%BB%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B"><span class="toc-text">4. HDFS读数据流程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81NN%E5%92%8C2NN%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="toc-text">五、NN和2NN的工作机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-NN%E5%92%8C2NN%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="toc-text">1. NN和2NN的工作机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Fsimage%E5%92%8CEdits%E8%A7%A3%E6%9E%90-%E4%BA%86%E8%A7%A3"><span class="toc-text">2. Fsimage和Edits解析(了解)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-CheckPoint%E6%97%B6%E9%97%B4%E8%AE%BE%E7%BD%AE"><span class="toc-text">3. CheckPoint时间设置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-NameNode%E6%95%85%E9%9A%9C%E5%A4%84%E7%90%86-%E6%89%A9%E5%B1%95"><span class="toc-text">4. NameNode故障处理(扩展)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E9%9B%86%E7%BE%A4%E5%AE%89%E5%85%A8%E6%A8%A1%E5%BC%8F"><span class="toc-text">5. 集群安全模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-NameNode%E5%A4%9A%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE"><span class="toc-text">6. NameNode多目录配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81DN%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="toc-text">六、DN的工作机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-DN%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="toc-text">1. DN的工作机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%B0%E6%8D%AE%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="toc-text">2. 数据完整性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%8E%89%E7%BA%BF%E6%97%B6%E9%99%90%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE"><span class="toc-text">3. 掉线时限参数设置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%9C%8D%E5%BD%B9%E6%96%B0%E6%95%B0%E6%8D%AE%E8%8A%82%E7%82%B9"><span class="toc-text">4. 服役新数据节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E9%80%80%E5%BD%B9%E6%97%A7%E6%95%B0%E6%8D%AE%E8%8A%82%E7%82%B9"><span class="toc-text">5. 退役旧数据节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Datanode%E5%A4%9A%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE"><span class="toc-text">6. Datanode多目录配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%83%E3%80%81Hadoop%E6%96%B0%E7%89%B9%E6%80%A7"><span class="toc-text">七、Hadoop新特性</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Hadoop2-x%E6%96%B0%E7%89%B9%E6%80%A7"><span class="toc-text">1. Hadoop2.x新特性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%B0%8F%E6%96%87%E4%BB%B6%E5%AD%98%E6%A1%A3"><span class="toc-text">1.1 小文件存档</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%9B%9E%E6%94%B6%E7%AB%99trash"><span class="toc-text">1.2 回收站trash</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E9%9B%86%E7%BE%A4%E9%97%B4%E6%95%B0%E6%8D%AE%E6%8B%B7%E8%B4%9D"><span class="toc-text">1.3 集群间数据拷贝</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Hadoop3-x%E6%96%B0%E7%89%B9%E6%80%A7"><span class="toc-text">2. Hadoop3.x新特性</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

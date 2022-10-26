@@ -1,0 +1,478 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Flink基础6之SQL与CEP | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="十一、Table API 和SQL  在Flink提供的多层级API中，核心是DataStreamAPI，底层是处理函数process function，可以访问事件的时间信息、注册定时器、自定义状态，进行有状态的流处理。DataStreamAPI和处理函数比较通用，有了这些API，理论上我们就可以实现所有场景的需求了。 不过企业一般会将底层API包装成更加具体的应用级接口。怎样的接口风格最容易让">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flink基础6之SQL与CEP">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%806%E4%B9%8BSQL%E4%B8%8ECEP/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="十一、Table API 和SQL  在Flink提供的多层级API中，核心是DataStreamAPI，底层是处理函数process function，可以访问事件的时间信息、注册定时器、自定义状态，进行有状态的流处理。DataStreamAPI和处理函数比较通用，有了这些API，理论上我们就可以实现所有场景的需求了。 不过企业一般会将底层API包装成更加具体的应用级接口。怎样的接口风格最容易让">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/quest.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.755Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/quest.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%806%E4%B9%8BSQL%E4%B8%8ECEP/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Flink基础6之SQL与CEP',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background: transparent"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Flink基础6之SQL与CEP</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.755Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Flink/">Flink</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">13.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>45分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Flink基础6之SQL与CEP"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="十一、Table-API-和SQL"><a href="#十一、Table-API-和SQL" class="headerlink" title="十一、Table API 和SQL"></a>十一、Table API 和SQL</h1><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220809152330775.png" alt="image-20220809152330775" style="zoom: 67%;" />
+
+<p>在Flink提供的多层级API中，核心是DataStreamAPI，底层是处理函数process function，可以访问事件的时间信息、注册定时器、自定义状态，进行有状态的流处理。DataStreamAPI和处理函数比较通用，有了这些API，理论上我们就可以实现所有场景的需求了。</p>
+<p>不过企业一般会将底层API包装成更加具体的应用级接口。怎样的接口风格最容易让大家接收呢？当然是SQL了。SQL是结构化查询语言Structured Query Language的缩写，是我们对关系型数据库进行查询和修改的通用编程语言。Flink同样提供了对于表处理的支持，这就是更高层级的应用API，在Flink中被称为TableAPI和SQL。</p>
+<p>在Flink中，这两种API被集成在一起，SQL执行的对象也是Flink中的表Table，所以我们一般会认为它们是一体的。TableAPI和SQL最初并不完善，在Flink1.9版本合并阿里巴巴内部版本Blink之后发生了非常大的改变，而即使是在目前最新的1.13版本中，TableAPI和SQL也依然不算稳定，接口用法还在不停调整和更新。所以这部分希望大家重在理解原理和基本用法，具体的API调用可以随时关注官网的更新变化。</p>
+<h2 id="1-快速上手"><a href="#1-快速上手" class="headerlink" title="1. 快速上手"></a>1. 快速上手</h2><p>Table API 和SQL 的使用其实非常简单，只要得到一个表Table，然后对它调用 Table API，或者直接写 SQL 就可以了。</p>
+<p><strong>记得先引入依赖。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 获取表环境</span><br><span class="line">StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);</span><br><span class="line"></span><br><span class="line">// 将数据流转换成表，注意这里不用注册就能直接在下面用</span><br><span class="line">Table eventTable = tableEnv.fromDataStream(streamSource);</span><br><span class="line"></span><br><span class="line">// 注意from后面有个空格，查询结果依然是个表</span><br><span class="line">Table result1 = tableEnv.sqlQuery(&quot;select url, user from &quot; + eventTable);</span><br><span class="line"></span><br><span class="line">// 将结果表转成数据流，并打印</span><br><span class="line">tableEnv.toDataStream(result1).print();</span><br></pre></td></tr></table></figure>
+
+<p>+I表示插入Insert到表中的新增数据</p>
+<p>Table 是 Table API 中的核心接口类，对应着表的概念。基于Table 调用的一系列方法直接进行转换的方式，就是所谓 Table API 的处理方式。这里的**$符号**是Table API 中定义的类Expressions 中的一个方法，传入一个字段名称，就可以指代数据中对应字段。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Table result2 = eventTable.select($(&quot;url&quot;), $(&quot;user&quot;));</span><br><span class="line">tableEnv.toDataStream(result2).print();</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-基本API"><a href="#2-基本API" class="headerlink" title="2. 基本API"></a>2. 基本API</h2><p>Table API 和 SQL 可以看作联结在一起的一套 API，这套 API 的核心概念就是表Table。输入数据可以定义成一张表，然后对这张表进行查询，就可以得到新的表，最后还可以定义一张用于输出的表，将处理结果写入到外部系统。</p>
+<h3 id="2-1-程序基本结构"><a href="#2-1-程序基本结构" class="headerlink" title="2.1 程序基本结构"></a>2.1 程序基本结构</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 创建表环境</span><br><span class="line">TableEnvironment tableEnv = ...;</span><br><span class="line"></span><br><span class="line">// 注册一个表，连接外部系统，读取数据</span><br><span class="line">// tableEnv.fromDataStream(streamSource)就是相当于这个操作</span><br><span class="line">tableEnv.executeSql(&quot;CREATE TEMPORARY TABLE inputTable ... WITH ( &#x27;connector&#x27; = ... )&quot;);</span><br><span class="line"></span><br><span class="line">// 注册一个表，连接到外部系统，用于输出</span><br><span class="line">tableEnv.executeSql(&quot;CREATE TEMPORARY TABLE outputTable ... WITH ( &#x27;connector&#x27; = ... )&quot;);</span><br><span class="line"></span><br><span class="line">// 执行 SQL 对表进行查询转换，得到一个新的表</span><br><span class="line">Table table1 = tableEnv.sqlQuery(&quot;SELECT ... FROM inputTable... &quot;);</span><br><span class="line"></span><br><span class="line">// 使用 Table API 对表进行查询转换，得到一个新的表</span><br><span class="line">Table table2 = tableEnv.from(&quot;inputTable&quot;).select(...);</span><br><span class="line"></span><br><span class="line">// 将得到的结果写入输出表</span><br><span class="line">TableResult tableResult = table1.executeInsert(&quot;outputTable&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>这里的CREATE语句中用WITH指定了外部系统的<strong>连接器</strong>，于是就可以连接外部系统读写数据了。基于这种程序架构，就可以完全抛开DataStreamAPI，直接用SQL语句实现全部的流处理过程。在创建表的过程中，其实并不区分输入还是输出，只需要将这个表注册进来，连接到外部系统就可以了</p>
+<h3 id="2-2-创建表环境"><a href="#2-2-创建表环境" class="headerlink" title="2.2 创建表环境"></a>2.2 创建表环境</h3><p>每个表和SQL的执行，都必须绑定在一个表环境中。TableEnvironment是TableAPI中提供的基本接口类，可以通过调用静态的create()方法来创建一个表环境实例。方法需要传入一个环境的配置参数EnvironmentSettings，它可以指定当前表环境的执行模式和计划器（planner）。执行模式有批处理和流处理两种选择，默认是流处理模式，计划器默认使用blinkplanner。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">EnvironmentSettings settings = EnvironmentSettings</span><br><span class="line">.newInstance()</span><br><span class="line">.inStreamingMode()	// 使用流处理模式</span><br><span class="line">.build();</span><br><span class="line"></span><br><span class="line">TableEnvironment tableEnv = TableEnvironment.create(settings);</span><br></pre></td></tr></table></figure>
+
+<p>对于流处理场景，默认配置就完全够用，可以用另一种更加简单的方式来创建表环境， StreamTableEnvironment 是继承自TableEnvironment 的子接口。调用它的 create() 方法， 只需要直接将当前的<strong>流式执行环境</strong>传入，就可以创建出对应的<strong>流式表环境</strong>了。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);</span><br></pre></td></tr></table></figure>
+
+<p>TableEnvironment主要负责：</p>
+<ul>
+<li>注册Catalog和表</li>
+<li>执行SQL查询</li>
+<li>注册用户自定义函数（UDF）</li>
+<li>DataStream和表之间的转换</li>
+</ul>
+<p>这里的Catalog就是目录，主要用来管理所有数据库和表的元数据metadata，可以认为我们所定义的表都会挂靠在某个目录下，这样就可以快速检索。在表环境中可以由用户自定义Catalog，并在其中注册表和自定义函数UDF，默认的Catalog叫作default_catalog。</p>
+<h3 id="2-3-创建表"><a href="#2-3-创建表" class="headerlink" title="2.3 创建表"></a>2.3 创建表</h3><p>为了方便地查询表，表环境中会维护一个目录Catalog和表的对应关系，所以表都是通过Catalog注册创建的。表在环境中有一个唯一的ID，由三部分组成：目录名，数据库名，以及表名。在默认情况下，目录名为default_catalog，数据库名为default_database。所以如果我们直接创建一个叫作MyTable的表，它的ID就是：default_catalog.default_database.MyTable。</p>
+<p>具体创建表的方式，有通过连接器connector和虚拟表virtual tables两种。</p>
+<h4 id="2-3-1-连接器表-Connector-Tables"><a href="#2-3-1-连接器表-Connector-Tables" class="headerlink" title="2.3.1 连接器表 Connector Tables"></a>2.3.1 连接器表 Connector Tables</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tableEnv.executeSql(&quot;CREATE TEMPORARY TABLE MyTable ... WITH ( &#x27;connector&#x27; = ... )&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>通过WITH关键字指定连接到外部系统的连接器，这里的TEMPORARY关键字可以省略。连接器会在11.8节中展开讲解。这里没有定义Catalog和Database，所以都是默认的，表的完整ID就是default_catalog.default_database.MyTable。如果希望使用自定义的目录名和库名，可以在环境中进行设置，这样我们创建的表完整ID就变成了custom_catalog.custom_database.MyTable。之后在表环境中创建的所有表，ID也会都以custom_catalog.custom_database作为前缀。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tEnv.useCatalog(&quot;custom_catalog&quot;);</span><br><span class="line">tEnv.useDatabase(&quot;custom_database&quot;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-3-2-虚拟表-Virtual-Tables"><a href="#2-3-2-虚拟表-Virtual-Tables" class="headerlink" title="2.3.2 虚拟表 Virtual Tables"></a>2.3.2 虚拟表 Virtual Tables</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Table newTable = tableEnv.sqlQuery(&quot;SELECT ... FROM MyTable... &quot;);</span><br></pre></td></tr></table></figure>
+
+<p>这里得到的newTable是一个中间转换结果，如果之后又希望直接使用这个表执行SQL，又该怎么做呢？由于newTable是一个Table对象，并没有在表环境中注册，所以我们还需要将这个中间结果表注册到环境中，才能在SQL中使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tableEnv.createTemporaryView(&quot;NewTable&quot;,newTable);  </span><br></pre></td></tr></table></figure>
+
+<p>这里的注册其实是创建了一个虚拟表，与SQL语法中的视图View非常类似，所以调用的方法也叫作createTemporaryView，虚拟表也不存真实数据，只存SQL片段。</p>
+<h3 id="2-4-表的查询"><a href="#2-4-表的查询" class="headerlink" title="2.4 表的查询"></a>2.4 表的查询</h3><p>Flink为我们提供了两种查询方式：SQL和Table API。</p>
+<h4 id="2-4-1-执行SQL查询"><a href="#2-4-1-执行SQL查询" class="headerlink" title="2.4.1 执行SQL查询"></a>2.4.1 执行SQL查询</h4><p>Flink基于Apache Calcite来提供对SQL的支持，Calcite是一个为不同的计算平台提供标准SQL查询的底层工具，很多大数据框架比如ApacheHive、ApacheKylin中的SQL支持都是通过集成Calcite来实现的。</p>
+<p>只要调用表环境的sqlQuery()方法，传入一条SQL就可以了，执行得到的结果，是一个Table对象。目前 Flink 支持标准 SQL 中的绝大部分用法，并提供了丰富的计算函数。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Table newTable = tableEnv.sqlQuery(&quot;SELECT ... FROM MyTable... &quot;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-4-2-调用Table-API查询"><a href="#2-4-2-调用Table-API查询" class="headerlink" title="2.4.2 调用Table API查询"></a>2.4.2 调用Table API查询</h4><p>通过一步步链式调用Table的方法，就可以定义出所有的查询转换操作，每一步方法调用的返回结果，都是一个Table。</p>
+<p>由于Table API是基于Table的Java实例进行调用的，因此我们首先要得到表的Java对象。基于环境中已注册的表，可以通过表环境的from()方法非常容易地得到一个Table对象：<code>Table eventTable=tableEnv.from(&quot;EventTable&quot;)</code>，传入的参数就是注册好的表名。得到Table对象之后，就可以调用API进行各种转换操作了：<code>Table result2 = eventTable.select($(&quot;url&quot;), $(&quot;user&quot;))</code>。</p>
+<p><strong>Table API的方式基本不会用，以后也是往SQL层面发展。</strong></p>
+<h4 id="2-4-3-两种API的结合使用"><a href="#2-4-3-两种API的结合使用" class="headerlink" title="2.4.3 两种API的结合使用"></a>2.4.3 两种API的结合使用</h4><p>无论是调用TableAPI还是执行SQL，得到的结果都是一个Table对象，所以这两种API的查询可以很方便地结合在一起。无论是那种方式得到的Table对象，都可以继续调用Table API进行查询转换。如果想要对一个表执行SQL操作，必须先在环境中对它进行注册。所以我们可以通过创建虚拟表的方式实现两者的转换：tableEnv.createTemporaryView(“MyTable”,myTable)，前面那个是自定义表名，后面那个是表对象。</p>
+<p>之前我们并没有将Table对象注册为虚拟表就直接在SQL中使用了，这其实是一种简略的写法，我们将Table对象名eventTable直接以字符串拼接的形式添加到SQL语句中，在解析时会自动注册一个同名的虚拟表到环境中，这样就省略了创建虚拟视图的步骤。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Table eventTable = tableEnv.fromDataStream(streamSource);</span><br><span class="line">Table result1 = tableEnv.sqlQuery(&quot;select url, user from &quot; + eventTable);</span><br><span class="line">错误写法：tableEnv.sqlQuery(&quot;select url, user from eventTable&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>尽量不要结合使用，企业项目中往往会直接选择SQL的方式来实现需求。</p>
+<h3 id="2-5-输出表"><a href="#2-5-输出表" class="headerlink" title="2.5 输出表"></a>2.5 输出表</h3><p>输出一张表最直接的方法，就是调用Table的方法executeInsert()将一个Table写入到注册过的表中，方法传入的参数就是注册的表名：<code>resultTable.executeInsert(&quot;output&quot;)</code>。这行的意思是，把结果表的数据写入output表，output表在创建的时候有个connector，里面应该有对TableSink的实现。</p>
+<p>在底层，表的输出是通过将数据写入到TableSink来实现的。TableSink是TableAPI中提供的一个向外部系统写入数据的通用接口，可以支持不同的文件格式（比如CSV、Parquet）、存储数据库（比如JDBC、HBase、Elasticsearch）和消息队列（比如Kafka）。它有些类似于DataStreamAPI中调用addSink()方法时传入的SinkFunction，有不同的连接器对它进行了实现。</p>
+<p>(在早期的版本中，有专门用于输入输出的TableSource和TableSink，但是这种方式与SQL的使用习惯不符，已弃用。不知道这里说的TableSink和上面说的TableSink是不是一个东西。)</p>
+<h3 id="2-6-表和流的转换"><a href="#2-6-表和流的转换" class="headerlink" title="2.6 表和流的转换"></a>2.6 表和流的转换</h3><p>测试业务逻辑一般不会直接将结果直接写入到外部系统，而是在本地控制台打印输出。对于<strong>DataStream</strong>这非常容易，直接调用print()方法就可以了，但对于<strong>Table</strong>就比较悲剧，它没有提供print()方法。这该怎么办呢？我们可以将Table再转换成DataStream，然后进行打印输出，这就涉及了表和流的转换。</p>
+<h4 id="2-6-1-将表转换成流"><a href="#2-6-1-将表转换成流" class="headerlink" title="2.6.1 将表转换成流"></a>2.6.1 将表转换成流</h4><p>toDataStream()和toChangelogStream()，前者不支持表的update操作，对于这样有更新操作的表，我们不要试图直接把它转换成 DataStream 打印输出，而是记录一下它的更新日志change log。这样一来，对于表的所有更新操作，就变成了一条更新日志的流，我们就可以转换成流打印输出了。所以前者又叫仅插入流Insert-Only Streams，后者叫更新日志流Changelog Streams，具体使用哪种方式取决于表中是否存在更新（update）操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tableEnv.toDataStream(sqlQuery1).print(&quot;sqlQuery1&quot;);</span><br><span class="line">tableEnv.toChangelogStream(sqlQuery2).print(&quot;sqlQuery2&quot;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-6-2-将流转换成表"><a href="#2-6-2-将流转换成表" class="headerlink" title="2.6.2 将流转换成表"></a>2.6.2 将流转换成表</h4><p>可以直接调用<strong>fromDataStream</strong>()方法，由于流中的数据是POJO类，所以将流转换成表之后，每一行数据就对应着一个Event，而表中的列名就对应着Event中的属性。我们还可以在fromDataStream()方法中给列名重命名或者改变位置，比如把关键字timestamp重命名为ts。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Table eventTable1 = tableEnv.fromDataStream(eventStream);</span><br><span class="line">Table eventTable2 = tableEnv.fromDataStream(eventStream, $(&quot;timestamp&quot;).as(&quot;ts&quot;), $(&quot;url&quot;));</span><br></pre></td></tr></table></figure>
+
+<p>通过fromDataStream()转换成的表不能直接在SQL里用，还要另外注册。可以用<strong>createTemporaryView</strong>直接创建成虚拟视图。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tableEnv.createTemporaryView(&quot;EventTable&quot;, eventStream, $(&quot;timestamp&quot;).as(&quot;ts&quot;), $(&quot;url&quot;));</span><br></pre></td></tr></table></figure>
+
+<p>另外表环境还提供了一个fromChangelogStream()方法，可以将一个更新日志流转换成表。这个方法要求流中的数据类型只能是 Row，而且每一个数据都需要指定当前行的更新类型RowKind，所以一般是由连接器帮我们实现的，直接应用比较少见，感兴趣的读者可以查看官网的文档说明。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220810093735129.png" alt="image-20220810093735129" style="zoom:67%;" />
+
+<h4 id="2-6-3-支持的数据类型"><a href="#2-6-3-支持的数据类型" class="headerlink" title="2.6.3 支持的数据类型"></a>2.6.3 支持的数据类型</h4><p>DataStream支持的数据类型，Table也都支持，大概有基本数据类型、POJO类型和Row类型，并且基础数据类型默认的字段名是f0，这是把原子类型当作了一元组Tuple1。需要特别注意的是Row类型，用起来不方便，需要指定RowKind，用来表示当前行在更新操作中的类型，所以好像只在connector里用。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">DataStream&lt;Row&gt; dataStream = env.fromElements(</span><br><span class="line">    Row.ofKind(RowKind.INSERT, &quot;Alice&quot;, 12),</span><br><span class="line">    Row.ofKind(RowKind.INSERT, &quot;Bob&quot;, 5),</span><br><span class="line">    Row.ofKind(RowKind.UPDATE_BEFORE, &quot;Alice&quot;, 12),</span><br><span class="line">    Row.ofKind(RowKind.UPDATE_AFTER, &quot;Alice&quot;, 100)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">// 将更新日志流转换为表</span><br><span class="line">Table table = tableEnv.fromChangelogStream(dataStream);</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-6-4-综合应用示例"><a href="#2-6-4-综合应用示例" class="headerlink" title="2.6.4 综合应用示例"></a>2.6.4 综合应用示例</h4><p>查询出某个用户点击的 url 列表，并统计出每个用户累计的点击次数。</p>
+<p>代码见 com.study.chapter11.F47_TableAPITest2</p>
+<p>这里数据的前缀出现了+I、-U和+U三种RowKind，分别表示INSERT插入、UPDATE_BEFORE更新前和UPDATE_AFTER更新后。这种表示更新日志的方式，像是撤回了之前的一条数据，再插入一条更新后的数据，所以也叫作撤回流RetractStream。</p>
+<h2 id="3-流处理中的表"><a href="#3-流处理中的表" class="headerlink" title="3. 流处理中的表"></a>3. 流处理中的表</h2><h3 id="3-1-动态表和持续查询"><a href="#3-1-动态表和持续查询" class="headerlink" title="3.1 动态表和持续查询"></a>3.1 动态表和持续查询</h3><p><strong>动态表：</strong>对于流式数据，当流中有新数据到来，表中会插入一行，这样得到的表就会不断地动态变化，被称为动态表DynamicTables。在很多高级关系型数据库（比如Oracle、DB2）中都有物化视图Materialized Views的概念，可以用来缓存SQL查询的结果，它的更新其实就是不停地处理更新日志流的过程。Flink中的动态表，就借鉴了物化视图的思想。</p>
+<p><strong>持续查询：</strong>对动态表定义的查询操作，都是持续查询，而持续查询的结果也会是一个动态表。每次数据到来都会触发查询操作，每次查询面对的数据集，就是当前输入动态表中收到的所有数据。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220810093431694.png" alt="image-20220810093431694" style="zoom:67%;" />
+
+<p>持续查询的步骤如下：</p>
+<ul>
+<li>流被转换为动态表</li>
+<li>对动态表进行持续查询，生成新的动态表</li>
+<li>生成的动态表被转换成流</li>
+</ul>
+<p>这样，<strong>只要将流和动态表的转换封装起来，我们就可以直接在数据流上执行 SQL 查询，用处理表的方式来做流处理了</strong>。</p>
+<h3 id="3-2-用-SQL-持续查询"><a href="#3-2-用-SQL-持续查询" class="headerlink" title="3.2 用 SQL 持续查询"></a>3.2 用 SQL 持续查询</h3><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220810093849191.png" alt="image-20220810093849191" style="zoom:67%;" />
+
+<p>当原始动态表不停地插入新的数据时，查询得到的urlCountTable会持续地进行更改，可能是插入，也可能是更新。换句话说，用来定义结果表的<strong>更新日志流</strong>中，包含了INSERT和UPDATE两种操作。这种持续查询被称为<strong>更新查询</strong>UpdateQuery，更新查询得到的结果表如果想要转换成DataStream，必须调用toChangelogStream()方法。而更新日志流中只有插入的持续查询，被称为<strong>追加查询</strong>AppendQuery，追加查询得到的结果表，转换成DataStream调用的方法没有限制，可以直接用toDataStream()，也可以像更新查询一样调用toChangelogStream()。</p>
+<p>什么时候表的结果只有插入呢？简单的select查询，或者基于窗口的聚合查询。窗口如果设置了允许迟到，结果也是一次性写入结果表吗？</p>
+<p>代码见 com.study.chapter11.F48_AppendQueryTest</p>
+<p>持续查询有个<strong>查询限制</strong>的问题，有些持续查询会因为计算代价太高而受到限制。比如对于rank()函数，每来一条新的数据，更新结果的时候可能需要全部重新计算，并且对很多已经输出的行进行更新。这样的查询操作，就不太适合作为连续查询在流处理中执行。或者给RANK()配合一个OVER 子句，这是所谓的开窗聚合。</p>
+<h3 id="3-3-表转流的编码方式"><a href="#3-3-表转流的编码方式" class="headerlink" title="3.3 表转流的编码方式"></a>3.3 表转流的编码方式</h3><p>动态表也可以增删改，可以通过编码后的消息指明所有的增删改操作。在 Flink 中，Table API 和 SQL 支持三种编码方式：</p>
+<ul>
+<li>仅追加流Append-only：只有插入</li>
+<li>撤回流Retract：包括之前数据的删除和新数据的插入</li>
+<li>更新插入流Upsert：需要动态表中有唯一的键key，通过这个key进行查询，如果存在对应的数据就更新，不存在就插入。更新插入流跟撤回流的主要区别在于，更新操作由于有key的存在，只需要用单条消息编码就可以，因此效率更高</li>
+</ul>
+<p>在代码里将动态表转换为DataStream时，只支持仅追加和撤回流，调用toChangelogStream()得到的就是撤回流。DataStream中并没有key的定义，所以只能通过两条消息一减一增来表示更新操作，而连接到外部系统时，则可以支持不同的编码方式。</p>
+<h2 id="4-时间属性和窗口"><a href="#4-时间属性和窗口" class="headerlink" title="4. 时间属性和窗口"></a>4. 时间属性和窗口</h2><p>在 Table API 和 SQL 中，会<strong>给表单独提供一个时间字段</strong>，专门用来在表处理程序中指示时间。它可以在创建表的DDL 里直接定义为一个字段，也可以在 DataStream 转换成表时定义。时间属性的数据类型为TIMESTAMP，它的行为类似于常规时间戳，可以直接访问并且进行计算。</p>
+<h3 id="4-1-事件时间"><a href="#4-1-事件时间" class="headerlink" title="4.1 事件时间"></a>4.1 事件时间</h3><h4 id="4-1-1-在创建表时定义"><a href="#4-1-1-在创建表时定义" class="headerlink" title="4.1.1 在创建表时定义"></a>4.1.1 在创建表时定义</h4><p>可以增加一个字段，通过 WATERMARK 语句来定义事件时间属性。这里我们把 ts 字段定义为事件时间属性，而且基于 ts 设置了 5 秒的水位线延迟，这里的5 秒是以时间间隔的形式定义的，数值必须用单引号引起来。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE EventTable( </span><br><span class="line">    user STRING,</span><br><span class="line">    url STRING,</span><br><span class="line">    ts TIMESTAMP(3),</span><br><span class="line">    WATERMARK FOR ts AS ts - INTERVAL &#x27;5&#x27; SECOND</span><br><span class="line">) WITH (</span><br><span class="line">...</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>事件时间的数据类型必须为TIMESTAMP或者TIMESTAMP_LTZ。TIMESTAMP_LTZ是指带有本地时区信息的时间戳，一般情况下如果数据中的时间戳是“年-月-日-时-分-秒”的形式，那就是不带时区信息的，可以将事件时间属性定义为TIMESTAMP类型。而如果原始的时间戳就是一个长整型的毫秒数，类型定义为TIMESTAMP_LTZ会更方便：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE events ( </span><br><span class="line">    user STRING,</span><br><span class="line">    url STRING, </span><br><span class="line">    ts BIGINT,</span><br><span class="line">    ts_ltz AS TO_TIMESTAMP_LTZ(ts, 3),</span><br><span class="line">    // watermark for后面的字段必须在原表中有定义，并且必须是TIMESTAMP类型</span><br><span class="line">    WATERMARK FOR ts_ltz AS ts_ltz - INTERVAL &#x27;5&#x27; SECOND</span><br><span class="line">) WITH (</span><br><span class="line">...</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>这里我们另外定义了一个字段ts_ltz，是把长整型的ts转换为TIMESTAMP_LTZ得到的，进而使用WATERMARK语句将它设为事件时间属性，并设置5秒的水位线延迟。</p>
+<h4 id="4-1-2-在流转换为表时定义"><a href="#4-1-2-在流转换为表时定义" class="headerlink" title="4.1.2 在流转换为表时定义"></a>4.1.2 在流转换为表时定义</h4><p>流转表时，给某个字段加上.rowtime()后缀，就表示将当前字段指定为事件时间属性。这个字段可以是数据中本不存在，额外追加上去的逻辑字段，也可以是本身固有的字段，那么这个字段就会被事件时间属性所覆盖，类型也会被转换为TIMESTAMP。不论那种方式，事件时间属性字段中保存的都是TIMESTAMP类型。这种方式只负责指定时间属性，而时间戳的提取和水位线的生成应该之前就在DataStream上定义好了。由于DataStream中没有时区概念，因此Flink会将事件时间属性解析成不带时区的TIMESTAMP类型，所有的时间都被当作UTC标准时间。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 方法一：流中数据类型为二元组 Tuple2，包含两个字段；需要自定义提取时间戳并生成水位线</span><br><span class="line">DataStream&lt;Tuple2&lt;String, String&gt;&gt; stream = inputStream.assignTimestampsAndWatermarks(...);</span><br><span class="line">// 声明一个额外的逻辑字段作为事件时间属性</span><br><span class="line">Table table = tEnv.fromDataStream(stream, $(&quot;user&quot;), $(&quot;url&quot;), $(&quot;ts&quot;).rowtime());</span><br><span class="line"></span><br><span class="line">// 方法二：流中数据类型为三元组 Tuple3，最后一个字段就是事件时间戳</span><br><span class="line">DataStream&lt;Tuple3&lt;String, String, Long&gt;&gt; stream = inputStream.assignTimestampsAndWatermarks(...);</span><br><span class="line">// 不再声明额外字段，直接用最后一个字段作为事件时间属性</span><br><span class="line">Table table = tEnv.fromDataStream(stream, $(&quot;user&quot;), $(&quot;url&quot;), $(&quot;ts&quot;).rowtime());</span><br><span class="line"></span><br><span class="line">// 这两种写法好像没区别？？？</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-处理时间"><a href="#4-2-处理时间" class="headerlink" title="4.2 处理时间"></a>4.2 处理时间</h3><p>相比之下处理时间就比较简单了，它就是我们的系统时间，使用时不需要提取时间戳和生成水位线，只需额外声明一个字段，专门用来保存当前的处理时间。</p>
+<h4 id="4-2-1-在创建表时定义"><a href="#4-2-1-在创建表时定义" class="headerlink" title="4.2.1 在创建表时定义"></a>4.2.1 在创建表时定义</h4><p>在创建表时，增加一个额外的字段，调用系统内置的<strong>PROCTIME()<strong>函数来指定处理时间，返回的类型是TIMESTAMP_LTZ。这里的时间属性，其实是以</strong>计算列</strong>的形式定义出来的，用一个AS语句来在表中产生数据中不存在的列，并且可以利用原有的列、各种运算符及内置函数。在前面事件时间属性的定义中，将ts字段转换成TIMESTAMP_LTZ类型的ts_ltz，也是计算列的定义方式。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE EventTable( </span><br><span class="line">    user STRING,</span><br><span class="line">    url STRING,</span><br><span class="line">    ts AS PROCTIME()</span><br><span class="line">) WITH (</span><br><span class="line">...</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-2-在流转换为表时定义"><a href="#4-2-2-在流转换为表时定义" class="headerlink" title="4.2.2 在流转换为表时定义"></a>4.2.2 在流转换为表时定义</h4><p>由于处理时间是系统时间，原始数据中并没有这个字段，所以处理时间属性一定不能定义在一个已有字段上，只能定义在表结构所有字段的<strong>最后</strong>，作为额外的逻辑字段出现。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Table table = tEnv.fromDataStream(stream, $(&quot;user&quot;), $(&quot;url&quot;), $(&quot;ts&quot;).proctime());</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-窗口"><a href="#4-3-窗口" class="headerlink" title="4.3 窗口"></a>4.3 窗口</h3><h4 id="4-3-1-分组窗口"><a href="#4-3-1-分组窗口" class="headerlink" title="4.3.1 分组窗口"></a>4.3.1 分组窗口</h4><p>在Flink1.12之前的版本中，TableAPI和SQL提供了一组分组窗口函数（Group Window），分组窗口的功能比较有限，目前已经处于弃用（deprecated）的状态。</p>
+<h4 id="4-3-2-窗口表值函数"><a href="#4-3-2-窗口表值函数" class="headerlink" title="4.3.2 窗口表值函数"></a>4.3.2 窗口表值函数</h4><p>从1.13版本开始，Flink开始使用窗口表值函数（Windowing table-valued functions，WindowingTVFs）来定义窗口。表函数（table function）可以看作是返回一个表的函数，后面会讲。目前Flink提供了以下几个窗口TVF：</p>
+<ul>
+<li>滚动窗口（TumblingWindows）</li>
+<li>滑动窗口（HopWindows）</li>
+<li>累积窗口（CumulateWindows）</li>
+<li>会话窗口（SessionWindows，目前尚未完全支持）</li>
+</ul>
+<p>目前窗口TVF的功能还不完善，会话窗口和很多高级功能还不支持，不过正在快速地更新完善。可以预见在未来的版本中，窗口TVF将越来越强大，将会是窗口处理的唯一入口。</p>
+<p>在窗口TVF的返回值中，除去原始表中的所有列，还增加了用来描述窗口的额外3个列：窗口起始点window_start、窗口结束点window_end、窗口时间window_time。这里的窗口时间等于window_end-1ms，所以相当于是窗口中能够包含数据的最大时间戳。</p>
+<p>在SQL中的声明方式，直接调用TUMBLE()、HOP()、CUMULATE()就可以实现滚动、滑动和累积窗口，不过传入的参数会有所不同。下面我们就分别对这几种窗口TVF进行介绍。</p>
+<p><strong>(1) 滚动窗口</strong></p>
+<p>滚动窗口只有一个核心参数就是窗口大小，暂不支持计数窗口，所以滚动窗口就是滚动时间窗口。这里基于时间字段ts，对表EventTable中的数据开了大小为1小时的滚动窗口。窗口会将表中的每一行数据，按照它们ts的值分配到一个指定的窗口中。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">TUMBLE(TABLE EventTable, DESCRIPTOR(ts), INTERVAL &#x27;1&#x27; HOUR)</span><br></pre></td></tr></table></figure>
+
+<p><strong>(2) 滑动窗口</strong></p>
+<p>通过调用HOP()来声明滑动窗口，除了要传入表名、时间属性外，还需要传入滑动步长和窗口大小两个参数。这里基于时间属性ts，在表EventTable上创建了大小为1小时的滑动窗口，每5分钟滑动一次。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">HOP(TABLE EventTable, DESCRIPTOR(ts), INTERVAL &#x27;5&#x27; MINUTES, INTERVAL &#x27;1&#x27; HOURS))</span><br></pre></td></tr></table></figure>
+
+<p><strong>(3) 累积窗口</strong></p>
+<p>有这样一类需求：我们的统计周期可能较长，因此希望中间每隔一段时间就输出一次当前的统计值。例如，我们按天来统计网站的PV，如果用1天的滚动窗口，那需要到每天24点才会计算一次，输出频率太低，如果用滑动窗口，计算频率可以更高，但统计的就变成了“过去24小时的PV”。我们真正希望的是，按照自然日统计每天的PV，不过每隔1小时就输出一次当天到目前为止的PV值。这种特殊的窗口就叫作累积窗口Cumulate Window，累积窗口中有两个核心的参数：累积步长和最大窗口长度。</p>
+<p>这里我们基于时间属性ts，在表EventTable上定义了一个统计周期为1天、累积步长为1小时的累积窗口。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CUMULATE(TABLE EventTable, DESCRIPTOR(ts), INTERVAL&#x27;1&#x27;HOURS, INTERVAL&#x27;1&#x27;DAYS))</span><br></pre></td></tr></table></figure>
+
+<p>到此为止，上面只是定义了窗口，窗口的完整调用包括开窗+聚合两步。</p>
+<h2 id="5-聚合查询"><a href="#5-聚合查询" class="headerlink" title="5. 聚合查询"></a>5. 聚合查询</h2><p>Flink 中的 SQL 是流处理与标准 SQL 结合的产物，所以聚合查询也可以分成两种：流处理中特有的聚合，以及 SQL 原生的聚合查询方式。</p>
+<h3 id="5-1-简单分组聚合"><a href="#5-1-简单分组聚合" class="headerlink" title="5.1 简单分组聚合"></a>5.1 简单分组聚合</h3><p>就是SUM()、MAX()、MIN()、AVG()以及COUNT()这些，这里不细说了。</p>
+<p>另外，在持续查询的过程中，由于用于分组的key可能会不断增加，因此计算结果所需要维护的状态也会持续增长。为了防止状态无限增长耗尽资源，Flink Table API和SQL可以在表环境中配置状态的生存时间TTL。</p>
+<h3 id="5-2-窗口聚合"><a href="#5-2-窗口聚合" class="headerlink" title="5.2 窗口聚合"></a>5.2 窗口聚合</h3><p>与分组聚合类似，窗口聚合也需要调用SUM()、MAX()、MIN()、COUNT()一类的聚合函数，通过GROUPBY子句来指定分组的字段。只不过窗口聚合时，需要将窗口信息作为分组key的一部分定义出来。在Flink1.12版本之前，是直接把窗口自身作为分组key放在GROUPBY之后的，所以也叫分组窗口聚合。而1.13版本开始使用了窗口表值函数，窗口本身返回的是就是一个表，所以窗口会出现在FROM后面，GROUPBY后面的则是窗口新增的字段window_start和window_end。比如将之前分组窗口的聚合，用窗口TVF重新实现一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    USER,</span><br><span class="line">    window_end,</span><br><span class="line">    COUNT(url) AS cnt</span><br><span class="line">FROM TABLE</span><br><span class="line">(</span><br><span class="line">    TUMBLE(TABLE EventTable, DESCRIPTOR(ts), INTERVAL &#x27;1&#x27; HOUR)</span><br><span class="line">) t1</span><br><span class="line">GROUP BY USER, window_start, window_end</span><br></pre></td></tr></table></figure>
+
+<p>这里我们以ts作为时间属性字段、基于EventTable定义了1小时的滚动窗口，希望统计出每小时每个用户点击url的次数。用来分组的字段是用户名user，以及表示窗口的window_start和window_end，而TUMBLE()是表值函数，所以得到的是一个表Table，我们的聚合查询就是在这个Table中进行的。</p>
+<p>下面是一段完整的窗口聚合代码，以累积聚合为例，代码见 F49_CumulateWindowTest。</p>
+<p>与分组聚合不同，窗口聚合不会将中间聚合的状态输出，只会最后输出一个结果。所以所有数据都是以 INSERT 操作追加到结果动态表中的，因此输出每行前面都有+I 的前缀。所以窗口聚合查询<strong>都</strong>属于追加查询，没有更新操作，代码中可以直接用 toDataStream() 将结果表转换成流。</p>
+<h3 id="5-3-在窗口里开窗"><a href="#5-3-在窗口里开窗" class="headerlink" title="5.3 在窗口里开窗"></a>5.3 在窗口里开窗</h3><p>rows between和range between都支持，但是逻辑和hive里不一样，hive里是物理行和逻辑行的区别，这里是计数范围和时间范围的区别。目前只支持按照时间属性的升序排列，也就是只能写order by ts。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">COUNT(url) OVER ( </span><br><span class="line">    PARTITION BY user ORDER BY ts</span><br><span class="line">    RANGE BETWEEN INTERVAL &#x27;1&#x27; HOUR PRECEDING AND CURRENT ROW</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>选择当前行之前 1 小时的数据： <code>RANGE BETWEEN INTERVAL &#39;1&#39; HOUR PRECEDING AND CURRENT ROW</code></p>
+<p>选择当前行和之前的 5 行数据： <code>ROWS BETWEEN 5 PRECEDING AND CURRENT ROW</code>  </p>
+<h3 id="5-4-应用实例-TopN"><a href="#5-4-应用实例-TopN" class="headerlink" title="5.4 应用实例 TopN"></a>5.4 应用实例 TopN</h3><p>如果真有那么一个TOPN()聚合函数，它需要实现多条数据的输入和多条数据的输出，这是一个真正意义上的多对多转换，很难实现，所以目前在 Flink SQL 中没有能够直接调用的 Top N 函数，而是提供了稍微复杂些的变通实现方法。</p>
+<h4 id="5-4-1-普通-Top-N"><a href="#5-4-1-普通-Top-N" class="headerlink" title="5.4.1 普通 Top N"></a>5.4.1 普通 Top N</h4><p>这个和hive里一样，先rank()排序，然后where rnk &lt;&#x3D; 10。注意这里，上面说ORDER BY 后面只能跟时间字段并且只支持升序，这里是因为Flink对TopN做了优化，目前 Table API 中并不支持ROW_NUMBER()函数，所以也只有 SQL 中这一种通用的Top N 实现方式。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SELECT </span><br><span class="line">    user</span><br><span class="line">    , url</span><br><span class="line">    , ts</span><br><span class="line">    , row_num </span><br><span class="line">FROM </span><br><span class="line">(</span><br><span class="line">    SELECT </span><br><span class="line">        *</span><br><span class="line">        , ROW_NUMBER() OVER (PARTITION BY user ORDER BY CHAR_LENGTH(url) desc) AS row_num </span><br><span class="line">    FROM EventTable</span><br><span class="line">) t1</span><br><span class="line">WHERE row_num &lt;= 2</span><br></pre></td></tr></table></figure>
+
+<p>新数据到来后，可能会改变之前数据的排名，所以这里的TopN是个更新操作，需要调用 toChangelogStream()才能转换成流打印输出。</p>
+<h4 id="5-4-2-窗口-Top-N"><a href="#5-4-2-窗口-Top-N" class="headerlink" title="5.4.2 窗口 Top N"></a>5.4.2 窗口 Top N</h4><p>先做一个窗口聚合，将窗口信息 window_start、window_end 连同每个商品的点击量一并返回，这样就得到了聚合的结果表，基于这个结果表，再按上面普通TopN的写法做就可以了。</p>
+<p>代码见 F50_WindowTopNTest。</p>
+<p>由于窗口的统计结果只会最终输出一次，只有插入操作，可以直接用toDataStream()将结果表转换成流打印输出。</p>
+<h3 id="5-5-join"><a href="#5-5-join" class="headerlink" title="5.5 join"></a>5.5 join</h3><p>普通的join、left join和full join在Flink中都支持。之前学习过 DataStream API 中的双流 Join，包括窗口联结window join和间隔联结interval join，目前 Flink SQL 还不支持窗口联结，间隔联结已经实现。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-- 下面是书本里给出的间隔连接的例子，但是我觉得写的很不好</span><br><span class="line">SELECT *</span><br><span class="line">FROM Order o, Shipment s </span><br><span class="line">WHERE o.id = s.order_id</span><br><span class="line">AND o.order_time BETWEEN s.ship_time - INTERVAL &#x27;4&#x27; HOUR AND s.ship_time</span><br><span class="line"></span><br><span class="line">-- 个人理解，这个是普通join</span><br><span class="line">SELECT *</span><br><span class="line">FROM Order o</span><br><span class="line">join Shipment s </span><br><span class="line">on o.id = s.order_id</span><br><span class="line"></span><br><span class="line">-- 这个是间隔连接</span><br><span class="line">SELECT *</span><br><span class="line">FROM Order o</span><br><span class="line">join Shipment s </span><br><span class="line">on o.id = s.order_id</span><br><span class="line">AND o.order_time BETWEEN s.ship_time - INTERVAL &#x27;4&#x27; HOUR AND s.ship_time</span><br><span class="line"></span><br><span class="line">实际就没必要分什么间隔连接，不就是在join后面加了个关于时间的过滤条件？？？</span><br></pre></td></tr></table></figure>
+
+<p>间隔联结查询只支持具有时间属性的仅追加表，有更新操作的表，可以用时间联结Temporal Join，这主要是针对版本表versioned table而言的，能够根据数据发生的时间，找到当时的版本，书上没细说，知道有这个概念就好。</p>
+<h2 id="6-函数"><a href="#6-函数" class="headerlink" title="6. 函数"></a>6. 函数</h2><p>Flink 的Table API 和 SQL 同样提供了函数的功能，两者在调用时略有不同：Table API 是通过方法调用来实现的，而 SQL 则是直接引用函数名称，传入数据作为参数。例如，要把一个字符串 str 转换成全大写的形式，Table API 的写法是<code>str.upperCase()</code>，而 SQL 中的写法是<code>UPPER(str)</code>。主要还是 SQL 中函数的使用。</p>
+<p>Flink SQL中的函数可以分为两类：一类是SQL中内置的系统函数，比如COUNT()、CHAR_LENGTH()、UPPER()等等，而另一类是用户自定义的函数UDF，需要在表环境中注册才能使用。</p>
+<p>这部分主要是一个知识扩展，实际应用的场景较少，一般只需要知道系统函数的用法就够了。</p>
+<h3 id="6-1-系统函数"><a href="#6-1-系统函数" class="headerlink" title="6.1 系统函数"></a>6.1 系统函数</h3><p>系统函数也叫内置函数，FlinkSQL中的系统函数分为两大类：标量函数ScalarFunctions和聚合函数AggregateFunctions。</p>
+<p>标量函数：+ - * &#x2F; &#x3D;，POWER，RAND，CHAR_LENGTH，TIMESTAMP，CURRENT_TIME</p>
+<p>聚合函数：COUNT()、SUM()、RANK()、ROW_NUMBER()</p>
+<h3 id="6-2-自定义函数-UDF"><a href="#6-2-自定义函数-UDF" class="headerlink" title="6.2 自定义函数 UDF"></a>6.2 自定义函数 UDF</h3><p>Flink 的Table API 和SQL 提供了多种自定义函数的接口，以抽象类的形式定义。当前 UDF主要有以下几类：</p>
+<ul>
+<li>标量函数 Scalar Functions ：将输入的标量值转换成一个新的标量值</li>
+<li>表函数 Table Functions ：将标量值转换成一个或多个新的行数据，也就是扩展成一个表</li>
+<li>聚合函数 Aggregate Functions ：将多行数据里的标量值转换成一个新的标量值</li>
+<li>表聚合函数 Table Aggregate Functions ：将多行数据里的标量值转换成一个或多个新的行数据</li>
+</ul>
+<h4 id="6-2-1-自定义函数的调用流程"><a href="#6-2-1-自定义函数的调用流程" class="headerlink" title="6.2.1 自定义函数的调用流程"></a>6.2.1 自定义函数的调用流程</h4><p>首先自定义对应 UDF 抽象类的实现，并在表环境中注册这个函数，然后就可以在 Table API 和 SQL 中调用了。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 注册系统函数，也可以注册为局部函数，但是没必要</span><br><span class="line">tableEnv.createTemporarySystemFunction(&quot;MyFunction&quot;, MyFunction.class);</span><br><span class="line"></span><br><span class="line">// 在Table API中，使用call()方法来调用自定义函数</span><br><span class="line">tableEnv.from(&quot;MyTable&quot;).select(call(&quot;MyFunction&quot;, $(&quot;myField&quot;)));</span><br><span class="line"></span><br><span class="line">// 在Table API中也可以不注册函数，直接用内联的方式调用UDF</span><br><span class="line">tableEnv.from(&quot;MyTable&quot;).select(call(SubstringFunction.class, $(&quot;myField&quot;)));</span><br><span class="line"></span><br><span class="line">// 在SQL中调用函数</span><br><span class="line">tableEnv.sqlQuery(&quot;SELECT MyFunction(myField) FROM MyTable&quot;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="6-2-2-标量函数"><a href="#6-2-2-标量函数" class="headerlink" title="6.2.2 标量函数"></a>6.2.2 标量函数</h4><p>想要实现自定义的标量函数，我们需要自定义一个类来继承抽象类 ScalarFunction，并实现叫作eval() 的求值方法。它必须是公有的（public），而且名字必须是 eval。求值方法 eval 可以重载多次，任何数据类型都可作为求值方法的参数和返回值类型。ScalarFunction 抽象类中并没有定义 eval()方法，所以我们不能直接在代码中重写（override），但 Table API 的框架底层又要求了求值方法必须名字为 eval()。这是 Table API 和 SQL 目前还显得不够完善的地方，未来的版本应该会有所改进。ScalarFunction 以及其它所有的UDF 接口，都在 org.apache.flink.table.functions 中。</p>
+<p>这里自定义了一个HashFunction，代码见 F51_UDF_ScalarFunction</p>
+<h4 id="6-2-3-表函数"><a href="#6-2-3-表函数" class="headerlink" title="6.2.3 表函数"></a>6.2.3 表函数</h4><p>就是<strong>一对多的UDTF函数</strong>，类似lateral view explode炸裂函数。</p>
+<p>表函数可以认为是返回一个表的函数，之前介绍过的窗口 TVF，本质上就是表函数。要实现自定义的表函数，需要自定义类来继承抽象类TableFunction，内部要实现的也是一个名为eval的方法。与标量函数不同的是，TableFunction类本身是有一个泛型参数T，这就是表函数返回数据的类型，而eval()方法没有返回类型，通过调用collect()方法输出数据。</p>
+<p>Flink里有个交叉连接cross join的概念，实际就是个没有关联条件的join，在mysql里叫笛卡尔积。注意自定义函数的使用。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">select user, url, word, length from event_table, lateral table(mysplit(url)) as T(word, length)</span><br></pre></td></tr></table></figure>
+
+<p>代码见 F52_UDF_TableFunction</p>
+<h4 id="6-2-4-聚合函数"><a href="#6-2-4-聚合函数" class="headerlink" title="6.2.4 聚合函数"></a>6.2.4 聚合函数</h4><p>多对一，类似于UDAF。自定义聚合函数需要继承抽象类AggregateFunction。它有两个泛型参数&lt;T, ACC&gt;，T表示聚合输出的结果类型，ACC则表示聚合的中间状态类型。聚合函数的所有方法都必须是公用的。</p>
+<p>聚合函数的工作原理如下：</p>
+<ul>
+<li>首先它需要调用createAccumulator()创建一个空的累加器，用来存储聚合的中间结果</li>
+<li>对于输入的每一行数据，都会调用accumulate()方法来更新累加器，这是聚合的核心过程。注意它的第一个参数是累加器，之后的参数是调用函数时传入的形参。不能重写只能手敲</li>
+<li>当所有的数据都处理完之后，通过调用getValue()方法来计算并返回最终的结果。在遇到复杂类型时，Flink的类型推导可能会无法得到正确的结果。所以AggregateFunction也可以专门对累加器和返回结果的类型进行声明，这是通过getAccumulatorType()和getResultType()两个方法来指定的</li>
+</ul>
+<p>当然还有其他一些方法，比如retract()、resetAccumulator()等，用到的时候再百度。</p>
+<p>这里有个求加权平均的案例，代码见 F53_UDF_AggregateFunction</p>
+<h4 id="6-2-5-表聚合函数"><a href="#6-2-5-表聚合函数" class="headerlink" title="6.2.5 表聚合函数"></a>6.2.5 表聚合函数</h4><p>需要继承TableAggregateFunction，这个就类似于上面求TopN的多对多。跟上面聚合函数不一样的就是emitValue()方法，对应上面的getValue()方法，通过收集器输出数据。</p>
+<p>表聚合函数相对比较复杂，它的一个典型应用场景就是TopN查询。这里我们自定义了个TopN函数，在累加器中应该能够保存当前最大的两个值，每当来一条新数据就在accumulate()方法中进行比较更新，最终在emitValue()中调用两次out.collect()将前两名数据输出。</p>
+<p>代码详见 F54_UDF_TableAggregatteFunction。目前SQL中没有直接使用表聚合函数的方式，所以需要使用TableAPI的方式来调用，flatAggregate()方法就是专门用来调用表聚合函数的接口。另外知道它还有个emitUpdateWithRetract()方法即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Table resultTable = tableEnv</span><br><span class="line">    .from(&quot;aggtable&quot;)</span><br><span class="line">    .groupBy($(&quot;window_end&quot;))</span><br><span class="line">    .flatAggregate(call(&quot;top2&quot;, $(&quot;cnt&quot;)).as(&quot;value&quot;, &quot;rnk&quot;))</span><br><span class="line">    .select($(&quot;window_end&quot;), $(&quot;value&quot;), $(&quot;rnk&quot;));</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-SQL-客户端"><a href="#7-SQL-客户端" class="headerlink" title="7. SQL 客户端"></a>7. SQL 客户端</h2><p>启动hadoop，启动flink本地模式<code>./bin/start-cluster.sh</code>，启动Flink SQL客户端<code>./bin/sql-client.sh</code>。在 SQL 客户端中，每定义一个 SQL 查询，就会把它作为一个 Flink 作业提交到集群上执行。所以通过这种方式，我们可以快速地对流处理程序进行开发测试。</p>
+<p>没演示好，用的时候百度吧。</p>
+<h2 id="8-连接到外部系统"><a href="#8-连接到外部系统" class="headerlink" title="8. 连接到外部系统"></a>8. 连接到外部系统</h2><p><strong>注意添加相关依赖。</strong></p>
+<p>架构中的TableSource 负责从外部系统中读取数据并转换成表，TableSink 则负责将结果表写入外部系统。在 Flink 1.13 的API 调用中，已经不去区分 TableSource 和TableSink，我们只要建立到外部系统的连接并创建表就可以，Flink 自动会从程序的处理逻辑中解析出它们的用途。比如最简单的就是连接到控制台打印。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE ResultTable </span><br><span class="line">( </span><br><span class="line">    user STRING,</span><br><span class="line">    cnt BIGINT </span><br><span class="line">WITH (</span><br><span class="line">    &#x27;connector&#x27; = &#x27;print&#x27;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-1-连接到kafka"><a href="#8-1-连接到kafka" class="headerlink" title="8.1 连接到kafka"></a>8.1 连接到kafka</h3><h4 id="8-1-1-kafka连接器"><a href="#8-1-1-kafka连接器" class="headerlink" title="8.1.1 kafka连接器"></a>8.1.1 kafka连接器</h4><p>如果想在 SQL 客户端里使用 Kafka 连接器，还需要下载对应的 jar 包放到 lib 目录下。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE KafkaTable </span><br><span class="line">(</span><br><span class="line">    user STRING,</span><br><span class="line">    url STRING,</span><br><span class="line">    ts TIMESTAMP(3) METADATA FROM &#x27;timestamp&#x27;</span><br><span class="line">) WITH (</span><br><span class="line">    &#x27;connector&#x27; = &#x27;kafka&#x27;, </span><br><span class="line">    &#x27;topic&#x27; = &#x27;events&#x27;,</span><br><span class="line">    &#x27;properties.bootstrap.servers&#x27; = &#x27;localhost:9092&#x27;, </span><br><span class="line">    &#x27;properties.group.id&#x27; = &#x27;testGroup&#x27;, </span><br><span class="line">    &#x27;scan.startup.mode&#x27; = &#x27;earliest-offset&#x27;,</span><br><span class="line">    &#x27;format&#x27; = &#x27;csv&#x27;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>在 KafkaTable 的字段中有一个 ts，它的声明中用到了METADATA FROM，这是一个元数据列metadata column，这里的 timestamp 其实就是Kafka 中数据自带的时间戳，把它提取出来，转换成一个新的字段 ts。</p>
+<h4 id="8-1-2-UpsertKafka"><a href="#8-1-2-UpsertKafka" class="headerlink" title="8.1.2 UpsertKafka"></a>8.1.2 UpsertKafka</h4><p>正常情况下，消息队列应该是仅追加模式，这时将有更新操作比如分组聚合的结果表写入Kafka，就会因为Kafka无法识别撤回或更新插入的消息而导致异常。为了解决这个问题，Flink专门增加了一个更新插入UpsertKafka连接器。</p>
+<p>UpsertKafka连接器处理的是更新日志changlog流。作为TableSource时，连接器会查找动态表中key对应的一行数据，将value更新为最新的值，如果没有key对应的行，会执行插入操作，如果遇到value为空，就对相应key那一行执行删除操作。作为TableSink时，如果遇到插入或者更新后UPDATE_AFTER的数据，就直接正常写入Kafka，如果是删除或者更新前的数据，对应是一个撤回消息，就把value为空的数据写入Kafka。由于Flink是根据键（key）的值对数据进行分区的，这样就可以保证同一个key上的更新和删除消息都会落到同一个分区中。</p>
+<p>下面是一个创建和使用Upsert Kafka 表的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-- 这里需要用PRIMARY KEY来指定主键，并在WITH子句中分别指定key和value的序列化格式</span><br><span class="line">create table pageviews_per_region ( </span><br><span class="line">    user_region string,</span><br><span class="line">    pv bigint, </span><br><span class="line">    uv bigint,</span><br><span class="line">    primary key (user_region) not enforced</span><br><span class="line">) with (</span><br><span class="line">    &#x27;connector&#x27; = &#x27;upsert-kafka&#x27;, </span><br><span class="line">    &#x27;topic&#x27; = &#x27;pageviews_per_region&#x27;,</span><br><span class="line">    &#x27;properties.bootstrap.servers&#x27; = &#x27;...&#x27;, </span><br><span class="line">    &#x27;key.format&#x27; = &#x27;avro&#x27;,</span><br><span class="line">    &#x27;value.format&#x27; = &#x27;avro&#x27;</span><br><span class="line">) ;</span><br><span class="line"></span><br><span class="line">create table pageviews ( </span><br><span class="line">    user_id bigint, </span><br><span class="line">    page_id bigint, </span><br><span class="line">    viewtime timestamp, </span><br><span class="line">    user_region string,</span><br><span class="line">    watermark for viewtime as viewtime - interval &#x27;2&#x27; second</span><br><span class="line">) with (</span><br><span class="line">    &#x27;connector&#x27; = &#x27;kafka&#x27;,</span><br><span class="line">    &#x27;topic&#x27; = &#x27;pageviews&#x27;,</span><br><span class="line">    &#x27;properties.bootstrap.servers&#x27; = &#x27;...&#x27;, </span><br><span class="line">    &#x27;format&#x27; = &#x27;json&#x27;</span><br><span class="line">) ;</span><br><span class="line"></span><br><span class="line">-- 计算 pv、uv 并插入到 upsert-kafka 表中</span><br><span class="line">insert into pageviews_per_region </span><br><span class="line">select</span><br><span class="line">    user_region, </span><br><span class="line">    count(*),</span><br><span class="line">    count(distinct user_id) </span><br><span class="line">from pageviews</span><br><span class="line">group by user_region;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-2-连接到文件系统"><a href="#8-2-连接到文件系统" class="headerlink" title="8.2 连接到文件系统"></a>8.2 连接到文件系统</h3><p>Flink 提供了文件系统的连接器，支持从本地或者分布式的文件系统中读写数据。基本没遇到过从文件中读写数据的场景，<code>&#39;connector&#39; = &#39;filesystem&#39;</code>，用到的时候再百度吧。</p>
+<h3 id="8-3-连接到-JDBC"><a href="#8-3-连接到-JDBC" class="headerlink" title="8.3 连接到 JDBC"></a>8.3 连接到 JDBC</h3><p>比如MySQL、PostgreSQL、Derby等，作为TableSink向数据库写入数据时，运行的模式取决于创建表的DDL是否定义了主键，有主键就可以覆盖更新，没有就只追加。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE MyTable ( </span><br><span class="line">    id BIGINT,</span><br><span class="line">    name STRING,</span><br><span class="line">    age INT,</span><br><span class="line">    status BOOLEAN,</span><br><span class="line">    PRIMARY KEY (id) NOT ENFORCED</span><br><span class="line">) WITH (</span><br><span class="line">    &#x27;connector&#x27; = &#x27;jdbc&#x27;,</span><br><span class="line">    &#x27;url&#x27; = &#x27;jdbc:mysql://localhost:3306/mydatabase&#x27;, </span><br><span class="line">    &#x27;table-name&#x27; = &#x27;users&#x27;</span><br><span class="line">) ;</span><br><span class="line"></span><br><span class="line">INSERT INTO MyTable</span><br><span class="line">SELECT </span><br><span class="line">    id, </span><br><span class="line">    name, </span><br><span class="line">    age, </span><br><span class="line">    status </span><br><span class="line">FROM test ;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-4-连接到ES"><a href="#8-4-连接到ES" class="headerlink" title="8.4 连接到ES"></a>8.4 连接到ES</h3><p><code>&#39;connector&#39; = &#39;elasticsearch-7&#39;</code></p>
+<h3 id="8-5-连接到HBase"><a href="#8-5-连接到HBase" class="headerlink" title="8.5 连接到HBase"></a>8.5 连接到HBase</h3><p>略</p>
+<h3 id="8-6-连接到Hive"><a href="#8-6-连接到Hive" class="headerlink" title="8.6 连接到Hive"></a>8.6 连接到Hive</h3><p>略，HiveCatalog 被设计为开箱即用，与现有的 Hive 配置完全兼容，我们不需要做任何的修改与调整就可以直接使用。注意只有 Blink 的计划器（planner）提供了 Hive 集成的支持， 所以需要在使用Flink SQL 时选择Blink planner。这里怎么选择计划器？每种计划器有啥区别？</p>
+<h3 id="8-7-连接到CK"><a href="#8-7-连接到CK" class="headerlink" title="8.7 连接到CK"></a>8.7 连接到CK</h3><p>Flink本身没提供，需要自定义connector？</p>
+<p>搜一下自定义connector的代码，实时项目里应该有，里面把数据发往CK。</p>
+<h1 id="十二、Flink-CEP"><a href="#十二、Flink-CEP" class="headerlink" title="十二、Flink CEP"></a>十二、Flink CEP</h1><p>在实际应用中，还有一类需求是要检测以特定顺序先后发生的一组事件，进行统计或做报警提示。例如检测连续登录失败事件。类似的多个事件的组合，我们把它叫作复杂事件。对于复杂时间的处理，由于涉及到事件的严格顺序，有时还有时间约束，我们很难直接用 SQL 或者 DataStream API 来完成。处理函数确实可以搞定这些需求，但是复杂度会非常高，很可能会使代码失去可读性。于是Flink 为我们提供了专门用于处理复杂事件的库——CEP，可以让我们更加轻松地解决这类棘手的问题。这在企业的实时风险控制中有非常重要的作用。</p>
+<h2 id="1-CEP与模式"><a href="#1-CEP与模式" class="headerlink" title="1. CEP与模式"></a>1. CEP与模式</h2><p>所谓<strong>CEP</strong>，就是复杂事件处理Complex Event Processing的缩写。Flink CEP，就是 Flink 实现的一个用于复杂事件处理的库。可以在事件流里，检测到<strong>特定的事件组合</strong>并进行处理，比如说连续登录失败，或者订单支付超时等等。</p>
+<p>CEP的流程可以分成三个步骤：</p>
+<ul>
+<li>定义一个匹配规则，又叫模式pattern</li>
+<li>将匹配规则应用到事件流上，检测满足规则的复杂事件</li>
+<li>对检测到的复杂事件进行处理，得到结果进行输出</li>
+</ul>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220811131759131.png" alt="image-20220811131759131" style="zoom:50%;" />
+
+<p>CEP的第一步所定义的匹配规则，我们可以把它叫作模式Pattern。模式的定义主要就是两部分内容：</p>
+<ul>
+<li>每个简单事件的特征</li>
+<li>简单事件之间的组合关系，比如事件的发生顺序，顺序又分严格近邻宽松近邻等，前后两个事件的时间间隔，事件是否可以重复出现等等</li>
+</ul>
+<p>Flink CEP为我们提供了丰富的API，可以实现上面关于模式的所有功能，这套API就叫作模式API，一般的应用场景大概在风险控制、用户画像、运维监控等方面。很多大数据框架如Spark都提供了不同的CEP解决方案，但没有专门的库，而Flink提供了专门的CEP库用于复杂事件处理，可以说是目前CEP的最佳解决方案。</p>
+<h2 id="2-快速上手"><a href="#2-快速上手" class="headerlink" title="2. 快速上手"></a>2. 快速上手</h2><p>为了精简和避免依赖冲突，Flink会保持尽量少的核心依赖，所以核心依赖中并不包括任何的连接器和库，这里的库就包括了SQL、CEP等等。所以如果想要在Flink集群中提交运行CEP作业，应该向Flink SQL那样将依赖的jar包放在&#x2F;lib目录下。从这个角度来看，Flink CEP和Flink SQL一样，都是最顶层的应用级API。</p>
+<p>接下来我们考虑一个具体的需求：检测用户行为，如果连续三次登录失败，就输出报警信息。代码见 F55_LoginFailDetect。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 定义pattern，连续的3个登录失败事件</span><br><span class="line">Pattern&lt;LoginEvent, LoginEvent&gt; pattern = Pattern</span><br><span class="line">    .&lt;LoginEvent&gt;begin(&quot;first&quot;)</span><br><span class="line">    .where(new SimpleCondition&lt;LoginEvent&gt;() &#123;</span><br><span class="line"></span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">// 将pattern应用到流上，检测匹配的复杂事件，得到一个patternstream</span><br><span class="line">PatternStream&lt;LoginEvent&gt; patternStream = CEP.pattern(keyedStream, pattern);</span><br><span class="line"></span><br><span class="line">// 将匹配到的复杂事件选出来，然后包装成字符串报警信息输出</span><br><span class="line">patternStream</span><br><span class="line">    .select(new PatternSelectFunction&lt;LoginEvent, String&gt;() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public String select(Map&lt;String, List&lt;LoginEvent&gt;&gt; map) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">            LoginEvent first = map.get(&quot;first&quot;).get(0);</span><br><span class="line">            LoginEvent second = map.get(&quot;second&quot;).get(0);</span><br><span class="line"></span><br><span class="line">            return first.userid + &quot;连续三次登录失败！登录时间：&quot; + first.ts + &quot;, &quot; + second.ts ;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    .print(&quot;warning&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>第一个事件要用begin()方法表示开始，next()是个严格近邻关系。所有这些连接词都可以有一个字符串作为参数，这个字符串就是当前事件的名称。所以上面案例如果匹配到了，里面就会有连续的三个登录失败事件，它们的名称分别叫作first、second、third。</p>
+<p>在第三步调用了PatternStream的select()方法，传入一个PatternSelectFunction对检测到的复杂事件进行处理。而检测到的复杂事件，会放在select方法里的形参MAP中，MAP的key是一个字符串，对应着事件的名称，而value是LoginEvent的一个列表，匹配到的登录失败事件就保存在这个列表里。</p>
+<h2 id="3-Pattern-API"><a href="#3-Pattern-API" class="headerlink" title="3. Pattern API"></a>3. Pattern API</h2><h3 id="3-1-个体模式"><a href="#3-1-个体模式" class="headerlink" title="3.1 个体模式"></a>3.1 个体模式</h3><p>每个简单事件的匹配规则，叫作个体模式。每个个体模式都以一个连接词开始，比如begin、next等等，这是Pattern对象的一个方法，返回的还是一个Pattern。这些连接词方法有一个String类型参数，这就是当前个体模式唯一的名字，在之后检测到匹配事件时，就会以这个名字来指代匹配事件。</p>
+<p>个体模式需要一个过滤条件，用来指定具体的匹配规则，这个条件一般通过where()方法实现，在个体模式后面加个量词就能匹配多次，还可以指定严格近邻、贪婪匹配、匹配一次或多次、可选匹配等。之前代码中没有定义量词，都是单例模式，所以只会匹配一个事件，每个List 中也只有一个元素。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Pattern</span><br><span class="line">    .&lt;LoginEvent&gt;begin(&quot;fail&quot;)</span><br><span class="line">    .where(new SimpleCondition&lt;LoginEvent&gt;() &#123;</span><br><span class="line"></span><br><span class="line">    &#125;)</span><br><span class="line">    .times(3)			-- 3次</span><br><span class="line">    .consecutive();		-- 严格近邻</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-组合模式"><a href="#3-2-组合模式" class="headerlink" title="3.2 组合模式"></a>3.2 组合模式</h3><p>组合模式确实就是一个模式序列，是用诸如 begin、next、followedBy 等表示先后顺序的连接词将个体模式串连起来得到的。组合模式的近邻条件又分为严格近邻、宽松近邻、非确定性宽松近邻等，分别对应next()、followedBy()、followedByAny()方法。或者调用within()指定一个模式序列必须在多长时间内匹配完成。在有量词的事件里，可以用consecutive()和allowCombinations()来指定严格模式和非确定性宽松近邻，默认是宽松模式。</p>
+<h3 id="3-3-模式组"><a href="#3-3-模式组" class="headerlink" title="3.3 模式组"></a>3.3 模式组</h3><p>多个模式序列串起来就是模式组。</p>
+<h3 id="3-4-匹配后跳过策略"><a href="#3-4-匹配后跳过策略" class="headerlink" title="3.4 匹配后跳过策略"></a>3.4 匹配后跳过策略</h3><p>对(a1 a2 a3 b)去匹配b，那么应该检测到 6 个匹配结果：(a1 a2 a3 b)，(a1 a2 b)，(a1 b)，(a2 a3 b)，(a2 b)，(a3 b)。匹配的太多了，可以自定义只要(a1 a2 a3 b)别的跳过，或者只要(a1 a2 a3 b)，(a2 a3 b)，(a3 b)别的跳过。</p>
+<h2 id="4-匹配后的数据处理"><a href="#4-匹配后的数据处理" class="headerlink" title="4. 匹配后的数据处理"></a>4. 匹配后的数据处理</h2><h3 id="4-1-将模式应用到流上"><a href="#4-1-将模式应用到流上" class="headerlink" title="4.1 将模式应用到流上"></a>4.1 将模式应用到流上</h3><p>将模式应用到事件流上的代码非常简单，只要调用 CEP 类的静态方法pattern()，将数据流DataStream和模式Pattern作为两个参数传入就可以了。最终得到的是一个 PatternStream：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">PatternStream&lt;LoginEvent&gt; patternStream = CEP.pattern(keyedStream, pattern);</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-处理匹配事件"><a href="#4-2-处理匹配事件" class="headerlink" title="4.2 处理匹配事件"></a>4.2 处理匹配事件</h3><p>PatternStream 的处理主要可以分成两种：简单便捷的选择提取操作select，和更加通用更加强大的处理操作process。选择操作传入的是一个 PatternSelectFunction或PatternFlatSelectFunction，处理操作传入的则是一个 PatternProcessFunction，后者是目前官方推荐的处理方式。事实上，PatternSelectFunction 和 PatternFlatSelectFunction 在 CEP 内部执行时也会被转换成 PatternProcessFunction。</p>
+<h3 id="4-3-处理超时事件"><a href="#4-3-处理超时事件" class="headerlink" title="4.3 处理超时事件"></a>4.3 处理超时事件</h3><p>一般来说，符合模式匹配的事件，会保存到对应的 Map 中，不符合的会丢弃。但是within()不同，在开头能够正常匹配的前提下，没有等到后续的匹配事件才会超时，所以往往不应该直接丢弃，这部分数据可以捕获，并由侧输出流输出。比如订单的超时检测用这个就很方便，它可以拿到哪单超时未支付，并给出这单的相关信息。用处理函数进行状态编程，结合定时器也可以实现同样的功能，但明显 CEP 的实现更加方便， 也更容易迁移和扩展。</p>
+<p>这里有个超时检测的案例，代码见 F57_OrderTimeoutDetect</p>
+<h3 id="4-4-处理迟到数据"><a href="#4-4-处理迟到数据" class="headerlink" title="4.4 处理迟到数据"></a>4.4 处理迟到数据</h3><p>在 Flink CEP 中沿用了通过设置水位线（watermark）延迟来处理乱序数据的做法。当一个事件到来时，并不会立即做检测匹配处理，而是先放入一个缓冲区。缓冲区内的数据，会按照时间戳由小到大排序，当一个水位线到来时，就会将缓冲区中所有时间戳小于水位线的事件依次取出，进行检测匹配。如果有数据再迟到又不想丢弃，也可以将迟到事件输出到侧输出流。</p>
+<h2 id="5-CEP-的状态机实现"><a href="#5-CEP-的状态机实现" class="headerlink" title="5. CEP 的状态机实现"></a>5. CEP 的状态机实现</h2><p>CEP 中模式的定义方式比较复杂，与正则表达式非常相似，它俩都是用状态机实现的。下面以检测连续3次登录失败为例，说下状态机的工作原理。</p>
+<p>从初始状态INITIAL出发，遇到一个类型为fail 的登录失败事件，就开始进入部分匹配的状态。目前只有一个 fail 事件，我们把当前状态记作 S1。基于S1如果继续遇到 fail 事件，那么就有两个 fail 事件，记作 S2。基于S2状态如果再次遇到 fail 事件，那么就找到了一组匹配的复杂事件，把当前状态记作 Matched， 就可以输出报警信息了。需要注意的是，报警完毕，需要立即重置状态回 S2，因为如果接下来再遇到 fail 事件，就又满足了新的连续三次登录失败，需要再次报警。</p>
+<p>而不论是初始状态，还是 S1、S2 状态，只要遇到类型为 success 的登录成功事件，就会跳转到结束状态，记作 Terminal。此时当前检测完毕，之前的部分匹配应该全部清空，所以需要立即重置状态到 Initial，重新开始下一轮检测。所以这里我们真正参与状态转移的，其实只有 Initial、S1、S2 三个状态，Matched 和Terminal 是为了方便我们做其他操作（比如输出报警、清空状态）的临时标记状态，不等新事件到来马上就会跳转。</p>
+<p>状态机的实现非常复杂，所以 Flink CEP 将底层状态机NFA全部实现好并封装起来，这样我们处理复杂事件时只要调上层的 Pattern API 就可以， 无疑大大降低了代码的复杂度，提高了编程的效率</p>
+<h2 id="6-本章总结"><a href="#6-本章总结" class="headerlink" title="6. 本章总结"></a>6. 本章总结</h2><p>DataStream API 和处理函数是 Flink 应用的基石，SQL 和CEP 是 Flink 大厦顶层扩展的两大工具。CEP 在实际生产中有非常广泛的应用。对于大数据分析而言，应用场景主要可以分为统计分析和逻辑分析。企业的报表统计、商业决策都离不开统计分析，这部分需求在目前企业的分析指标中占了很大的比重，实时的流数据统计可以通过 Flink SQL 方便地实现。而逻辑分析可以进一步细分为风险控制、数据挖掘、用户画像、精准推荐等各个应用场景，如今对实时性要求也越来越高，Flink CEP 就可以作为对流数据进行逻辑分析、进行实时风控和推荐的有力工具。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%805%E4%B9%8B%E5%AE%B9%E9%94%99%E6%9C%BA%E5%88%B6/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/bored.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Flink基础5之容错机制</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E5%AF%BC%E8%88%AA/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/testing.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">导航</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81Table-API-%E5%92%8CSQL"><span class="toc-text">十一、Table API 和SQL</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B"><span class="toc-text">1. 快速上手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%9F%BA%E6%9C%ACAPI"><span class="toc-text">2. 基本API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E7%A8%8B%E5%BA%8F%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="toc-text">2.1 程序基本结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%88%9B%E5%BB%BA%E8%A1%A8%E7%8E%AF%E5%A2%83"><span class="toc-text">2.2 创建表环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%88%9B%E5%BB%BA%E8%A1%A8"><span class="toc-text">2.3 创建表</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-1-%E8%BF%9E%E6%8E%A5%E5%99%A8%E8%A1%A8-Connector-Tables"><span class="toc-text">2.3.1 连接器表 Connector Tables</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-2-%E8%99%9A%E6%8B%9F%E8%A1%A8-Virtual-Tables"><span class="toc-text">2.3.2 虚拟表 Virtual Tables</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E8%A1%A8%E7%9A%84%E6%9F%A5%E8%AF%A2"><span class="toc-text">2.4 表的查询</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-1-%E6%89%A7%E8%A1%8CSQL%E6%9F%A5%E8%AF%A2"><span class="toc-text">2.4.1 执行SQL查询</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-2-%E8%B0%83%E7%94%A8Table-API%E6%9F%A5%E8%AF%A2"><span class="toc-text">2.4.2 调用Table API查询</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-3-%E4%B8%A4%E7%A7%8DAPI%E7%9A%84%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8"><span class="toc-text">2.4.3 两种API的结合使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E8%BE%93%E5%87%BA%E8%A1%A8"><span class="toc-text">2.5 输出表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-%E8%A1%A8%E5%92%8C%E6%B5%81%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="toc-text">2.6 表和流的转换</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-1-%E5%B0%86%E8%A1%A8%E8%BD%AC%E6%8D%A2%E6%88%90%E6%B5%81"><span class="toc-text">2.6.1 将表转换成流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-2-%E5%B0%86%E6%B5%81%E8%BD%AC%E6%8D%A2%E6%88%90%E8%A1%A8"><span class="toc-text">2.6.2 将流转换成表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-3-%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">2.6.3 支持的数据类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-4-%E7%BB%BC%E5%90%88%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="toc-text">2.6.4 综合应用示例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%B5%81%E5%A4%84%E7%90%86%E4%B8%AD%E7%9A%84%E8%A1%A8"><span class="toc-text">3. 流处理中的表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%8A%A8%E6%80%81%E8%A1%A8%E5%92%8C%E6%8C%81%E7%BB%AD%E6%9F%A5%E8%AF%A2"><span class="toc-text">3.1 动态表和持续查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E7%94%A8-SQL-%E6%8C%81%E7%BB%AD%E6%9F%A5%E8%AF%A2"><span class="toc-text">3.2 用 SQL 持续查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E8%A1%A8%E8%BD%AC%E6%B5%81%E7%9A%84%E7%BC%96%E7%A0%81%E6%96%B9%E5%BC%8F"><span class="toc-text">3.3 表转流的编码方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%97%B6%E9%97%B4%E5%B1%9E%E6%80%A7%E5%92%8C%E7%AA%97%E5%8F%A3"><span class="toc-text">4. 时间属性和窗口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E4%BA%8B%E4%BB%B6%E6%97%B6%E9%97%B4"><span class="toc-text">4.1 事件时间</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-1-%E5%9C%A8%E5%88%9B%E5%BB%BA%E8%A1%A8%E6%97%B6%E5%AE%9A%E4%B9%89"><span class="toc-text">4.1.1 在创建表时定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-2-%E5%9C%A8%E6%B5%81%E8%BD%AC%E6%8D%A2%E4%B8%BA%E8%A1%A8%E6%97%B6%E5%AE%9A%E4%B9%89"><span class="toc-text">4.1.2 在流转换为表时定义</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%A4%84%E7%90%86%E6%97%B6%E9%97%B4"><span class="toc-text">4.2 处理时间</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-%E5%9C%A8%E5%88%9B%E5%BB%BA%E8%A1%A8%E6%97%B6%E5%AE%9A%E4%B9%89"><span class="toc-text">4.2.1 在创建表时定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-%E5%9C%A8%E6%B5%81%E8%BD%AC%E6%8D%A2%E4%B8%BA%E8%A1%A8%E6%97%B6%E5%AE%9A%E4%B9%89"><span class="toc-text">4.2.2 在流转换为表时定义</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E7%AA%97%E5%8F%A3"><span class="toc-text">4.3 窗口</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-1-%E5%88%86%E7%BB%84%E7%AA%97%E5%8F%A3"><span class="toc-text">4.3.1 分组窗口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-2-%E7%AA%97%E5%8F%A3%E8%A1%A8%E5%80%BC%E5%87%BD%E6%95%B0"><span class="toc-text">4.3.2 窗口表值函数</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%81%9A%E5%90%88%E6%9F%A5%E8%AF%A2"><span class="toc-text">5. 聚合查询</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E7%AE%80%E5%8D%95%E5%88%86%E7%BB%84%E8%81%9A%E5%90%88"><span class="toc-text">5.1 简单分组聚合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E7%AA%97%E5%8F%A3%E8%81%9A%E5%90%88"><span class="toc-text">5.2 窗口聚合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E5%9C%A8%E7%AA%97%E5%8F%A3%E9%87%8C%E5%BC%80%E7%AA%97"><span class="toc-text">5.3 在窗口里开窗</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-%E5%BA%94%E7%94%A8%E5%AE%9E%E4%BE%8B-TopN"><span class="toc-text">5.4 应用实例 TopN</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-4-1-%E6%99%AE%E9%80%9A-Top-N"><span class="toc-text">5.4.1 普通 Top N</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-4-2-%E7%AA%97%E5%8F%A3-Top-N"><span class="toc-text">5.4.2 窗口 Top N</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-join"><span class="toc-text">5.5 join</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%87%BD%E6%95%B0"><span class="toc-text">6. 函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E7%B3%BB%E7%BB%9F%E5%87%BD%E6%95%B0"><span class="toc-text">6.1 系统函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0-UDF"><span class="toc-text">6.2 自定义函数 UDF</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-1-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0%E7%9A%84%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="toc-text">6.2.1 自定义函数的调用流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-2-%E6%A0%87%E9%87%8F%E5%87%BD%E6%95%B0"><span class="toc-text">6.2.2 标量函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-3-%E8%A1%A8%E5%87%BD%E6%95%B0"><span class="toc-text">6.2.3 表函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-4-%E8%81%9A%E5%90%88%E5%87%BD%E6%95%B0"><span class="toc-text">6.2.4 聚合函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-2-5-%E8%A1%A8%E8%81%9A%E5%90%88%E5%87%BD%E6%95%B0"><span class="toc-text">6.2.5 表聚合函数</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-SQL-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-text">7. SQL 客户端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E8%BF%9E%E6%8E%A5%E5%88%B0%E5%A4%96%E9%83%A8%E7%B3%BB%E7%BB%9F"><span class="toc-text">8. 连接到外部系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E8%BF%9E%E6%8E%A5%E5%88%B0kafka"><span class="toc-text">8.1 连接到kafka</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#8-1-1-kafka%E8%BF%9E%E6%8E%A5%E5%99%A8"><span class="toc-text">8.1.1 kafka连接器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-1-2-UpsertKafka"><span class="toc-text">8.1.2 UpsertKafka</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E8%BF%9E%E6%8E%A5%E5%88%B0%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-text">8.2 连接到文件系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E8%BF%9E%E6%8E%A5%E5%88%B0-JDBC"><span class="toc-text">8.3 连接到 JDBC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E8%BF%9E%E6%8E%A5%E5%88%B0ES"><span class="toc-text">8.4 连接到ES</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-%E8%BF%9E%E6%8E%A5%E5%88%B0HBase"><span class="toc-text">8.5 连接到HBase</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-6-%E8%BF%9E%E6%8E%A5%E5%88%B0Hive"><span class="toc-text">8.6 连接到Hive</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-7-%E8%BF%9E%E6%8E%A5%E5%88%B0CK"><span class="toc-text">8.7 连接到CK</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81Flink-CEP"><span class="toc-text">十二、Flink CEP</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-CEP%E4%B8%8E%E6%A8%A1%E5%BC%8F"><span class="toc-text">1. CEP与模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B"><span class="toc-text">2. 快速上手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Pattern-API"><span class="toc-text">3. Pattern API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%B8%AA%E4%BD%93%E6%A8%A1%E5%BC%8F"><span class="toc-text">3.1 个体模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F"><span class="toc-text">3.2 组合模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E6%A8%A1%E5%BC%8F%E7%BB%84"><span class="toc-text">3.3 模式组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E5%8C%B9%E9%85%8D%E5%90%8E%E8%B7%B3%E8%BF%87%E7%AD%96%E7%95%A5"><span class="toc-text">3.4 匹配后跳过策略</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%8C%B9%E9%85%8D%E5%90%8E%E7%9A%84%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="toc-text">4. 匹配后的数据处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%B0%86%E6%A8%A1%E5%BC%8F%E5%BA%94%E7%94%A8%E5%88%B0%E6%B5%81%E4%B8%8A"><span class="toc-text">4.1 将模式应用到流上</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%A4%84%E7%90%86%E5%8C%B9%E9%85%8D%E4%BA%8B%E4%BB%B6"><span class="toc-text">4.2 处理匹配事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%A4%84%E7%90%86%E8%B6%85%E6%97%B6%E4%BA%8B%E4%BB%B6"><span class="toc-text">4.3 处理超时事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E5%A4%84%E7%90%86%E8%BF%9F%E5%88%B0%E6%95%B0%E6%8D%AE"><span class="toc-text">4.4 处理迟到数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-CEP-%E7%9A%84%E7%8A%B6%E6%80%81%E6%9C%BA%E5%AE%9E%E7%8E%B0"><span class="toc-text">5. CEP 的状态机实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%9C%AC%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="toc-text">6. 本章总结</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

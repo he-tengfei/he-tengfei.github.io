@@ -1,0 +1,429 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>ClickHouse | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一、ClickHouse入门ClickHouse是俄罗斯的Yandex于2016年开源的列式存储数据库DBMS，使用C++语言编写，主要用于在线分析处理查询OLAP。版本号21.3.7。官网有中文，但别用，看英文版的，内容比较全。 1. ClickHouse 的特点 列式存储：经常与hbase做对比，适合OLAP的场景，也就是一次插入多次查询，还有个OLTP，联机事务处理，代表是MySQL和ora">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ClickHouse">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E6%95%B0%E6%8D%AE%E5%BA%93/ClickHouse/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="一、ClickHouse入门ClickHouse是俄罗斯的Yandex于2016年开源的列式存储数据库DBMS，使用C++语言编写，主要用于在线分析处理查询OLAP。版本号21.3.7。官网有中文，但别用，看英文版的，内容比较全。 1. ClickHouse 的特点 列式存储：经常与hbase做对比，适合OLAP的场景，也就是一次插入多次查询，还有个OLTP，联机事务处理，代表是MySQL和ora">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/seo.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.760Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/seo.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E6%95%B0%E6%8D%AE%E5%BA%93/ClickHouse/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ClickHouse',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/christmas-4701783.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">ClickHouse</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.760Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">6.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>22分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="ClickHouse"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="一、ClickHouse入门"><a href="#一、ClickHouse入门" class="headerlink" title="一、ClickHouse入门"></a>一、ClickHouse入门</h1><p>ClickHouse是俄罗斯的Yandex于2016年开源的列式存储数据库DBMS，使用C++语言编写，主要用于在线分析处理查询OLAP。版本号21.3.7。官网有中文，但别用，看英文版的，内容比较全。</p>
+<h2 id="1-ClickHouse-的特点"><a href="#1-ClickHouse-的特点" class="headerlink" title="1. ClickHouse 的特点"></a>1. ClickHouse 的特点</h2><ul>
+<li><strong>列式存储：</strong>经常与hbase做对比，适合OLAP的场景，也就是一次插入多次查询，还有个OLTP，联机事务处理，代表是MySQL和oracle，适合增删改查。所以要明白CK的定位，它是个分析型数据库。行式存储的好处是，想查某个人所有的属性时，一次读盘加顺序读取就可以。但是当想查所有人的年龄时，就要几乎全表扫描才行。列式存储的话，想查所有人的年龄只需把年龄那一列拿出来就可以了。所以列式存储更适合大数据，平时也是只查几个字段。对于列的聚合，计数，求和等统计操作原因优于行式存储。由于某一列的数据类型都是相同的，更容易进行数据压缩。</li>
+<li><strong>几乎覆盖了标准 SQL 的大部分语法</strong></li>
+<li><strong>多样化引擎：</strong>把表级的存储引擎插件化，根据表的不同需求可以设定不同的存储引擎。目前包括<strong>合并树</strong>、日志、接口和其他四大类 20 多种引擎</li>
+<li><strong>高吞吐写入能力：</strong>ClickHouse 采用类LSM Tree 的结构，数据写入后定期在后台Compaction。通过类 LSM tree的结构，ClickHouse 在数据导入时全部是顺序 append 写，写入后数据段不可更改，在后台compaction 时也是多个段 merge sort 后顺序写回磁盘。顺序写的特性，充分利用了磁盘的吞吐能力，即便在 HDD 上也有着优异的写入性能。官方公开 benchmark 测试显示能够达到 50MB-200MB&#x2F;s 的写入吞吐能力，按照每行100Byte 估算，大约相当于 50W-200W 条&#x2F;s 的写入速度。</li>
+<li><strong>数据分区与线程级并行：</strong>ClickHouse 将数据划分为多个 partition，每个 partition 再进一步划分为多个 index granularity(索引粒度)，然后通过多个 CPU 核心分别处理其中的一部分来实现并行数据处理。在这种设计下，<strong>单条 Query 就能利用整机所有 CPU</strong>。极致的并行处理能力，极大的降低了查询延时。所以，ClickHouse 即使对于大量数据的查询也能够化整为零平行处理。<strong>但是有一个弊端就是对于单条查询使用多 cpu，就不利于同时并发多条查询</strong>。<strong>所以对于高 qps 的查询业务，ClickHouse 并不是强项</strong>。</li>
+<li><strong>qps：</strong>query per second，每秒钟的查询次数。CPU是个瓶颈，高qps也是个瓶颈。CK适合做大宽表的存储，尽量避免做join，它join起来极其慢。它join时会把右表读进内存，然后与左表去比对。</li>
+</ul>
+<p>其他需要了解的：</p>
+<ul>
+<li>ClickHouse 像很多 OLAP 数据库一样，单表查询速度由于关联查询，而且 ClickHouse的两者差距更为明显</li>
+<li>hbase用的也是LSM Tree，这个结构在写数的时候是顺序追加写</li>
+<li>CK和hbase很相似，查数的时候也是新数老数都在，hbase用时间戳，CK用版本号，它俩都是在合并的时候才会把老数据删掉</li>
+<li>快的原因：LSM Tree + 顺写</li>
+<li>CK不需要hadoop生态，不需要hdfs，而且很快</li>
+<li>explain 20.6版本之后才有</li>
+<li>测试数据有3个，分别是170万行、800万行、1亿行，都是100多个字段</li>
+<li>学的版本是21.3.7</li>
+<li>ck也需要zk</li>
+<li>无中心化</li>
+</ul>
+<h1 id="二、ClickHouse-的安装"><a href="#二、ClickHouse-的安装" class="headerlink" title="二、ClickHouse 的安装"></a>二、ClickHouse 的安装</h1><h2 id="1-CentOS-取消打开文件数限制"><a href="#1-CentOS-取消打开文件数限制" class="headerlink" title="1. CentOS 取消打开文件数限制"></a>1. CentOS 取消打开文件数限制</h2><p>主要是调两个参数，打开文件数open files和最大用户进程数max user processes，因为CK比较吃CPU，并且数据存在本地磁盘，数据量大的时候这俩参数可能不够用，这俩之前ES也调过。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[kuyehenfei@hadoop180 ~]$ ulimit -a</span><br><span class="line">open files                      (-n) 1024</span><br><span class="line">max user processes              (-u) 4096</span><br></pre></td></tr></table></figure>
+
+<p>在 &#x2F;etc&#x2F;security&#x2F;limits.conf 文件和 &#x2F;etc&#x2F;security&#x2F;limits.d&#x2F;20-nproc.conf 文件的末尾加入以下带*的4行内容</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#&lt;domain&gt;        &lt;type&gt;  &lt;item&gt;  &lt;value&gt;</span><br><span class="line">* soft nofile 65536</span><br><span class="line">* hard nofile 65536</span><br><span class="line">* soft nproc 131072</span><br><span class="line">* hard nproc 131072</span><br><span class="line"></span><br><span class="line">第一列是要限制用户或用户组，*表示所有用户，soft表示当前生效的，软限制，hard表示最大，硬限制。nofile表示文件描述符的数量，no表示number，nproc表示进程数</span><br><span class="line"></span><br><span class="line">还要改下sudo vim /etc/security/limits.d/20-nproc.conf，因为它会覆盖上面那个，所以俩文件都改下，如果文件没有怎么办？自己创建1个</span><br><span class="line"></span><br><span class="line">改完重开xshell窗口，查看有没有生效</span><br><span class="line">[kuyehenfei@hadoop180 ~]$ ulimit -a</span><br><span class="line">open files                      (-n) 65536</span><br><span class="line">max user processes              (-u) 131072</span><br><span class="line"></span><br><span class="line">然后把这俩文件记得同步</span><br></pre></td></tr></table></figure>
+
+<p>跳板机：早在2000年左右，一些中大型企业为了能对运维人员的远程登录进行集中管理，会在机房部署一台跳板机。跳板机其实就是一台unix&#x2F;windows操作系统的服务器，所有运维人员都需要先远程登录跳板机，然后再从跳板机登录其他服务器中进行运维操作。</p>
+<p>堡垒机：堡垒机是从跳板机的概念演变过来的，跳板机并没有实现对运维人员操作行为的控制和审计，一旦出现操作事故很难快速定位原因和责任人。所以堡垒机就是解决 你是谁？你要去哪？你能做哪些？你做了什么？你什么时候做的？ 这5个问题的。</p>
+<h2 id="2-安装依赖"><a href="#2-安装依赖" class="headerlink" title="2. 安装依赖"></a>2. 安装依赖</h2><p>安装依赖，记得仨节点都要安装。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo yum install -y libtool	</span><br><span class="line">sudo yum install -y *unixODBC*</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-CentOS-取消-SELINUX"><a href="#3-CentOS-取消-SELINUX" class="headerlink" title="3. CentOS 取消 SELINUX"></a>3. CentOS 取消 SELINUX</h2><p>CentOS 取消 SELINUX，se是安全增强的缩写，确实很安全，但是它管的太多了，一般都把它关掉。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/selinux/config </span><br><span class="line">	SELINUX=disabled</span><br><span class="line"></span><br><span class="line">改完记得同步，注意这里可不能改错了，这个要重启机器才能生效，生产环境中不用重启，可以临时关闭</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-单机安装"><a href="#4-单机安装" class="headerlink" title="4. 单机安装"></a>4. 单机安装</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">新建文件夹clickhouse，把4个安装包上传，然后分发，然后在3台机器上分别安装这4个rpm包，这里应该装1台就好，不用起集群</span><br><span class="line">单机版不依赖zk，集群就得先开启zk</span><br><span class="line"></span><br><span class="line">sudo rpm -ivh *.rpm</span><br><span class="line"></span><br><span class="line">密码：123456，用户名default</span><br><span class="line"></span><br><span class="line">这里只装一台，不影响使用</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-修改配置文件"><a href="#5-修改配置文件" class="headerlink" title="5. 修改配置文件"></a>5. 修改配置文件</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/clickhouse-server/config.xml</span><br><span class="line">把 &lt;listen_host&gt;::&lt;/listen_host&gt; 的注释打开，这样的话才能让 ClickHouse 被除本机以外的服务器访问</span><br><span class="line">改完分发</span><br><span class="line"></span><br><span class="line">这俩是数据文件路径和日志文件路径，这俩路径可以改</span><br><span class="line">&lt;path&gt;/var/lib/clickhouse/&lt;/path&gt;</span><br><span class="line">&lt;log&gt;/var/log/clickhouse-server/clickhouse-server.log&lt;/log&gt;，日志级别默认是trace，比debug更详细</span><br><span class="line"></span><br><span class="line">/etc/clickhouse-server 下有两个文件config.xml和users.xml，内存CPU等都是在users.xml里配置</span><br><span class="line"></span><br><span class="line">命令在/usr/bin下</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-启动CK"><a href="#6-启动CK" class="headerlink" title="6. 启动CK"></a>6. 启动CK</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo clickhouse start | stop | status | restart</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-关闭开机自启"><a href="#7-关闭开机自启" class="headerlink" title="7. 关闭开机自启"></a>7. 关闭开机自启</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在3台服务器上执行，生产环境不能关</span><br><span class="line">sudo systemctl disable clickhouse-server</span><br></pre></td></tr></table></figure>
+
+<h2 id="8-连接CK"><a href="#8-连接CK" class="headerlink" title="8. 连接CK"></a>8. 连接CK</h2><p>用文档里的连不上，因为设置了密码。这里的-m代表多行模式，用 ; 代表命令结束，默认是单行模式，回车代表命令结束。 </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">clickhouse-client -m --user default --password &quot;123456&quot;</span><br><span class="line">可以看到默认端口号是9000，大概率会改</span><br><span class="line"></span><br><span class="line">也可以不连直接查询</span><br><span class="line">clickhouse-client --query &quot;show databases;&quot;;</span><br></pre></td></tr></table></figure>
+
+<p>启动的时候只起了180的，不是在3台机器上都装了吗？</p>
+<h1 id="三、数据类型"><a href="#三、数据类型" class="headerlink" title="三、数据类型"></a>三、数据类型</h1><h2 id="1-整型"><a href="#1-整型" class="headerlink" title="1. 整型"></a>1. 整型</h2><p>固定长度的整型，包括有符号整型或无符号整型。</p>
+<ul>
+<li>有符号整型：Int8、Int16、Int32、Int64</li>
+<li>无符号整型：UInt8、UInt16、UInt32、UInt64，范围(0~2^n-1)</li>
+</ul>
+<h2 id="2-浮点型"><a href="#2-浮点型" class="headerlink" title="2. 浮点型"></a>2. 浮点型</h2><p>select 1-0.9，在CK里结果就是个浮点型的0.09999999999999998</p>
+<p>Float32相当于float，Float64相当于double，建议尽可能以整数形式存储数据。比如将时间用毫秒为单位表示，因为浮点型进行计算时可能引起四舍五入的误差。</p>
+<h2 id="3-布尔型"><a href="#3-布尔型" class="headerlink" title="3. 布尔型"></a>3. 布尔型</h2><p>没有单独的类型来存储布尔值。可以使用 UInt8 类型，取值限制为 0 或 1。</p>
+<h2 id="4-Decimal-型"><a href="#4-Decimal-型" class="headerlink" title="4. Decimal 型"></a>4. Decimal 型</h2><p>有符号的浮点数，可在加、减和乘法运算过程中保持精度。对于除法，最低有效数字会被丢弃。一般金额字段、汇率、利率等字段为了保证小数点精度，都使用 Decimal进行存储。</p>
+<p>有三种声明：</p>
+<ul>
+<li>Decimal32(s)，相当于 Decimal(9-s,s)，有效位数为 1~9，s标识小数位</li>
+<li>Decimal64(s)，相当于 Decimal(18-s,s)，有效位数为 1~18</li>
+<li>Decimal128(s)，相当于 Decimal(38-s,s)，有效位数为 1~38</li>
+</ul>
+<h2 id="5-字符串"><a href="#5-字符串" class="headerlink" title="5. 字符串"></a>5. 字符串</h2><ul>
+<li>String：字符串可以任意长度的。它可以包含任意的字节集，包含空字节</li>
+<li>FixedString(N)：固定长度 N 的字符串，少了末尾用空补全，多了报错，极少用</li>
+</ul>
+<h2 id="6-枚举类型"><a href="#6-枚举类型" class="headerlink" title="6. 枚举类型"></a>6. 枚举类型</h2><p>包括 Enum8 和 Enum16 类型，用来保存 string&#x3D; integer 的对应关系。感觉没有使用场景，知道有这个就好。</p>
+<h2 id="7-时间类型"><a href="#7-时间类型" class="headerlink" title="7. 时间类型"></a>7. 时间类型</h2><p>目前 ClickHouse 有三种时间类型</p>
+<ul>
+<li><strong>Date：</strong>接受年-月-日的字符串比如 2019-12-16</li>
+<li><strong>Datetime：</strong>接受年-月-日 时:分:秒的字符串比如 2019-12-16 20:50:10</li>
+<li><strong>Datetime64：</strong>接受年-月-日 时:分:秒.亚秒的字符串比如 2019-12-16 20:50:10.66</li>
+</ul>
+<h2 id="8-数组"><a href="#8-数组" class="headerlink" title="8. 数组"></a>8. 数组</h2><p>Array(T)：由 T 类型元素组成的数组。T 可以是任意类型，包含数组类型。 但不推荐使用多维数组，ClickHouse 对多维数组的支持有限，比如不能在 MergeTree 表中存储多维数组。</p>
+<p>创建数组的两种方式，一种用array，一种用方括号，array也是被翻译成了方括号</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">select array(1,2) as x, toTypeName(x);</span><br><span class="line">select [1,2] as x, toTypeName(x) ;</span><br></pre></td></tr></table></figure>
+
+<p>还有很多其他格式比如map等，这里就不说了，注意不要存null，影响性能，高级部分会细说原因。</p>
+<h1 id="四、表引擎"><a href="#四、表引擎" class="headerlink" title="四、表引擎"></a>四、表引擎</h1><h2 id="1-表引擎概述"><a href="#1-表引擎概述" class="headerlink" title="1. 表引擎概述"></a>1. 表引擎概述</h2><p>表引擎是 ClickHouse 的一大特色。可以说表引擎决定了如何存储表的数据。包括：</p>
+<ul>
+<li>数据的存储方式和位置，写到哪里以及从哪里读取数据。一种是自带的一种是外部集成的，集成的就相当于dataphin上的外部表，数据不在CK里存，而是CK去MySQL里查，可以看官网，有很多集成引擎比如kafka。</li>
+<li>支持哪些查询以及如何支持</li>
+<li>并发数据访问</li>
+<li>索引的使用</li>
+<li>是否可以执行多线程请求</li>
+<li>数据复制参数</li>
+</ul>
+<p>说白了就是不同引擎功能不一样，必须在创建表时定义表引擎，以及相关参数，并且引擎的名称大小写敏感。</p>
+<h2 id="2-TinyLog"><a href="#2-TinyLog" class="headerlink" title="2. TinyLog"></a>2. TinyLog</h2><p><strong>基本不用</strong>。以列文件的形式保存在磁盘上，不支持索引，没有并发控制。一般保存少量数据的小表， 生产环境上作用有限。可以用于平时练习测试用。如：create table test( id String, name String) engine&#x3D;TinyLog;   </p>
+<h2 id="3-Memory"><a href="#3-Memory" class="headerlink" title="3. Memory"></a>3. Memory</h2><p>内存引擎，数据以未压缩的原始形式直接保存在内存当中，<strong>服务器重启数据就会消失</strong>。读写操作不会相互阻塞，不支持索引。简单查询下有非常非常高的性能表现(超过 10G&#x2F;s)。一般用到它的地方不多，除了用来测试，就是在需要非常高的性能，同时数据量又不太大(上限大概 1 亿行)的场景。</p>
+<h2 id="4-MergeTree"><a href="#4-MergeTree" class="headerlink" title="4. MergeTree"></a>4. MergeTree</h2><p>ClickHouse中最强大的表引擎当属MergeTree（合并树）引擎及该系列（*MergeTree）中的其他引擎，支持索引和分区，地位可以相当于innodb之于Mysql。而且基于MergeTree，还衍生除了很多小弟，也是非常有特色的引擎。这个<strong>很重要</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-- 建测试表</span><br><span class="line">create table test01</span><br><span class="line">( </span><br><span class="line">    id 					UInt32,</span><br><span class="line">    sku_id 				String,</span><br><span class="line">    total_amount 		Decimal(16,2), </span><br><span class="line">    create_time 		Datetime</span><br><span class="line">) engine = MergeTree</span><br><span class="line">partition by toYYYYMMDD(create_time) </span><br><span class="line">primary key (id)</span><br><span class="line">-- 第一次建表的时候，没写order by也成功了？？？</span><br><span class="line">order by(id, sku_id) ;</span><br><span class="line"></span><br><span class="line">insert into test01 values </span><br><span class="line">(101,&#x27;sku_001&#x27;,1000.00,&#x27;2020-06-01 12:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,2000.00,&#x27;2020-06-01 11:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_004&#x27;,2500.00,&#x27;2020-06-01 12:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,2000.00,&#x27;2020-06-01 13:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,12000.00,&#x27;2020-06-01 13:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,600.00,&#x27;2020-06-02 12:00:00&#x27;) ;</span><br><span class="line"></span><br><span class="line">// 第三方工具比如datagrip就看不到这种分区效果</span><br><span class="line">select * from test01 ;</span><br></pre></td></tr></table></figure>
+
+<p>MergeTree有很多参数，这里讲解特别重要的3个。</p>
+<h3 id="4-1-partition-by-分区-可选"><a href="#4-1-partition-by-分区-可选" class="headerlink" title="4.1 partition by 分区(可选)"></a>4.1 partition by 分区(可选)</h3><p><strong>分区就是分目录，目的是避免全表扫描</strong>，优化查询速度，如果不写就只会有1个分区。MergeTree是以列文件+索引文件+表定义文件组成的，但是如果设定了分区那么这些文件就会保存到不同的分区目录中。分区后，面对涉及跨分区的查询统计，ClickHouse会以分区为单位<strong>并行</strong>处理。任何一个批次的数据写入都会产生一个临时分区，写入后的某个时刻(大概10-15分钟后)，ClickHouse会自动执行<strong>合并</strong>操作，把临时分区的数据合并到已有分区中，等不及也可以手动通过optimize执行。生产环境一般按天分区。</p>
+<p>比如再次执行上面的插入数据的操作，然后马上执行select查询，观察数据，然后执行<code>optimize table order_detail final</code>，再查询观察效果。</p>
+<h3 id="4-2-primary-key-主键-可选"><a href="#4-2-primary-key-主键-可选" class="headerlink" title="4.2 primary key 主键(可选)"></a>4.2 primary key 主键(可选)</h3><p>ClickHouse中的主键，和其他数据库不太一样，它只提供了数据的一级索引，但却<strong>不是唯一</strong>约束，这就意味着是可以存在相同主键的数据。MergeTree的主键类似于<strong>稀疏索引</strong>，根据条件通过对主键进行某种形式的二分查找，能够定位到对应的index granularity，避免了全表扫描。并且主键的值要<strong>从order by中选</strong>。</p>
+<p>index granularity：直接翻译的话就是<strong>索引粒度</strong>，指在稀疏索引中两个相邻索引对应数据的间隔。ClickHouse中的默认是<strong>8192</strong>。官方不建议修改这个值，除非该列存在大量重复值，比如在一个分区中几万行才有一个不同数据。稀疏索引的好处就是可以用很少的索引数据，定位更多的数据，代价就是只能定位到索引粒度的第一行，然后再进行扫描。</p>
+<p>稀疏索引：</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220818161303413.png" alt="image-20220818161303413" style="zoom:67%;" />
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@hadoop180 20200601_7_7_0]# pwd</span><br><span class="line">/var/lib/clickhouse/data/default/test01/20200601_7_7_0</span><br><span class="line">[root@hadoop180 20200601_7_7_0]# ll</span><br><span class="line">总用量 36</span><br><span class="line">-rw-r----- 1 clickhouse clickhouse 259 8月  18 17:18 checksums.txt</span><br><span class="line">-rw-r----- 1 clickhouse clickhouse 118 8月  18 17:18 columns.txt</span><br><span class="line">-rw-r----- 1 clickhouse clickhouse   1 8月  18 17:18 count.txt</span><br><span class="line">-rw-r----- 1 clickhouse clickhouse 170 8月  18 17:18 data.bin</span><br><span class="line">-rw-r----- 1 clickhouse clickhouse 144 8月  18 17:18 data.mrk3</span><br><span class="line">-rw-r----- 1 clickhouse clickhouse  10 8月  18 17:18 default_compression_codec.txt</span><br><span class="line">-rw-r----- 1 clickhouse clickhouse   8 8月  18 17:18 minmax_create_time.idx</span><br><span class="line">-rw-r----- 1 clickhouse clickhouse   4 8月  18 17:18 partition.dat</span><br><span class="line">-rw-r----- 1 clickhouse clickhouse   8 8月  18 17:18 primary.idx</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>bin文件：数据文件</li>
+<li>mrk文件：标记文件，一般是记录偏移量，标记文件在idx索引文件和bin数据文件起到了桥梁作用，以mrk2结尾的文件，表示该表启用了自适应索引间隔</li>
+<li>primary.idx文件：主键索引文件，稀疏索引</li>
+<li>minmax_create_time.idx：分区键的最大最小值</li>
+<li>checksums.txt：校验文件</li>
+<li>20200601_7_7_0：这个目录的详细命名规则不用纠结，想知道就翻视频</li>
+</ul>
+<h3 id="4-3-order-by-必选"><a href="#4-3-order-by-必选" class="headerlink" title="4.3 order by (必选)"></a>4.3 order by (必选)</h3><p>必选字段？可是上面的建表语句就没选？</p>
+<p>order by是<strong>分区内排序</strong>，是MergeTree中唯一一个<strong>必填</strong>项，甚至比primary key还重要，因为当用户不设置主键的情况，很多处理会依照order by的字段进行处理(比如后面会讲的去重和汇总)，并且<strong>主键必须是order by字段的前缀字段</strong>。比如order by字段是(id, sku_id) 那么主键必须是id或者(id, sku_id)。</p>
+<h3 id="4-4-二级索引"><a href="#4-4-二级索引" class="headerlink" title="4.4 二级索引"></a>4.4 二级索引</h3><p>目前在ClickHouse的官网上二级索引的功能在v20.1.2.4之前是被标注为实验性的，在这个版本之后<strong>默认开启</strong>。使用时在原建表语句最后加一句话：<code>INDEX a total_amount TYPE minmax GRANULARITY 5</code>，其中 GRANULARITY N 是设定二级索引对于一级索引粒度的粒度，二级索引能够为非主键字段的查询发挥作用。注意这个二级索引的范围比一级范围更大，比如上面索引粒度设置为5，那它的范围就是5个8192：[0, 5*8192]</p>
+<h3 id="4-5-数据TTL"><a href="#4-5-数据TTL" class="headerlink" title="4.5 数据TTL"></a>4.5 数据TTL</h3><p>TTL 即 Time To Live，MergeTree可以对<strong>表或列</strong>设生命周期，到期后该列值置为0或空，涉及判断的字段必须是 Date 或者 Datetime 类型，推荐使用分区的日期字段。这里一般是实时用，过期的数据会在合并的时候清除。表的TTL是针对行的，哪行过期删哪行。对列设生命周期时，不能对主键列设置TTL。过期的数据默认删除，也可以设置让它存到别的地方。</p>
+<h2 id="5-ReplacingMergeTree"><a href="#5-ReplacingMergeTree" class="headerlink" title="5. ReplacingMergeTree"></a>5. ReplacingMergeTree</h2><p>ReplacingMergeTree是MergeTree的一个变种，它存储特性完全继承MergeTree，只是多了一个<strong>去重</strong>的功能。尽管MergeTree可以设置主键，但是它的主键并没有唯一约束的功能，如果想处理掉重复的数据，可以借助这个ReplacingMergeTree。</p>
+<p>去重时机：数据的去重只会在<strong>合并</strong>的过程中出现，而合并会在<strong>未知</strong>的时间在后台进行。</p>
+<p>去重范围：<strong>分区内去重</strong>，所以它不能保证没有重复的数据出现</p>
+<p>测试：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">create table test02</span><br><span class="line">( </span><br><span class="line">    id                  UInt32</span><br><span class="line">    , sku_id            String</span><br><span class="line">    , total_amount      Decimal(16,2)</span><br><span class="line">    , create_time       Datetime</span><br><span class="line">) engine = ReplacingMergeTree(create_time) </span><br><span class="line">partition by toYYYYMMDD(create_time) </span><br><span class="line">primary key (id)</span><br><span class="line">order by (id, sku_id) ;</span><br><span class="line"></span><br><span class="line">insert into test02 values </span><br><span class="line">(101,&#x27;sku_001&#x27;,1000.00,&#x27;2020-06-01 12:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,2000.00,&#x27;2020-06-01 11:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_004&#x27;,2500.00,&#x27;2020-06-01 12:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,2000.00,&#x27;2020-06-01 13:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,12000.00,&#x27;2020-06-01 13:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,600.00,&#x27;2020-06-02 12:00:00&#x27;) ;</span><br><span class="line"></span><br><span class="line">select * from test02 ;</span><br><span class="line"></span><br><span class="line">optimize table test02 final ;</span><br><span class="line"></span><br><span class="line">select * from test02 ;</span><br></pre></td></tr></table></figure>
+
+<p>这里ReplacingMergeTree() 填入的参数为版本字段，重复数据保留版本字段值最大的。如果不填版本字段，默认按照插入顺序保留最后一条。</p>
+<p>结论</p>
+<ul>
+<li>实际上是使用order by字段作为唯一键</li>
+<li>去重不能跨分区</li>
+<li>只有同一批插入(新版本)或合并分区时才会进行去重</li>
+<li>重复的数据，保留版本字段值最大的，如果版本字段相同，保留最后插入的</li>
+</ul>
+<p>副本用的也是ReplicatedMergeTree？？？</p>
+<h2 id="6-SummingMergeTree"><a href="#6-SummingMergeTree" class="headerlink" title="6. SummingMergeTree"></a>6. SummingMergeTree</h2><p>对于不查询明细，只关心以维度进行汇总聚合结果的场景。如果只使用普通的MergeTree的话，无论是存储空间的开销，还是查询时临时聚合的开销都比较大。ClickHouse为了这种场景，提供了一种能够<strong>预聚合</strong>的引擎SummingMergeTree。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">create table test03</span><br><span class="line">( </span><br><span class="line">    id                  UInt32</span><br><span class="line">    , sku_id            String</span><br><span class="line">    , total_amount      Decimal(16,2)</span><br><span class="line">    , create_time       Datetime</span><br><span class="line">    -- , INDEX a total_amount TYPE minmax GRANULARITY 5</span><br><span class="line">) engine = SummingMergeTree(total_amount) </span><br><span class="line">partition by toYYYYMMDD(create_time) </span><br><span class="line">primary key (id)</span><br><span class="line">order by (id, sku_id) ;</span><br><span class="line"></span><br><span class="line">insert into test03 values </span><br><span class="line">(101,&#x27;sku_001&#x27;,1000.00,&#x27;2020-06-01 12:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,2000.00,&#x27;2020-06-01 11:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_004&#x27;,2500.00,&#x27;2020-06-01 12:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,2000.00,&#x27;2020-06-01 13:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,12000.00,&#x27;2020-06-01 13:00:00&#x27;)</span><br><span class="line">, (102,&#x27;sku_002&#x27;,600.00,&#x27;2020-06-02 12:00:00&#x27;) ;</span><br><span class="line"></span><br><span class="line">select * from test03 ;</span><br><span class="line"></span><br><span class="line">optimize table test03 final ;</span><br><span class="line"></span><br><span class="line">select * from test03 ;</span><br></pre></td></tr></table></figure>
+
+<p>结论</p>
+<ul>
+<li>以SummingMergeTree()中指定的列作为汇总数据列</li>
+<li>可以填写多列必须数字列，如果不填，以所有非维度列且为数字列的字段为汇总数据列</li>
+<li>以order by的列为准，作为维度列</li>
+<li>其他的列按插入顺序保留第一行</li>
+<li>分区内聚合</li>
+<li>只有在同一批次插入(新版本)或分片合并时才会进行聚合，这个新版本如何理解？</li>
+</ul>
+<p>设计聚合表的话，唯一键值、流水号可以去掉，所有字段全部是维度、度量或者时间戳。</p>
+<p>问题：能不能直接执行以下SQL得到汇总值？不行，因为可能会有些新数据还没来得及聚合，还是得用sum。</p>
+<h1 id="五、SQL-操作"><a href="#五、SQL-操作" class="headerlink" title="五、SQL 操作"></a>五、SQL 操作</h1><p>这里只说CK与MySQL不一样的地方。</p>
+<h2 id="1-insert"><a href="#1-insert" class="headerlink" title="1. insert"></a>1. insert</h2><p>和MySQL一致。</p>
+<h2 id="2-Update-和-Delete"><a href="#2-Update-和-Delete" class="headerlink" title="2. Update 和 Delete"></a>2. Update 和 Delete</h2><p>ClickHouse 提供了 Delete 和 Update 的能力，这类操作被称为 Mutation 查询，它可以看做 Alter 的一种。虽然可以实现修改和删除，但是和一般的 OLTP 数据库不一样，Mutation 语句是一种很<strong>重</strong>的操作，而且不支持事务。重的原因主要是每次修改或者删除都会导致放弃目标数据的原有分区，重建新分区。所以尽量做批量的变更，不要进行频繁小数据的操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">alter table test03 delete where sku_id = &#x27;sku_001&#x27;;	</span><br><span class="line">alter table test03 update total_amount = toDecimal32(2000.00,2) where id = 102;</span><br></pre></td></tr></table></figure>
+
+<p>由于操作比较重，所以 Mutation 语句分两步执行，同步执行的部分其实只是进行新增数据新增分区和把旧分区打上逻辑上的失效标记。直到触发分区合并的时候，才会删除旧数据释放磁盘空间，一般不会开放这样的功能给用户，由管理员完成。</p>
+<h2 id="3-查询操作"><a href="#3-查询操作" class="headerlink" title="3. 查询操作"></a>3. 查询操作</h2><p>ClickHouse 基本上与标准 SQL 差别不大</p>
+<ul>
+<li>支持子查询</li>
+<li>支持 CTE(Common Table Expression 公用表表达式)</li>
+<li>支持各种 JOIN， 但是 JOIN 操作无法使用缓存，所以即使是两次相同的 JOIN 语句，ClickHouse 也会视为两条新 SQL，并且join性能很差</li>
+<li>窗口函数(官方正在测试中…)</li>
+<li>不支持自定义函数</li>
+<li>GROUP BY 操作增加了 with rollup\with cube\with total 用来计算小计和总计</li>
+</ul>
+<details>
+  <summary>测试</summary>
+  <pre><blockcode> 
+    alter table test01 delete where 1 = 1 ; 
+    #####################################################
+    insert into test01 values 
+    (101,'sku_001',1000.00,'2020-06-01 12:00:00')
+    , (101,'sku_002',2000.00,'2020-06-01 12:00:00')
+    , (106,'sku_001',1000.00,'2020-06-04 12:00:00')
+    , (107,'sku_002',2000.00,'2020-06-04 12:00:00')
+    , (110,'sku_003',600.00,'2020-06-01 12:00:00') ;
+    #####################################################
+    select 
+        id 
+        , sku_id
+        , sum(total_amount) 
+    from test01 
+    group by id, sku_id
+    -- with rollup：从右至左去掉维度进行小计
+    with rollup ;
+    #####################################################
+    select 
+        id 
+        , sku_id
+        , sum(total_amount) 
+    from test01 
+    group by id, sku_id
+    -- with cube：从右至左 和 从左至右 去掉维度进行小计
+    with cube ;
+    #####################################################
+    select 
+        id 
+        , sku_id
+        , sum(total_amount) 
+    from test01 
+    group by id, sku_id
+    -- with totals：只计算合计
+    with totals ;
+  </blockcode></pre>
+</details>
+
+<h2 id="4-alter-操作"><a href="#4-alter-操作" class="headerlink" title="4. alter 操作"></a>4. alter 操作</h2><p>同 MySQL 的修改字段基本一致。注意这里alter是对表结构的操作，而上面的update和delete是对单条数据的操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">alter table tableName add column ... ;</span><br><span class="line">alter table tableName modify column ... ;</span><br><span class="line">alter table tableName drop column ... ;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-导出数据"><a href="#5-导出数据" class="headerlink" title="5. 导出数据"></a>5. 导出数据</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">clickhouse-client --query &quot;select * from test01&quot; --format CSVWithNames&gt; /opt/module/data/rs1.csv</span><br></pre></td></tr></table></figure>
+
+<h1 id="六、副本"><a href="#六、副本" class="headerlink" title="六、副本"></a>六、副本</h1><p>副本的目的主要是保障数据的高可用性，即使一台 ClickHouse 节点宕机，那么也可以从其他服务器获得相同的数据。</p>
+<p>副本写入流程</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220818173323719.png" alt="image-20220818173323719" style="zoom:67%;" />
+
+<p>副本只能同步数据，不能同步表结构，所以我们需要在每台机器上自己手动建表，建表用的也是ReplicatedMergeTree？？？</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">engine =ReplicatedMergeTree(&#x27;/clickhouse/table/01/t_order_rep&#x27;,&#x27;rep_102&#x27;)</span><br></pre></td></tr></table></figure>
+
+<h1 id="七、分片集群"><a href="#七、分片集群" class="headerlink" title="七、分片集群"></a>七、分片集群</h1><p>副本虽然能够提高数据的可用性，降低丢失风险，但是每台服务器实际上必须容纳全量数据，对数据的横向扩容没有解决。要解决数据水平切分的问题，需要引入分片的概念。通过分片把一份完整的数据进行切分，不同的分片分布到不同的节点上，再通过 Distributed 表引擎把数据拼接起来一同使用。</p>
+<p>Distributed 表引擎本身不存储数据，有点类似于 MyCat 之于 MySql，成为一种中间件， 通过分布式逻辑表来写入、分发、路由来操作多台节点不同分片的分布式数据。</p>
+<p> ClickHouse 的集群是表级别的，实际企业中，大部分做了高可用，但是没有用分片，避免降低查询性能以及<strong>操作集群的复杂性</strong>。</p>
+<h2 id="1-集群写入流程-3分片2副本共6个节点"><a href="#1-集群写入流程-3分片2副本共6个节点" class="headerlink" title="1. 集群写入流程(3分片2副本共6个节点)"></a>1. 集群写入流程(3分片2副本共6个节点)</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220818174329548.png" alt="image-20220818174329548" style="zoom:67%;" />
+
+<h2 id="2-集群读取流程-3分片2副本共6个节点"><a href="#2-集群读取流程-3分片2副本共6个节点" class="headerlink" title="2. 集群读取流程(3分片2副本共6个节点)"></a>2. 集群读取流程(3分片2副本共6个节点)</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220818174336777.png" alt="image-20220818174336777" style="zoom:67%;" />
+
+
+
+
+
+<p>Explain 查看执行计划</p>
+<p>在clickhouse20.6版本之前要查看SQL语句的执行计划需要设置日志级别为trace才能可以看到，并且只能真正执行sql，在执行日志里面查看。在20.6版本引入了原生的执行计划的语法，在20.6.3版本成为正式版本的功能，本文档基于目前较新稳定版21.7.3.14。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/Maxwell/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/hunting.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Maxwell</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL%E5%9F%BA%E7%A1%80/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/creative-team.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">MySQL基础</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81ClickHouse%E5%85%A5%E9%97%A8"><span class="toc-text">一、ClickHouse入门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-ClickHouse-%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-text">1. ClickHouse 的特点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81ClickHouse-%E7%9A%84%E5%AE%89%E8%A3%85"><span class="toc-text">二、ClickHouse 的安装</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-CentOS-%E5%8F%96%E6%B6%88%E6%89%93%E5%BC%80%E6%96%87%E4%BB%B6%E6%95%B0%E9%99%90%E5%88%B6"><span class="toc-text">1. CentOS 取消打开文件数限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="toc-text">2. 安装依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-CentOS-%E5%8F%96%E6%B6%88-SELINUX"><span class="toc-text">3. CentOS 取消 SELINUX</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%8D%95%E6%9C%BA%E5%AE%89%E8%A3%85"><span class="toc-text">4. 单机安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">5. 修改配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%90%AF%E5%8A%A8CK"><span class="toc-text">6. 启动CK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%85%B3%E9%97%AD%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="toc-text">7. 关闭开机自启</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E8%BF%9E%E6%8E%A5CK"><span class="toc-text">8. 连接CK</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">三、数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%95%B4%E5%9E%8B"><span class="toc-text">1. 整型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%B5%AE%E7%82%B9%E5%9E%8B"><span class="toc-text">2. 浮点型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%B8%83%E5%B0%94%E5%9E%8B"><span class="toc-text">3. 布尔型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Decimal-%E5%9E%8B"><span class="toc-text">4. Decimal 型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-text">5. 字符串</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B"><span class="toc-text">6. 枚举类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B"><span class="toc-text">7. 时间类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%95%B0%E7%BB%84"><span class="toc-text">8. 数组</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E8%A1%A8%E5%BC%95%E6%93%8E"><span class="toc-text">四、表引擎</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%A1%A8%E5%BC%95%E6%93%8E%E6%A6%82%E8%BF%B0"><span class="toc-text">1. 表引擎概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-TinyLog"><span class="toc-text">2. TinyLog</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Memory"><span class="toc-text">3. Memory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-MergeTree"><span class="toc-text">4. MergeTree</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-partition-by-%E5%88%86%E5%8C%BA-%E5%8F%AF%E9%80%89"><span class="toc-text">4.1 partition by 分区(可选)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-primary-key-%E4%B8%BB%E9%94%AE-%E5%8F%AF%E9%80%89"><span class="toc-text">4.2 primary key 主键(可选)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-order-by-%E5%BF%85%E9%80%89"><span class="toc-text">4.3 order by (必选)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E4%BA%8C%E7%BA%A7%E7%B4%A2%E5%BC%95"><span class="toc-text">4.4 二级索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-%E6%95%B0%E6%8D%AETTL"><span class="toc-text">4.5 数据TTL</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-ReplacingMergeTree"><span class="toc-text">5. ReplacingMergeTree</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-SummingMergeTree"><span class="toc-text">6. SummingMergeTree</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81SQL-%E6%93%8D%E4%BD%9C"><span class="toc-text">五、SQL 操作</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-insert"><span class="toc-text">1. insert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Update-%E5%92%8C-Delete"><span class="toc-text">2. Update 和 Delete</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%9F%A5%E8%AF%A2%E6%93%8D%E4%BD%9C"><span class="toc-text">3. 查询操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-alter-%E6%93%8D%E4%BD%9C"><span class="toc-text">4. alter 操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%AF%BC%E5%87%BA%E6%95%B0%E6%8D%AE"><span class="toc-text">5. 导出数据</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%89%AF%E6%9C%AC"><span class="toc-text">六、副本</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%88%86%E7%89%87%E9%9B%86%E7%BE%A4"><span class="toc-text">七、分片集群</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%9B%86%E7%BE%A4%E5%86%99%E5%85%A5%E6%B5%81%E7%A8%8B-3%E5%88%86%E7%89%872%E5%89%AF%E6%9C%AC%E5%85%B16%E4%B8%AA%E8%8A%82%E7%82%B9"><span class="toc-text">1. 集群写入流程(3分片2副本共6个节点)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E9%9B%86%E7%BE%A4%E8%AF%BB%E5%8F%96%E6%B5%81%E7%A8%8B-3%E5%88%86%E7%89%872%E5%89%AF%E6%9C%AC%E5%85%B16%E4%B8%AA%E8%8A%82%E7%82%B9"><span class="toc-text">2. 集群读取流程(3分片2副本共6个节点)</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Flink基础2之DataStreamAPI | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="五、DataStream API（基础篇）Flink有非常灵活的分层API设计，其中的核心层就是DataStream&#x2F;DataSet API。由于新版本已经实现了流批一体，DataSet API将被弃用，官方推荐统一使用DataStream API处理流数据和批数据。由于内容较多，我们将会用几章的篇幅来做详细讲解，本章主要介绍基本的DataStreamAPI用法。 DataStream本">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flink基础2之DataStreamAPI">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%802%E4%B9%8BDataStreamAPI/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="五、DataStream API（基础篇）Flink有非常灵活的分层API设计，其中的核心层就是DataStream&#x2F;DataSet API。由于新版本已经实现了流批一体，DataSet API将被弃用，官方推荐统一使用DataStream API处理流数据和批数据。由于内容较多，我们将会用几章的篇幅来做详细讲解，本章主要介绍基本的DataStreamAPI用法。 DataStream本">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/launching.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.752Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/launching.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%802%E4%B9%8BDataStreamAPI/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Flink基础2之DataStreamAPI',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background: transparent"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Flink基础2之DataStreamAPI</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.752Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Flink/">Flink</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">9.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>30分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Flink基础2之DataStreamAPI"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="五、DataStream-API（基础篇）"><a href="#五、DataStream-API（基础篇）" class="headerlink" title="五、DataStream API（基础篇）"></a>五、DataStream API（基础篇）</h1><p>Flink有非常灵活的分层API设计，其中的核心层就是DataStream&#x2F;DataSet API。由于新版本已经实现了流批一体，DataSet API将被弃用，官方推荐统一使用DataStream API处理流数据和批数据。由于内容较多，我们将会用几章的篇幅来做详细讲解，本章主要介绍基本的DataStreamAPI用法。</p>
+<p>DataStream本身是Flink中一个用来表示数据集合的类，我们编写的Flink代码其实就是基于这种数据类型的处理，所以这套核心API就以DataStream命名。对于批处理和流处理，我们都可以用这同一套API来实现。DataStream在用法上有些类似于常规的Java集合，但又有所不同。我们在代码中往往并不关心集合中具体的数据，而只是用API定义出一连串的操作来处理它们，这就叫作数据流的转换。</p>
+<p>一个Flink程序，其实就是对DataStream的各种转换。具体来说，代码基本上都由以下几部分构成：</p>
+<ul>
+<li>获取执行环境(executionenvironment)</li>
+<li>读取数据源(source)</li>
+<li>定义基于数据的转换操作(transformations)</li>
+<li>定义计算结果的输出位置(sink)</li>
+<li>触发程序执行(execute)</li>
+</ul>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220731212433170.png" alt="image-20220731212433170" style="zoom: 80%;" />
+
+<p>其中，获取环境和触发执行，都可以认为是针对执行环境的操作。所以本章我们就从执行环境、数据源(source)、转换操作(transformation)、输出(sink)四大部分，对常用的DataStream API做基本介绍。</p>
+<h2 id="1-执行环境"><a href="#1-执行环境" class="headerlink" title="1. 执行环境"></a>1. 执行环境</h2><p>Flink 程序可以在本地 JVM 中执行程序，也可以提交到远程集群上运行。在提交作业执行计算时，首先必须获取运行环境，从而建立起与 Flink 框架之间的联系。只有获取了环境上下文信息，才能将具体的任务调度到不同的 TaskManager 执行。</p>
+<h3 id="1-1-创建执行环境"><a href="#1-1-创建执行环境" class="headerlink" title="1.1 创建执行环境"></a>1.1 创建执行环境</h3><p>我们要获取的执行环境， 是StreamExecutionEnvironment 类的对象，在代码中创建执行环境的方式，就是<strong>调用这个类的静态方法</strong>，具体有以下三种：</p>
+<ul>
+<li>getExecutionEnvironment：最简单的方式，就是直接调用getExecutionEnvironment方法。它会根据当前运行的上下文直接得到正确的结果：如果程序是独立运行的，就返回一个本地执行环境；如果是创建了jar包，然后从命令行调用它并提交到集群执行，那么就返回集群的执行环境。也就是说，这个方法会根据当前运行的方式，自行决定该返回什么样的运行环境</li>
+<li>createLocalEnvironment：返回一个本地执行环境，不常用</li>
+<li>createRemoteEnvironment：返回集群执行环境，不常用</li>
+</ul>
+<p>在获取到程序执行环境后，我们还可以对执行环境进行灵活的设置。比如可以全局设置程序的并行度、禁用算子链，还可以定义程序的时间语义、配置容错机制。关于时间语义和容错机制，我们会在后续的章节介绍。</p>
+<h3 id="1-2-执行模式"><a href="#1-2-执行模式" class="headerlink" title="1.2 执行模式"></a>1.2 执行模式</h3><p>获取批处理的执行环境，是调用类ExecutionEnvironment的静态方法，但是从1.12.0版本起，Flink实现了API上的流批统一。DataStream API新增了一个重要特性：可以支持不同的执行模式（execution mode），通过简单的设置就可以让一段Flink程序在流处理和批处理之间切换，这样一来，DataSetAPI也就没有存在的必要了。</p>
+<p>Flink有3种执行模式：<strong>流执行模式（STREAMING）、批执行模式（BATCH）和自动模式（AUTOMATIC）</strong>，自动模式下由系统自己判定是用STREAMING还是BATCH。由于Flink程序默认是STREAMING模式，我们这里重点介绍一下BATCH模式的配置。主要有两种方式：</p>
+<ul>
+<li>命令行：增加execution.runtime-mode参数，指定值为BATCH，比如bin&#x2F;flink run -Dexecution.runtime-mode&#x3D;BATCH</li>
+<li>代码：env.setRuntimeMode(RuntimeExecutionMode.BATCH)，最好不要在代码中配置，而是使用命令行，在代码中硬编码的方式可扩展性比较差，一般都不推荐</li>
+</ul>
+<p><strong>什么时候选择BATCH模式？我们能不能所有情况下都用流处理模式呢？</strong></p>
+<p>当然是可以的，但是这样有时不够高效。比如前面写的wordcount程序，在STREAMING模式下，每来一条数据，就会输出一次结果；而BATCH模式下，只有数据全部处理完之后，才会一次性输出结果。最终的结果两者是一致的，但是流处理模式会将更多的中间结果输出。所以总结起来，一个简单的原则就是：<strong>用BATCH模式处理批量数据，用STREAMING模式处理流式数据</strong>。但是要明白，我们的主要目标还是构建实时处理流数据的程序，有界数据源也只是我们用来测试的手段。</p>
+<h3 id="1-3-触发程序执行"><a href="#1-3-触发程序执行" class="headerlink" title="1.3 触发程序执行"></a>1.3 触发程序执行</h3><p><strong>写完输出sink并不代表程序已经结束</strong>，因为当main()方法被调用时，其实只是定义了作业的每个执行操作，然后添加到数据流图中，这时并没有真正处理数据，因为数据可能还没来。Flink是由事件驱动的，只有等到数据到来，才会触发真正的计算，这也被称为延迟执行或懒执行。所以我们需要显式地调用执行环境的execute()方法，来触发程序执行。execute()方法将一直等待作业完成，然后返回一个执行结果。</p>
+<h2 id="2-源算子"><a href="#2-源算子" class="headerlink" title="2. 源算子"></a>2. 源算子</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220731215952348.png" alt="image-20220731215952348" style="zoom:67%;" />
+
+<p>Flink 可以从各种来源获取数据，然后构建DataStream进行转换处理，所以source就是我们整个处理程序的<strong>输入端</strong>。Flink 代码中通用的添加 source 的方式，是调用执行环境的 addSource()方法：<code> env.addSource()</code></p>
+<p>方法传入一个对象参数，需要实现SourceFunction接口，返回DataStreamSource。这里的DataStreamSource类继承自SingleOutputStreamOperator类，又进一步继承自DataStream。所以很明显，读取数据的source操作是一个算子，得到的是一个数据流DataStream。</p>
+<p>addSource传入的参数是一个源函数类，需要实现SourceFunction接口。这是何方神圣，又<strong>该怎么实现呢？</strong>自己去实现它显然不会是一件容易的事。好在Flink直接提供了很多预实现的接口，此外还有很多外部连接工具也帮我们实现了对应的sourcefunction，通常情况下足以应对我们的实际需求。接下来我们就详细展开讲解。                              </p>
+<h3 id="2-1-准备工作-POJO类"><a href="#2-1-准备工作-POJO类" class="headerlink" title="2.1 准备工作(POJO类)"></a>2.1 准备工作(POJO类)</h3><p>建个POJO类，方便测试，代码见com.study.common.TestEvent</p>
+<p>这里需要注意，我们定义的TestEvent，有这样几个特点：</p>
+<ul>
+<li>类是公有(public)的</li>
+<li>有一个无参的构造器</li>
+<li>所有属性都是公有(public)的</li>
+<li>所有属性的类型都是可以序列化的</li>
+</ul>
+<p>Flink会把这样的类作为一种特殊的POJO数据类型来对待，方便数据的解析和序列化。另外我们在类中还重写了toString方法，主要是为了测试输出显示更清晰。关于Flink支持的数据类型，我们会在后面章节做详细说明。</p>
+<h3 id="2-2-从集合中读取数据"><a href="#2-2-从集合中读取数据" class="headerlink" title="2.2 从集合中读取数据"></a>2.2 从集合中读取数据</h3><p>最简单的读取数据的方式，一般用于测试。</p>
+<ul>
+<li>env.fromCollection()</li>
+<li>env.fromElements()</li>
+</ul>
+<p>代码见com.study.chapter05.F04_SourceTest</p>
+<h3 id="2-3-从文件读取数据"><a href="#2-3-从文件读取数据" class="headerlink" title="2.3 从文件读取数据"></a>2.3 从文件读取数据</h3><p>批处理中最常见的读取方式。</p>
+<ul>
+<li>env.readTextFile(“hdfs:&#x2F;&#x2F;&#x2F;input&#x2F;clicks.csv”)</li>
+<li>参数可以是目录，也可以是文件</li>
+<li>也可以从hdfs目录下读取，需要pom中添加hadoop的相关依赖</li>
+</ul>
+<p>代码见com.study.chapter05.F04_SourceTest</p>
+<h3 id="2-4-从-Socket-读取数据"><a href="#2-4-从-Socket-读取数据" class="headerlink" title="2.4 从 Socket 读取数据"></a>2.4 从 Socket 读取数据</h3><p>不论从集合还是文件，都是有界数据，Socket是最简单的数据流，一般也是用于测试。</p>
+<ul>
+<li>env.socketTextStream(“hadoop180”, 6666)</li>
+</ul>
+<p>代码见com.study.chapter05.F04_SourceTest</p>
+<h3 id="2-5-从-Kafka-读取数据"><a href="#2-5-从-Kafka-读取数据" class="headerlink" title="2.5 从 Kafka 读取数据"></a>2.5 从 Kafka 读取数据</h3><p>Kafka 和 Flink 天生一对，是当前处理流式数据的双子星。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801011544769.png" alt="image-20220801011544769" style="zoom:80%;" />
+
+<p>略微遗憾的是，与Kafka的连接比较复杂，Flink内部并没有提供预实现的方法。所以我们只能采用通用的addSource方式、实现一个SourceFunction了。好在Kafka与Flink确实是非常契合，所以Flink官方提供了连接工具flink-connector-kafka，直接帮我们实现了一个消费者FlinkKafkaConsumer，它就是用来读取Kafka数据的SourceFunction。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">DataStreamSource&lt;String&gt; kafkaSource = env.addSource(</span><br><span class="line">    new FlinkKafkaConsumer&lt;String&gt;(</span><br><span class="line">        &quot;test&quot;,</span><br><span class="line">        new SimpleStringSchema(),</span><br><span class="line">        properties</span><br><span class="line">    )</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>创建FlinkKafkaConsumer时需要传入三个参数：</p>
+<ul>
+<li>第一个参数topic，定义了从哪些主题中读取数据。可以是一个topic，也可以是topic列表，还可以是匹配所有想要读取的topic的正则表达式。当从多个topic中读取数据时，Kafka连接器将会处理所有topic的分区，将这些分区的数据放到一条流中去</li>
+<li>第二个参数是一个DeserializationSchema或者KeyedDeserializationSchema，类似于一个<strong>反序列化器</strong>。Kafka消息被存储为原始的字节数据，所以需要反序列化成Java或者Scala对象。上面代码中使用的SimpleStringSchema，是一个内置的DeserializationSchema，它只是将字节数组简单地反序列化成字符串。DeserializationSchema和KeyedDeserializationSchema是公共接口，所以我们也可以自定义反序列化逻辑</li>
+<li>第三个参数是一个Properties对象，设置了Kafka客户端的一些属性</li>
+</ul>
+<p>代码见com.study.chapter05.F05_KafkaSource</p>
+<h3 id="2-6-自定义-Source"><a href="#2-6-自定义-Source" class="headerlink" title="2.6 自定义 Source"></a>2.6 自定义 Source</h3><p>当flink没有提供连接器时，就可以自定义source来读取数据。需要实现SourceFunction接口，重写两个关键方法：</p>
+<ul>
+<li>run()方法：使用运行时上下文对象（SourceContext）向下游发送数据</li>
+<li>cancel()方法：通过标识位控制退出循环，来达到中断数据源的效果</li>
+<li>自定义并行数据源的话，需要实现ParallelSourceFunction接口</li>
+<li>调用的话，就直接<code>env.addSource(new ClickGenerate())</code>就行</li>
+</ul>
+<p>这里要注意的是SourceFunction接口定义的数据源，并行度只能设置为1，如果数据源设置为大于1的并行度，则会抛出异常，需要自定义并行的数据源的话，需要使用ParallelSourceFunction，只需要把下面代码中的SourceFunction换成ParallelSourceFunction即可，别的都不用变。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public class ClickGenerate implements SourceFunction&lt;TestEvent&gt; &#123;</span><br><span class="line"></span><br><span class="line">    private Boolean running = true ;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    public void run(SourceContext&lt;TestEvent&gt; sourceContext) throws Exception &#123;</span><br><span class="line">        while (running)&#123;</span><br><span class="line">            sourceContext.collect(new TestEvent());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void cancel() &#123; running = false; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码见com.study.common.ClickGenerate和com.study.chapter05.F06_MySource，多并行度的见com.study.chapter05.F07_MySourceParallel</p>
+<h3 id="2-7-Flink支持的数据类型"><a href="#2-7-Flink支持的数据类型" class="headerlink" title="2.7 Flink支持的数据类型"></a>2.7 Flink支持的数据类型</h3><h4 id="2-7-1-Flink-的类型系统"><a href="#2-7-1-Flink-的类型系统" class="headerlink" title="2.7.1 Flink 的类型系统"></a>2.7.1 Flink 的类型系统</h4><p>为什么会出现“不支持”的数据类型呢？因为Flink 作为一个分布式处理框架，就不可避免地要面对数据的网络传输、状态的落盘和故障恢复等问题，这就需要对数据进行<strong>序列化和反序列化</strong>。所以Flink有自己的一整套类型系统，它使用类型信息TypeInformation来统一表示数据类型。TypeInformation类是Flink中所有类型描述符的基类，它涵盖了类型的一些基本属性，并为每个数据类型生成特定的序列化器、反序列化器和比较器。</p>
+<h4 id="2-7-2-Flink-支持的数据类型"><a href="#2-7-2-Flink-支持的数据类型" class="headerlink" title="2.7.2 Flink 支持的数据类型"></a>2.7.2 Flink 支持的数据类型</h4><p><strong>简单来说，对于常见的Java和Scala数据类型，Flink都是支持的。</strong></p>
+<p>Flink在内部，Flink对支持不同的类型进行了划分，这些类型可以在Types工具类中找到：</p>
+<ul>
+<li><p>基本类型：<strong>所有Java基本类型及其包装类，再加上Void、String、Date、BigDecimal和BigInteger。</strong></p>
+</li>
+<li><p>数组类型：包括基本类型数组(PRIMITIVE_ARRAY)和对象数组(OBJECT_ARRAY)</p>
+</li>
+<li><p>复合数据类型</p>
+<ul>
+<li><p><strong>Java元组类型(TUPLE)<strong>：这是Flink内置的元组类型，是JavaAPI的一部分。</strong>最多25个字段，也就是从Tuple0~Tuple25</strong>，不支持空字段</p>
+</li>
+<li><p>Scala样例类及Scala元组：不支持空字段</p>
+</li>
+<li><p>行类型(ROW)：可以认为是具有任意个字段的元组，并支持空字段</p>
+</li>
+<li><p><strong>POJO：Flink自定义的类似于Javabean模式的类</strong></p>
+</li>
+</ul>
+</li>
+<li><p>辅助类型：Option、Either、List、Map等</p>
+</li>
+<li><p>泛型类型(GENERIC)：Flink支持所有的Java类和Scala类。不过如果没有按照上面POJO类型的要求来定义，就会被Flink当作泛型类来处理。Flink会把泛型类型当作黑盒，无法获取它们内部的属性；它们也不是由Flink本身序列化的，而是由Kryo序列化的。</p>
+</li>
+</ul>
+<p>在这些类型中，<strong>元组类型和POJO类型最为灵活</strong>，因为它们支持创建复杂类型。而相比之下，<strong>POJO还支持在键(key)的定义中直接使用字段名</strong>，这会让我们的代码可读性大大增加。<strong>所以在项目实践中，往往会将流处理程序中的元素类型定为Flink的POJO类型。</strong></p>
+<p><strong>Flink对POJO类型的要求如下：</strong></p>
+<ul>
+<li>类是公共的(public)和独立的(standalone，也就是说没有非静态的内部类)</li>
+<li>类有一个公共的无参构造方法</li>
+<li>类中的所有字段是public且非final的；或者有一个公共的getter和setter方法，这些方法需要符合Javabean的命名规范</li>
+</ul>
+<p>之前创建的TestEvent类，就是POJO类。<strong>关于POJO和Tuple，指定字段位置时统一下，POJO就指定字段名，Tuple也指定字段名，但是元组中字段的名称，是以 f0、f1、f2、…来命名的。</strong></p>
+<h4 id="2-7-3-类型提示-Type-Hints"><a href="#2-7-3-类型提示-Type-Hints" class="headerlink" title="2.7.3 类型提示 Type Hints"></a>2.7.3 类型提示 Type Hints</h4><p>Flink专门提供了TypeHint类，它可以捕获泛型的类型信息，并且一直记录下来，为运行时提供足够的信息。这是一个类型提取系统，可以分析函数的输入和返回类型，自动获取类型信息，从而获得对应的序列化器和反序列化器。但是，由于Java中泛型擦除的存在，在某些特殊情况下(比如Lambda表达式中)，自动提取的信息是不够精细的，比如前面wordcount中，系统只能推断出返回的是Tuple2类型，而无法得到Tuple2&lt;String,Long&gt;。这时就需要显式地提供类型信息，才能使应用程序正常工作或提高其性能，否则输出将被视为 Object类型，这会导致低效的序列化，类型冲突还容易报错。</p>
+<p>可以通过returns()方法，明确地指定转换之后的DataStream里元素的类型：</p>
+<ul>
+<li>returns(newTypeHint&lt;Tuple2&lt;Integer,SomeType&gt;&gt;(){})，这种写法还没见过</li>
+<li>returns(Types.TUPLE(Types.STRING, Types.LONG))，以前用的都是这种</li>
+</ul>
+<h2 id="3-转换算子"><a href="#3-转换算子" class="headerlink" title="3. 转换算子"></a>3. 转换算子</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801015809965.png" alt="image-20220801015809965" style="zoom:80%;" />
+
+<p>数据源读入数据之后，我们就可以使用各种转换算子，将一个或多个DataStream转换为新的DataStream。一个Flink程序的核心，其实就是所有的转换操作，它们决定了处理的业务逻辑。我们可以针对一条流进行转换处理，也可以进行分流、合流等多流转换操作，从而组合成复杂的数据流拓扑。在本节中，我们将重点介绍基本的单数据流的转换，多流转换的内容我们将在后续章节展开。</p>
+<h3 id="3-1-基本转换算子"><a href="#3-1-基本转换算子" class="headerlink" title="3.1 基本转换算子"></a>3.1 基本转换算子</h3><p>一进一出的map、filter和一进n出的flatmap，这些方法都有个共性，<strong>方法里的参数是某个接口的具体实现，返回值类型还是DataStream，不过泛型（流中的元素类型）可能改变。</strong></p>
+<p>在实现MapFunction接口的时候，需要指定两个泛型，分别是输入事件和输出事件的类型，还需要重写一个map()方法，定义具体的转换逻辑。返回一个SingleOutputStreamOperator，<strong>可以看看它的类图</strong>。像这样可以自定义方法的具体实现逻辑的，就跟自定义udf很像。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">   // 传入MapFunction的匿名内部类</span><br><span class="line">   SingleOutputStreamOperator&lt;String&gt; user1 = fromElements.map(new MapFunction&lt;TestEvent, String&gt;() &#123;</span><br><span class="line">       @Override</span><br><span class="line">       public String map(TestEvent testEvent) throws Exception &#123;</span><br><span class="line">           return testEvent.user;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;);</span><br><span class="line"></span><br><span class="line">// 传入MapFunction的具体实现类</span><br><span class="line">   SingleOutputStreamOperator&lt;String&gt; user2 = fromElements.map(new UserExtractor());</span><br><span class="line"></span><br><span class="line">// lambda表达式</span><br><span class="line">   SingleOutputStreamOperator&lt;String&gt; user3 = fromElements.map(testEvent -&gt; &#123;</span><br><span class="line">       return testEvent.user;</span><br><span class="line">   &#125;);</span><br><span class="line">   </span><br><span class="line">   // lambda表达式极简版</span><br><span class="line">   SingleOutputStreamOperator&lt;String&gt; user4 = fromElements.map(t -&gt; t.user);</span><br></pre></td></tr></table></figure>
+
+<p>filter就不说了，这里说下flatmap。它可以返回0个、1个或多个结果数据，因此flatMap并没有直接定义返回值类型，而是通过一个<strong>收集器Collector</strong>来指定输出。这个方法可以多次调用，也可以不调用，所以flatMap方法也可以实现map方法和filter方法的功能。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fromElements.flatMap(new FlatMapFunction&lt;TestEvent, String&gt;() &#123;</span><br><span class="line">       @Override</span><br><span class="line">       public void flatMap(TestEvent testEvent, Collector&lt;String&gt; collector) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">           collector.collect(testEvent.user);</span><br><span class="line">           // 想输出啥就输出啥，很灵活</span><br><span class="line">           collector.collect(testEvent.url);</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>代码见com.study.chapter05.F09_FunctionTest</p>
+<h3 id="3-2-聚合算子"><a href="#3-2-聚合算子" class="headerlink" title="3.2 聚合算子"></a>3.2 聚合算子</h3><p>类似于MapReduce 中的 reduce</p>
+<h4 id="3-2-1-按键分区keyBy"><a href="#3-2-1-按键分区keyBy" class="headerlink" title="3.2.1 按键分区keyBy"></a>3.2.1 按键分区keyBy</h4><p>对于Flink而言，DataStream是没有直接进行聚合的API的。因为我们对海量数据做聚合肯定要进行分区并行处理，这样才能提高效率。所以在Flink中，<strong>要做聚合，必须先进行分区</strong>，这个操作就是通过keyBy来完成的。<strong>这里所说的分区，其实就是并行处理的子任务，也就对应着任务槽。所有相同的key，都被发往同一个分区，那么下一步算子操作就会在同一个slot中进行处理了。</strong>在内部，是通过计算key的哈希值，对分区数进行取模运算来实现的。所以这里key如果是POJO的话，必须要重写hashCode()方法。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// 注意这里的返回值类型，键控流，&lt;流中数据的类型, 键的类型&gt;</span><br><span class="line">KeyedStream&lt;TestEvent, String&gt; keyedStream = fromElements.keyBy(new KeySelector&lt;TestEvent, String&gt;() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public String getKey(TestEvent testEvent) throws Exception &#123;</span><br><span class="line">        return testEvent.user;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">// KeyedStream真的改变了数据的格式了吗？但是print并没有把键的类型输出，和TestEvent的输出结果一样</span><br></pre></td></tr></table></figure>
+
+<p>keyBy得到的结果将不再是DataStream，而是<strong>键控流KeyedStream</strong>。它是对DataStream按照key的一个<strong>逻辑分区</strong>，所以泛型是&lt;流中数据的类型, 键的类型&gt;。它只是一个分区操作，<strong>不是转换算子</strong>。KeyedStream是一个非常重要的数据结构，只有基于它才可以做后续的聚合操作，比如sum、reduce。而且它可以将当前算子任务的状态state也按照key进行划分，限定为仅对当前key有效。</p>
+<p>代码见com.study.chapter05.F09_FunctionTest</p>
+<h4 id="3-2-2-简单聚合sum"><a href="#3-2-2-简单聚合sum" class="headerlink" title="3.2.2 简单聚合sum"></a>3.2.2 简单聚合sum</h4><p>sum、min&#x2F;max、minby&#x2F;maxby，min()只计算指定字段的最小值，其他字段会保留最初第一个数据的值，而minBy()则会返回包含字段最小值的整条数据。</p>
+<p>简单聚合算子返回的，同样是一个SingleOutputStreamOperator，也就是从KeyedStream又转换成了常规的DataStream。所以可以这样理解：keyBy和聚合是成对出现的，先分区、后聚合，得到的依然是一个DataStream。</p>
+<p><strong>一个聚合算子，会为每一个key保存一个聚合的值，在Flink中我们把它叫作状态state</strong>。所以每当有一个新的数据输入，算子就会更新保存的聚合结果，并发送一个带有更新后聚合值的事件到下游算子。对于无界流来说，这些状态是永远不会被清除的，所以我们使用聚合算子，应该只用在含有<strong>有限个key</strong>的数据流上。</p>
+<p>代码见com.study.chapter05.F09_FunctionTest</p>
+<h4 id="3-2-3-归约聚合reduce"><a href="#3-2-3-归约聚合reduce" class="headerlink" title="3.2.3 归约聚合reduce"></a>3.2.3 归约聚合reduce</h4><p>调用KeyedStream的reduce方法时，需要传入一个参数，实现ReduceFunction接口，重写里面的reduce()方法，这个方法接收两个输入事件，经过转换处理(比如合并)之后输出一个相同类型的事件，然后再将合并的结果看作一个数据，再跟后面的数据合并再输出一条数据。在流处理的底层实现过程中，实际上是将中间合并的结果作为任务的一个状态保存起来的。</p>
+<p>在ReduceFunction内部会维护一个初始值为空的累加器，注意累加器的类型和输入元素的类型相同，当第一条元素到来时，累加器的值更新为第一条元素的值，当新的元素到来时，新元素会和累加器进行累加操作，这里的累加操作就是reduce函数定义的运算规则。然后将更新以后的累加器的值向下游输出。</p>
+<p>下面我们来看一个稍复杂的例子，我们将数据流按照用户id进行分区，然后用一个reduce算子实现sum的功能，统计每个用户访问的频次；进而将所有统计结果分到一组，用另一个reduce算子实现maxBy的功能，记录所有用户中访问频次最高的那个，也就是当前访问量最大的用户是谁。</p>
+<p>代码见com.study.chapter05.F10_ReduceTest</p>
+<h3 id="3-3-用户自定义函数UDF"><a href="#3-3-用户自定义函数UDF" class="headerlink" title="3.3 用户自定义函数UDF"></a>3.3 用户自定义函数UDF</h3><p>在前面的介绍我们可以发现，Flink的DataStream API编程风格其实是一致的：<strong>基本上都是基于DataStream调用一个方法，方法需要传入一个参数，这个参数都是需要实现一个接口</strong>。并且很容易发现，这些接口有一个共同特点：全部都以算子操作名称+Function命名，例如源算子需要实现SourceFunction接口，map算子需要实现MapFunction接口，reduce算子需要实现ReduceFunction接口。而且查看源码会发现，它们都继承自Function接口，这个接口是空的，主要就是为了方便扩展，这就是我们所说的<strong>函数接口</strong>，也就是所谓的用户自定义函数UDF。Flink暴露了所有UDF函数的接口，具体实现方式为接口或者抽象类， 例如 MapFunction、FilterFunction、ReduceFunction 等。</p>
+<h3 id="3-4-富函数类"><a href="#3-4-富函数类" class="headerlink" title="3.4 富函数类"></a>3.4 富函数类</h3><p>富函数类也是DataStream API提供的一个函数类的接口，所有的Flink函数类都有其Rich版本。例如：RichMapFunction、RichReduceFunction等。与常规函数类的不同主要在于，它<strong>可以获取运行环境的上下文，例如程序执行的并行度、任务名称以及状态，并拥有一些生命周期方法</strong>，可以实现更复杂的功能。</p>
+<p>典型的<strong>生命周期方法</strong>有：</p>
+<ul>
+<li>open()方法，是RichFunction的初始化方法，也就是会开启一个算子的生命周期。当一个算子的实际工作方法例如map()或者filter()方法被调用之前，open()会首先被调用。所以像文件IO的创建，数据库连接的创建，配置文件的读取等等这样一次性的工作，都适合在open()方法中完成</li>
+<li>close()方法，是生命周期中的最后一个调用的方法，一般用来做一些清理工作</li>
+</ul>
+<p>需要注意的是，这里的<strong>生命周期方法，一个并行子任务只会调用一次</strong>；而实际工作方法，例如RichMapFunction中的map()，在每条数据到来后都会触发一次调用。</p>
+<p>代码见com.study.chapter05.F11_RichFunctionTest</p>
+<h3 id="3-5-数据的重分区"><a href="#3-5-数据的重分区" class="headerlink" title="3.5 数据的重分区"></a>3.5 数据的重分区</h3><p>重分区在一些情况下已经在发生了，比如两个连续的算子并行度不一致，如果并行度变小，当前分区可能没有下游任务了，如果并行度变大，所有数据还在原先的分区处理就会导致资源的浪费。所以这种情况下，系统会自动地将数据均匀地发往下游所有的并行任务，保证各个分区的负载均衡。</p>
+<p><strong>keyby是分区，而这里说的是重分区，重分区就是把数据打散，redistributing。</strong>重分区与keyBy另一大区别在于，keyBy之后得到的是一个KeyedStream，而重分区之后结果仍是DataStream，且流中元素数据类型保持不变。重分区算子并不对数据进行转换处理，只是定义了<strong>数据的传输方式</strong>。</p>
+<p>常见的重分区策略有<strong>随机分配Random、轮询分配Round-Robin、重缩放Rescale和广播Broadcast</strong>，下边我们分别来做了解。</p>
+<ul>
+<li><p>随机shuffle：random，shuffle方法完全随机</p>
+</li>
+<li><p>完全轮询rebalance：用的Round-Robin算法</p>
+</li>
+<li><p>部分轮询rescale：由于 rebalance 是所有分区数据的重新平衡，当 TaskManager 数据量较多时，这种跨节点的网络传输必然影响效率。而如果我们配置的 task slot 数量合适，用 rescale 的方式进行部分轮询，就可以让数据只在当前 TaskManager 的多个 slot 之间重新分配，从而避免了网络传输带来的损耗</p>
+</li>
+<li><p>广播Broadcast：将输入数据复制并发送到下游算子的所有并行任务中去，下游每个分区都保留一份</p>
+</li>
+<li><p>全局global：将所有数据都发送到下游算子的第一个并行子任务中去，相当于强行让下游任务并行度变成1，禁用</p>
+</li>
+</ul>
+<p>代码见com.study.chapter05.F12_RePartitionTest，另外还可以自定义分区，代码见com.study.chapter05.F13_MyPartition</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">DataStream&lt;TestEvent&gt; dataStream = streamSource.partitionCustom(new Partitioner&lt;String&gt;() &#123;</span><br><span class="line">    @Override //分区规则</span><br><span class="line">    public int partition(String str, int i) &#123;</span><br><span class="line">        return str == &quot;zhangsan&quot; ? 0 : 1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;, new KeySelector&lt;TestEvent, String&gt;() &#123;</span><br><span class="line">    @Override //根据哪个字段分区</span><br><span class="line">    public String getKey(TestEvent testEvent) throws Exception &#123;</span><br><span class="line">        return testEvent.user;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">// 这里不设置并行度居然还报错</span><br><span class="line">dataStream.print().setParallelism(2);</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-输出算子"><a href="#4-输出算子" class="headerlink" title="4. 输出算子"></a>4. 输出算子</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801090556792.png" alt="image-20220801090556792" style="zoom:80%;" />
+
+<h3 id="4-1-连接到外部系统"><a href="#4-1-连接到外部系统" class="headerlink" title="4.1 连接到外部系统"></a>4.1 连接到外部系统</h3><p>在Flink中，写出数据的方法有很多，例如在RichMapFunction中，我们完全可以在open()中构建一个到Redis的连接，然后将当前处理的结果保存到Redis中。</p>
+<p>这样看起来很方便，却会带来很多问题。Flink作为一个快速的分布式实时流处理系统，对<strong>稳定性和容错性</strong>要求极高。一旦出现故障，我们应该有能力恢复之前的状态，保障处理结果的正确性，这种性质一般被称作<strong>状态一致性</strong>。Flink内部提供了一致性检查点checkpoint来保障我们可以回滚到正确的状态，但如果我们在处理过程中任意读写外部系统，发生故障后就很难回退到从前了。</p>
+<p>为了避免这样的问题，Flink的DataStreamAPI专门提供了向外部写入数据的方法：<strong>addSink</strong>。与addSource类似，addSink方法对应着一个Sink输出算子，主要就是用来实现<strong>与外部系统连接，并将数据提交写入</strong>的。之前一直在用的<strong>print方法其实就是一种Sink</strong>，它表示将数据流写入标准控制台打印输出。查看源码可以发现，print方法返回的就是一个<strong>DataStreamSink</strong>。</p>
+<p>与Source算子非常类似，除去一些Flink预实现的Sink，一般情况下Sink算子的创建是通过调用DataStream的.addSink()方法实现的：<code>stream.addSink(new SinkFunction(…))</code>。在这个接口中只需要重写一个方法<strong>invoke</strong>()，用来将指定的值写入到外部系统中，这个方法在每条数据记录到来时都会调用。</p>
+<p>当然，SinkFuntion多数情况下同样并不需要我们自己实现。Flink官方提供了一部分的框架的Sink连接器。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801092430815.png" alt="image-20220801092430815" style="zoom:67%;" />
+
+<p>我们可以看到，像Kafka之类流式系统，Flink提供了完美对接，source&#x2F;sink两端都能连接，可读可写。而对于Elasticsearch、文件系统（FileSystem）、JDBC等数据存储系统，则只提供了输出写入的sink连接器。除Flink官方之外，ApacheBahir作为给Spark和Flink提供扩展支持的项目，也实现了一些其他第三方系统与Flink的连接器。除此以外，就需要用户自定义实现sink连接器了。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220801092525760.png" alt="image-20220801092525760" style="zoom:67%;" />
+
+<h3 id="4-2-输出到文件"><a href="#4-2-输出到文件" class="headerlink" title="4.2 输出到文件"></a>4.2 输出到文件</h3><p>最简单的输出方式，当然就是写入文件了。对应着读取文件作为输入数据源，Flink本来也有一些非常简单粗暴的输出到文件的预实现方法：如writeAsText()、writeAsCsv()，可以直接将输出结果保存到文本文件或Csv文件。但我们知道，这种方式是不支持同时写入一份文件的，所以我们往往会将最后的Sink操作并行度设为1，这就大大拖慢了系统效率，而且对于故障恢复后的状态一致性，也没有任何保证，所以目前这些简单的方法已经要被弃用。</p>
+<p>Flink为此专门提供了一个流式文件系统的连接器：StreamingFileSink，它继承自抽象类RichSinkFunction，而且集成了Flink的检查点(checkpoint)机制，用来保证精确一次(exactly once)的一致性语义。StreamingFileSink为批处理和流处理提供了一个统一的Sink，它可以将分区文件写入Flink支持的文件系统。它可以保证精确一次的状态一致性，大大改进了之前流式文件Sink的方式。</p>
+<p>它的主要操作是将数据写入桶(buckets)，每个桶中的数据都可以分割成一个个大小有限的分区文件，这样一来就实现真正意义上的分布式文件存储。我们可以通过各种配置来控制分桶的操作，默认的分桶方式是基于时间的，每小时写入一个新的桶。换句话说，每个桶内保存的文件，记录的都是1小时的输出数据。</p>
+<p>StreamingFileSink支持行编码(Row-encoded)和批量编码(Bulk-encoded，比如Parquet)格式。这两种不同的方式都有各自的构建器(builder)，调用方法也非常简单，可以直接调用StreamingFileSink的静态方法：</p>
+<ul>
+<li>行编码：StreamingFileSink.forRowFormat(basePath，rowEncoder)</li>
+<li>批量编码：StreamingFileSink.forBulkFormat(basePath，bulkWriterFactory)</li>
+</ul>
+<p>在创建行或批量编码Sink时，我们需要传入两个参数，用来指定存储桶的<strong>基本路径</strong>(basePath)和数据的<strong>编码逻辑</strong>(rowEncoder或bulkWriterFactory)。下面我们就以行编码为例，将一些测试数据直接写入文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">StreamingFileSink&lt;String&gt; streamingFileSink = StreamingFileSink</span><br><span class="line">    .&lt;String&gt;forRowFormat(</span><br><span class="line">    	new Path(&quot;D:\\Java\\study\\1101_flink_study\\output&quot;), </span><br><span class="line">    	new SimpleStringEncoder&lt;&gt;(&quot;UTF-8&quot;))</span><br><span class="line">    // 滚动策略</span><br><span class="line">    .withRollingPolicy(</span><br><span class="line">        DefaultRollingPolicy</span><br><span class="line">            .builder()</span><br><span class="line">            // 至少包含5s的数据</span><br><span class="line">            .withRolloverInterval(TimeUnit.SECONDS.toMillis(5))</span><br><span class="line">            // 最近5s没有收到新的数据</span><br><span class="line">            .withInactivityInterval(TimeUnit.SECONDS.toMillis(5))</span><br><span class="line">            // 文件大小已达到1GB</span><br><span class="line">            .withMaxPartSize(1024 * 1024 * 1024)</span><br><span class="line">            .build()</span><br><span class="line">    ).build();</span><br><span class="line"></span><br><span class="line">streamSource.map(TestEvent::toString).addSink(streamingFileSink);</span><br></pre></td></tr></table></figure>
+
+<p>这里我们创建了一个简单的文件Sink，通过.withRollingPolicy()方法指定了一个<strong>滚动策略</strong>。滚动的概念在日志文件的写入中经常遇到：因为文件会有内容持续不断地写入，所以我们应该给一个标准，到什么时候就开启新的文件，将之前的内容归档保存。也就是说，上面的代码设置了在以下3种情况下，我们就会滚动分区文件。</p>
+<p>测试代码见com.study.chapter05.F14_SinkToFile，注意这里，<strong>流数据输出的时候，没演示出效果</strong>，可能是滚动策略没有生效？？？</p>
+<h3 id="4-3-输出到-Kafka"><a href="#4-3-输出到-Kafka" class="headerlink" title="4.3 输出到 Kafka"></a>4.3 输出到 Kafka</h3><p><strong>Kafka处理的数据也是流式的，经常会作为Flink的输入数据源和输出系统。</strong>Flink官方为Kafka提供了Source和Sink的连接器，我们可以用它方便地从Kafka读写数据。如果仅仅是支持读写，那还说明不了Kafka和Flink关系的亲密，真正让它们密不可分的是，Flink与Kafka的连接器提供了<strong>端到端的精确一次</strong>（exactly once）语义保证，这在实际项目中是最高级别的一致性保证。关于这部分内容，我们会在后续章节做更详细的讲解。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">streamOperator.addSink(new FlinkKafkaProducer&lt;String&gt;(</span><br><span class="line">    &quot;test&quot;,</span><br><span class="line">    new SimpleStringSchema(),</span><br><span class="line">    properties</span><br><span class="line">));</span><br></pre></td></tr></table></figure>
+
+<p>测试代码见com.study.chapter05.F15_SinkToKafka</p>
+<p>这里我们可以看到，addSink传入的参数是一个FlinkKafkaProducer，它继承了抽象类TwoPhaseCommitSinkFunction，这是一个实现了<strong>两阶段提交的RichSinkFunction</strong>。两阶段提交提供了Flink向Kafka写入数据的事务性保证，能够真正做到精确一次的状态一致性。关于这部分内容，我们会在后续章节展开介绍。</p>
+<p>比较有趣的一个实验是，我们可以同时将Kafka作为Flink程序的数据源和写入结果的外部系统。只要将输入和输出的数据设置为不同的topic，就可以看到整个系统运行的路径：Flink从Kakfa的一个topic读取消费数据，然后进行处理转换，最终将结果数据写入Kafka的另一个topic——<strong>数据从Kafka流入、经Flink处理后又流回到Kafka去</strong>，这就是所谓的数据管道的应用。</p>
+<h3 id="4-4-输出到-Redis"><a href="#4-4-输出到-Redis" class="headerlink" title="4.4 输出到 Redis"></a>4.4 输出到 Redis</h3><p>Redis是一个开源的内存式的数据存储，因为它运行速度快、支持的数据类型丰富，在实际项目中已经成为了<strong>架构优化</strong>必不可少的一员，一般用作数据库、缓存，也可以作为消息代理。</p>
+<p>Flink没有直接提供官方的Redis连接器，不过Bahir项目还是担任了合格的辅助角色，为我们提供了Flink-Redis的连接工具。连接器为我们提供了一个RedisSink，它继承了抽象类RichSinkFunction，这就是已经实现好的向Redis写入数据的SinkFunction。我们可以直接将Event数据输出到Redis：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">private static class MyRedisMapper implements RedisMapper&lt;TestEvent&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public RedisCommandDescription getCommandDescription() &#123;</span><br><span class="line">        return new RedisCommandDescription(RedisCommand.HSET,&quot;clicks&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String getKeyFromData(TestEvent testEvent) &#123;</span><br><span class="line">        return testEvent.user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String getValueFromData(TestEvent testEvent) &#123;</span><br><span class="line">        return testEvent.url;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig</span><br><span class="line">	.Builder()</span><br><span class="line">    .setHost(&quot;hadoop180&quot;)</span><br><span class="line">    .build();</span><br><span class="line">    </span><br><span class="line">streamSource.addSink(new RedisSink&lt;TestEvent&gt;(conf,new MyRedisMapper()));</span><br></pre></td></tr></table></figure>
+
+<p>这里RedisSink的构造方法需要传入两个参数：</p>
+<ul>
+<li>JFlinkJedisConfigBase：Jedis的连接配置</li>
+<li>RedisMapper：Redis映射类接口，说明怎样将数据转换成可以写入Redis的类型</li>
+</ul>
+<p>在这里我们可以看到，保存到Redis时调用的命令是<strong>HSET</strong>，所以是保存为哈希表hash，表名为“clicks”，保存的数据以user为key，以url为value，每来一条数据就会做一次转换。为什么发送了多条数据，但是Redis中只有2条数据？原因是hash中的key重复了，后面的会把前面的覆盖掉。</p>
+<h3 id="4-5-输出到-Elasticsearch"><a href="#4-5-输出到-Elasticsearch" class="headerlink" title="4.5 输出到 Elasticsearch"></a>4.5 输出到 Elasticsearch</h3><p>与RedisSink类似，连接器也为我们实现了写入到Elasticsearch的ElasticsearchSink。区别在于，<strong>这个类的构造方法是私有private的，需要使用ElasticsearchSink的Builder内部静态类，调用它的build()方法才能创建出真正的SinkFunction。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">stream.addSink(new ElasticsearchSink.Builder&lt;Event&gt;(httpHosts, elasticsearchSinkFunction).build());</span><br></pre></td></tr></table></figure>
+
+<p>没有ES环境，这里就不演示了。</p>
+<h3 id="4-6-输出到-MySQL-JDBC"><a href="#4-6-输出到-MySQL-JDBC" class="headerlink" title="4.6 输出到 MySQL(JDBC)"></a>4.6 输出到 MySQL(JDBC)</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String sql = &quot;insert into sink_to_mysql values(?,?)&quot; ;</span><br><span class="line">JdbcConnectionOptions conn = new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()</span><br><span class="line">        .withUrl(&quot;jdbc:mysql://hadoop180:3306/test?useSSL=false&quot;)</span><br><span class="line">        .withDriverName(&quot;com.mysql.jdbc.Driver&quot;)</span><br><span class="line">        .withUsername(&quot;root&quot;)</span><br><span class="line">        .withPassword(&quot;sql_boy&quot;)</span><br><span class="line">        .build();</span><br><span class="line"></span><br><span class="line">streamSource.addSink(</span><br><span class="line">	JdbcSink.sink(</span><br><span class="line">        sql,</span><br><span class="line">        // 这里没看懂啥意思，看起来像占位符</span><br><span class="line">        (statement, testEvent) -&gt; &#123;</span><br><span class="line">            statement.setString(1, testEvent.user);</span><br><span class="line">            statement.setString(2, testEvent.url);</span><br><span class="line">        &#125;,</span><br><span class="line">    	conn</span><br><span class="line">    )</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-7-自定义-Sink-输出"><a href="#4-7-自定义-Sink-输出" class="headerlink" title="4.7 自定义 Sink 输出"></a>4.7 自定义 Sink 输出</h3><p>与Source类似，Flink为我们提供了通用的SinkFunction接口和对应的RichSinkDunction抽象类。之前与外部系统的连接，其实都是连接器帮我们实现了SinkFunction，但是Flink并没有提供HBase的连接器，所以需要我们自己写。在实现SinkFunction的时候，需要重写的一个关键方法<strong>invoke</strong>()，在这个方法中我们就可以实现将流里的数据发送出去的逻辑。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">streamSource</span><br><span class="line">        .addSink(new RichSinkFunction&lt;String&gt;() &#123;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void open(Configuration parameters) throws Exception &#123;&#125;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void invoke(String value, Context context) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void close() throws Exception &#123;&#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-本章总结"><a href="#5-本章总结" class="headerlink" title="5. 本章总结"></a>5. 本章总结</h2><p>本章从编写 Flink 程序的基本流程入手，依次讲解了执行环境的创建、数据源的读取、数据流的转换操作，和最终结果数据的输出，对各种常见的转换操作 API 和外部系统的连接都做了详细介绍，并在其中穿插阐述了 Flink 中支持的数据类型和 UDF 的用法。我们可以自信地说，到目前为止已经充分掌握了DataStream API 的基本用法，熟悉了 Flink 的编程习惯，应该说已经真正跨进了 Flink 流处理的大门。</p>
+<p>当然，本章对于转换算子只是一个简单介绍，Flink 中的操作远远不止这些，还有窗口（Window）、多流转换、底层的处理函数（Process Function）以及状态编程等更加高级的用法。另外本章中由于涉及读写外部系统，我们不只一次地提到了精确一次的状态一致性，这也是 Flink 的高级特性之一。关于这些内容，我们将在后续章节逐一展开。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/FlinkDemo%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/project-manager.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">FlinkDemo项目总结</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93/Flink%E5%9F%BA%E7%A1%804%E4%B9%8B%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0&amp;%E5%A4%9A%E6%B5%81%E8%BD%AC%E6%8D%A2&amp;%E7%8A%B6%E6%80%81%E7%BC%96%E7%A8%8B/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/global-warming.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Flink基础4之处理函数&amp;多流转换&amp;状态编程</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81DataStream-API%EF%BC%88%E5%9F%BA%E7%A1%80%E7%AF%87%EF%BC%89"><span class="toc-text">五、DataStream API（基础篇）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83"><span class="toc-text">1. 执行环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%88%9B%E5%BB%BA%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83"><span class="toc-text">1.1 创建执行环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%89%A7%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="toc-text">1.2 执行模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E8%A7%A6%E5%8F%91%E7%A8%8B%E5%BA%8F%E6%89%A7%E8%A1%8C"><span class="toc-text">1.3 触发程序执行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%BA%90%E7%AE%97%E5%AD%90"><span class="toc-text">2. 源算子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C-POJO%E7%B1%BB"><span class="toc-text">2.1 准备工作(POJO类)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E4%BB%8E%E9%9B%86%E5%90%88%E4%B8%AD%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-text">2.2 从集合中读取数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E4%BB%8E%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-text">2.3 从文件读取数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E4%BB%8E-Socket-%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-text">2.4 从 Socket 读取数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E4%BB%8E-Kafka-%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-text">2.5 从 Kafka 读取数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-%E8%87%AA%E5%AE%9A%E4%B9%89-Source"><span class="toc-text">2.6 自定义 Source</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-7-Flink%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">2.7 Flink支持的数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-7-1-Flink-%E7%9A%84%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F"><span class="toc-text">2.7.1 Flink 的类型系统</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-7-2-Flink-%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">2.7.2 Flink 支持的数据类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-7-3-%E7%B1%BB%E5%9E%8B%E6%8F%90%E7%A4%BA-Type-Hints"><span class="toc-text">2.7.3 类型提示 Type Hints</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%BD%AC%E6%8D%A2%E7%AE%97%E5%AD%90"><span class="toc-text">3. 转换算子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%9F%BA%E6%9C%AC%E8%BD%AC%E6%8D%A2%E7%AE%97%E5%AD%90"><span class="toc-text">3.1 基本转换算子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E8%81%9A%E5%90%88%E7%AE%97%E5%AD%90"><span class="toc-text">3.2 聚合算子</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-%E6%8C%89%E9%94%AE%E5%88%86%E5%8C%BAkeyBy"><span class="toc-text">3.2.1 按键分区keyBy</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-%E7%AE%80%E5%8D%95%E8%81%9A%E5%90%88sum"><span class="toc-text">3.2.2 简单聚合sum</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-%E5%BD%92%E7%BA%A6%E8%81%9A%E5%90%88reduce"><span class="toc-text">3.2.3 归约聚合reduce</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E7%94%A8%E6%88%B7%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0UDF"><span class="toc-text">3.3 用户自定义函数UDF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E5%AF%8C%E5%87%BD%E6%95%B0%E7%B1%BB"><span class="toc-text">3.4 富函数类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E6%95%B0%E6%8D%AE%E7%9A%84%E9%87%8D%E5%88%86%E5%8C%BA"><span class="toc-text">3.5 数据的重分区</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%BE%93%E5%87%BA%E7%AE%97%E5%AD%90"><span class="toc-text">4. 输出算子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E8%BF%9E%E6%8E%A5%E5%88%B0%E5%A4%96%E9%83%A8%E7%B3%BB%E7%BB%9F"><span class="toc-text">4.1 连接到外部系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E8%BE%93%E5%87%BA%E5%88%B0%E6%96%87%E4%BB%B6"><span class="toc-text">4.2 输出到文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E8%BE%93%E5%87%BA%E5%88%B0-Kafka"><span class="toc-text">4.3 输出到 Kafka</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E8%BE%93%E5%87%BA%E5%88%B0-Redis"><span class="toc-text">4.4 输出到 Redis</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-%E8%BE%93%E5%87%BA%E5%88%B0-Elasticsearch"><span class="toc-text">4.5 输出到 Elasticsearch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-6-%E8%BE%93%E5%87%BA%E5%88%B0-MySQL-JDBC"><span class="toc-text">4.6 输出到 MySQL(JDBC)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-7-%E8%87%AA%E5%AE%9A%E4%B9%89-Sink-%E8%BE%93%E5%87%BA"><span class="toc-text">4.7 自定义 Sink 输出</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%9C%AC%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="toc-text">5. 本章总结</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

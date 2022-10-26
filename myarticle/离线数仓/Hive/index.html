@@ -1,0 +1,818 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Hive | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="官网：https:&#x2F;&#x2F;hive.apache.org&#x2F; 文档：https:&#x2F;&#x2F;cwiki.apache.org&#x2F;confluence&#x2F;display&#x2F;Hive&#x2F;GettingStarted  一、Hive基本概念1. 什么是Hivehive简介：  Hive：由Facebook开源用于解决海量结构化日志的数据统计工具，hive是Facebook写的，Apache本身不生产代码，是一个代码托管平台">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/Hive/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="官网：https:&#x2F;&#x2F;hive.apache.org&#x2F; 文档：https:&#x2F;&#x2F;cwiki.apache.org&#x2F;confluence&#x2F;display&#x2F;Hive&#x2F;GettingStarted  一、Hive基本概念1. 什么是Hivehive简介：  Hive：由Facebook开源用于解决海量结构化日志的数据统计工具，hive是Facebook写的，Apache本身不生产代码，是一个代码托管平台">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/bus-driver.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.768Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/bus-driver.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/Hive/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Hive',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/christmas-4701783.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Hive</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.768Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/">离线数仓</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">17.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>63分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Hive"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>官网：<a target="_blank" rel="noopener" href="https://hive.apache.org/">https://hive.apache.org/</a></p>
+<p>文档：<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/GettingStarted">https://cwiki.apache.org/confluence/display/Hive/GettingStarted</a></p>
+</blockquote>
+<h1 id="一、Hive基本概念"><a href="#一、Hive基本概念" class="headerlink" title="一、Hive基本概念"></a>一、Hive基本概念</h1><h2 id="1-什么是Hive"><a href="#1-什么是Hive" class="headerlink" title="1. 什么是Hive"></a>1. 什么是Hive</h2><p><strong>hive简介：</strong></p>
+<ul>
+<li>Hive：由Facebook开源用于解决海量<strong>结构化日志</strong>的数据统计工具，hive是Facebook写的，Apache本身不生产代码，是一个代码托管平台，所以我们访问都是访问Apache。</li>
+<li>Hive是基于Hadoop的一个数据仓库工具，可以将结构化的数据文件<strong>映射为一张表</strong>，并提供类SQL查询功能</li>
+<li>也只有结构化的日志才可以映射为一张表，好拆分</li>
+</ul>
+<p><strong>Hive本质</strong>：将HQL(跟sql极其像)转化成MapReduce程序，前面学MR的时候，发现不管写多简单的wordcount，总是要写mapper、reducer、driver，再加上比较器、分区器什么的，书写过程过于冗余，于是hive就封装了很多MR的模板，它在底层能把SQL转换成MR程序，最终提交到yarn上执行的依然是MR，这样我们通过简单的SQL就能实现MR。hive说白了就是把(mapper、reducer、driver、比较器、分区器)这个过程，简化为了写SQL这个过程。</p>
+<ul>
+<li>Hive处理的数据存储在HDFS</li>
+<li>Hive分析数据底层的实现是MapReduce</li>
+<li>执行程序运行在Yarn上</li>
+</ul>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220306210043543.png" alt="image-20220306210043543" style="zoom: 50%;" />
+
+<h2 id="2-Hive的优缺点"><a href="#2-Hive的优缺点" class="headerlink" title="2. Hive的优缺点"></a>2. Hive的优缺点</h2><p><strong>优点：</strong></p>
+<ul>
+<li>操作接口采用类SQL语法，提供快速开发的能力（简单、容易上手）</li>
+<li>避免了去写MapReduce，减少开发人员的学习成本</li>
+<li>Hive的执行延迟比较高，因此Hive常用于数据分析，对实时性要求不高的场合(这个如果换成spark引擎的话还算可以，因为spark引擎都是在内存中实现的，少了很多IO操作)</li>
+<li>Hive优势在于处理大数据，对于处理小数据没有优势，因为Hive的执行延迟比较高。小数据MySQL就行</li>
+<li>Hive支持用户自定义函数，用户可以根据自己的需求来实现自己的函数</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>Hive的HQL表达能力有限<ul>
+<li>迭代式算法无法表达</li>
+<li>数据挖掘方面不擅长，由于MapReduce数据处理流程的限制(IO次数太多)，效率更高的算法却无法实现</li>
+</ul>
+</li>
+<li>Hive的效率比较低<ul>
+<li>Hive自动生成的MapReduce作业，通常情况下不够智能化，因为SQL转换为MR的过程实际就是机器翻译，可能不够智能但是翻译出来的结果一定是能够跑的。这个其实也不叫缺点，自己写的还不一定能不能跑呢</li>
+<li>Hive调优比较困难，粒度较粗，<strong>框架越封装，调优越困难</strong></li>
+</ul>
+</li>
+</ul>
+<h2 id="3-Hive架构原理"><a href="#3-Hive架构原理" class="headerlink" title="3. Hive架构原理"></a>3. Hive架构原理</h2><p>这个架构跟MySQL的架构很像很像，但是MySQL高级我们没学，好像宋红康新出了个完整的MySQL高级的视频，里面可能有，后面补上。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220306212412499.png" alt="image-20220306212412499" style="zoom: 80%;" />
+
+<p>将来我们肯定要通过客户端来操作hive，我们用hive本身的客户端CLI，也可以用JDBC连接hive的方式，不管用哪种方式总得有驱动Driver，我们把SQL发给hive后，它要做SQL的解析、编译、优化、执行，刚好就对应了解析器、编译器、优化器、执行器。然后交给计算引擎去计算(MR，spark是跟MR没有任何关联的计算引擎吗？)，然后把结果存储到HDFS。</p>
+<p>左边的meta store是元数据存储，但是Hive只做数据分析，<strong>不存储任何数据</strong>，数据存第三方数据库，比如待分析的数据存HDFS，要用到的表格公式等存MySQL，表与文件的映射关系也存MySQL，函数也存MySQL，跟元数据相关的都存MySQL(这里hive默认存derby数据库，这个很不好用，我们给它改成存MySQL)。hive是把存在HDFS上的文件映射成存在MySQL的一张表，这里文件与表的映射关系也叫元数据</p>
+<ul>
+<li>用户接口Client：CLI（command-line interface）、JDBC&#x2F;ODBC(jdbc访问hive)、WEBUI（浏览器访问hive）</li>
+<li>元数据Metastore：元数据包括表名、表所属的数据库（默认是default）、表的拥有者、列&#x2F;分区字段、表的类型（是否是外部表）、表的数据所在目录等，默认存储在自带的derby数据库中，推荐使用MySQL存储Metastore</li>
+<li>Hadoop：使用HDFS进行存储，使用MapReduce进行计算</li>
+<li>驱动器：Driver<ul>
+<li><strong>解析器</strong>（SQL Parser）：将SQL字符串转换成抽象语法树AST，这一步一般都用第三方工具库完成，比如antlr；对AST进行语法分析，<strong>主要是检查表是否存在、字段是否存在、SQL语义是否有误</strong></li>
+<li><strong>编译器</strong>（Physical Plan）：将AST编译<strong>生成逻辑执行计划</strong></li>
+<li><strong>优化器</strong>（Query Optimizer）：对逻辑执行计划进行<strong>优化</strong></li>
+<li><strong>执行器</strong>（Execution）：把逻辑执行计划转换成可以运行的<strong>物理计划</strong>。对于Hive来说，就是MR&#x2F;Spark</li>
+</ul>
+</li>
+</ul>
+<p><strong>小知识：</strong>写SQL的时候最好小表驱动大表，这个新版本会在优化器里自动优化，但是复杂逻辑的话不一定会优化，毕竟是机翻，所以最好写的时候就把小表写前面。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220306215403400.png" alt="image-20220306215403400"></p>
+<p>Hive通过给用户提供的一系列交互接口，接收到用户的指令(SQL)，使用自己的Driver，结合元数据(MetaStore)，将这些指令翻译成MapReduce，提交到Hadoop中执行，最后，将执行返回的结果输出到用户交互接口。</p>
+<h2 id="4-Hive和数据库比较"><a href="#4-Hive和数据库比较" class="headerlink" title="4. Hive和数据库比较"></a>4. Hive和数据库比较</h2><p>由于 Hive 采用了类似SQL 的查询语言 HQL(Hive Query Language)，因此很容易将 Hive 理解为数据库。其实从结构上来看，<strong>Hive和数据库除了拥有类似的查询语言，再无类似之处</strong>。本文将从多个方面来阐述 Hive 和数据库的差异。数据库可以用在 Online 的应用中，但是Hive 是为数据仓库而设计的，清楚这一点，有助于从应用角度理解 Hive 的特性。</p>
+<p><strong>查询语言：</strong>由于SQL被广泛的应用在数据仓库中，因此，专门针对Hive的特性设计了类SQL的查询语言HQL。熟悉SQL开发的开发者可以很方便的使用Hive进行开发。</p>
+<p><strong>数据更新：</strong>由于Hive是针对数据仓库应用设计的，而数据仓库的内容是读多写少的。因此，<strong>Hive中不建议对数据的改写，因此不支持upate等对单行数据修改的操作，撑死了支持文件末尾追加</strong>，所有的数据都是在加载的时候确定好的。而数据库中的数据通常是需要经常进行修改的，因此可以使用 INSERT INTO … VALUES 添加数据，使用 UPDATE … SET修改数据。</p>
+<p><strong>执行延迟：</strong>Hive 在查询数据的时候，由于<strong>没有索引，需要扫描整个表</strong>，因此延迟较高。另外一个导致 Hive 执行延迟高的因素是 MapReduce框架。由于MapReduce 本身具有较高的延迟，因此在利用MapReduce 执行Hive查询时，也会有较高的延迟。相对的，数据库的执行延迟较低。当然，这个低是有条件的，即数据规模较小，当数据规模大到超过数据库的处理能力的时候，Hive的并行计算显然能体现出优势。</p>
+<p><strong>关于全表扫描这个点，后面我们可以通过分区分桶让它尽可能少扫描一些数据。</strong></p>
+<p><strong>数据规模：</strong>由于Hive建立在集群上并可以利用MapReduce进行并行计算，因此可以支持很大规模的数据；对应的，数据库可以支持的数据规模较小。</p>
+<h1 id="二、Hive的安装和启动"><a href="#二、Hive的安装和启动" class="headerlink" title="二、Hive的安装和启动"></a>二、Hive的安装和启动</h1><p>见大数据框架安装篇</p>
+<h1 id="三、Hive常用交互命令"><a href="#三、Hive常用交互命令" class="headerlink" title="三、Hive常用交互命令"></a>三、Hive常用交互命令</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[kuyehen@hadoop180 ~]$ hive -help</span><br><span class="line"></span><br><span class="line">“-e”不进入hive的交互窗口执行sql语句，本质上还是要连hive的，它自动连又自动退出了</span><br><span class="line">[kuyehen@hadoop180 ~]$ bin/hive -e &quot;select id from default.student;&quot;</span><br><span class="line"></span><br><span class="line">“-f”执行脚本中sql语句</span><br><span class="line">在/opt/module/hive/下创建datas目录并在datas目录下创建hivef.sql文件</span><br><span class="line">[kuyehen@hadoop180 ~]$ touch hivef.sql</span><br><span class="line">文件中写入正确的sql语句</span><br><span class="line">select *from student;</span><br><span class="line">执行文件中的sql语句</span><br><span class="line">[kuyehen@hadoop180 ~]$ bin/hive -f /opt/module/hive/datas/hivef.sql</span><br><span class="line">执行文件中的sql语句并将结果写入文件中，这种方式是不是可以导出查询结果？</span><br><span class="line">[kuyehen@hadoop180 ~]$ bin/hive -f /opt/module/hive/datas/hivef.sql  &gt; /opt/module/datas/hive_result.txt</span><br><span class="line"></span><br><span class="line">在hive cli命令窗口中如何查看hdfs文件系统，知道就行了，一般不会在这里看</span><br><span class="line">hive(default)&gt;dfs -ls /;</span><br><span class="line"></span><br><span class="line">hive中输入的历史命令，在家目录下</span><br><span class="line">[kuyehen@hadoop180 ~]$ cat .hivehistory</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、参数配置方式"><a href="#四、参数配置方式" class="headerlink" title="四、参数配置方式"></a>四、参数配置方式</h1><p>默认配置文件：hive-default.xml，用户自定义配置文件：hive-site.xml，用户自定义配置会覆盖默认配置。另外，Hive也会读入Hadoop的配置，因为Hive是作为Hadoop的客户端启动的，Hive的配置会覆盖Hadoop的配置。配置文件的设定对本机启动的所有Hive进程都有效。</p>
+<p>也可以在命令行或hive客户端临时配置，以下两种临时配置方式仅对本次hive启动有效</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">启动Hive时，可以在命令行添加-hiveconf param=value来设定参数</span><br><span class="line">[kuyehen@hadoop180 ~]$ hive -hiveconf mapred.reduce.tasks=10;</span><br><span class="line">查看参数设置</span><br><span class="line">hive (default)&gt; set mapred.reduce.tasks;</span><br><span class="line"></span><br><span class="line">参数声明方式，可以在HQL中使用SET关键字设定参数</span><br><span class="line">hive (default)&gt; set mapred.reduce.tasks=100;</span><br><span class="line">查看参数设置</span><br><span class="line">hive (default)&gt; set mapred.reduce.tasks;</span><br><span class="line"></span><br><span class="line">可以在客户端用set查看所有配置项</span><br><span class="line">0: jdbc:hive2://hadoop180:10000&gt; set</span><br></pre></td></tr></table></figure>
+
+<p>上述三种设定方式的优先级依次递增。即配置文件&lt;命令行参数&lt;参数声明。注意某些系统级的参数，例如log4j相关的设定，必须用前两种方式设定，因为那些参数的读取在会话建立以前已经完成了。</p>
+<h1 id="五、Hive数据类型"><a href="#五、Hive数据类型" class="headerlink" title="五、Hive数据类型"></a>五、Hive数据类型</h1><h2 id="1-基本数据类型"><a href="#1-基本数据类型" class="headerlink" title="1. 基本数据类型"></a>1. 基本数据类型</h2><table>
+<thead>
+<tr>
+<th>Hive数据类型</th>
+<th>Java数据类型</th>
+<th>长度</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TINYINT</td>
+<td>byte</td>
+<td>1byte有符号整数</td>
+<td>20</td>
+</tr>
+<tr>
+<td>SMALINT</td>
+<td>short</td>
+<td>2byte有符号整数</td>
+<td>20</td>
+</tr>
+<tr>
+<td><strong>INT</strong></td>
+<td>int</td>
+<td>4byte有符号<strong>整数</strong></td>
+<td>20</td>
+</tr>
+<tr>
+<td><strong>BIGINT</strong></td>
+<td>long</td>
+<td>8byte有符号<strong>整数</strong></td>
+<td>20</td>
+</tr>
+<tr>
+<td>BOOLEAN</td>
+<td>boolean</td>
+<td>布尔类型，true或false</td>
+<td>不用，基本都是用0和1来表达</td>
+</tr>
+<tr>
+<td>FLOAT</td>
+<td>float</td>
+<td>单精度浮点数</td>
+<td>3.14159</td>
+</tr>
+<tr>
+<td><strong>DOUBLE</strong></td>
+<td>double</td>
+<td><strong>双精度浮点数</strong></td>
+<td>3.14159</td>
+</tr>
+<tr>
+<td><strong>STRING</strong></td>
+<td>string</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>TIMESTAMP</td>
+<td></td>
+<td>时间类型</td>
+<td></td>
+</tr>
+<tr>
+<td>BINARY</td>
+<td></td>
+<td>字节数组</td>
+<td></td>
+</tr>
+</tbody></table>
+<ul>
+<li>对于<strong>Hive的String类型</strong>相当于数据库的varchar类型，该类型是一个<strong>可变的字符串</strong>，不过它不能声明其中最多能存储多少个字符，理论上它可以存储2GB的字符数，可以指定字符集？</li>
+<li>时间可以用字符串表示</li>
+</ul>
+<h2 id="2-集合数据类型"><a href="#2-集合数据类型" class="headerlink" title="2. 集合数据类型"></a>2. 集合数据类型</h2><p>Hive有三种复杂数据类型ARRAY、MAP 和 STRUCT。ARRAY和MAP与Java中的Array和Map类似，而STRUCT与C语言中的Struct类似，它封装了一个命名字段集合，复杂数据类型允许任意层次的嵌套。</p>
+<p><strong>MAP：</strong>键值对元组集合，使用数组表示法可以访问数据。map&lt;key, value&gt;，可以通过key得到value</p>
+<p><strong>ARRAY：</strong>数组是一组具有相同类型和名称的变量的集合，元素可以通过数组名[索引]进行引用</p>
+<p><strong>STRUCT：</strong>结构体，类似于对象，可以通过 . 访问元素内容。例如，如果某个列的数据类型是STRUCT{first STRING, last STRING},那么第1个元素可以通过字段.first来引用。这个比map灵活，数据类型可以随意指定而不用受限于事先指定的泛型</p>
+<p><strong>实操：</strong>基于下面的json数据结构，我们在Hive里创建对应的表，并导入数据</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;name&quot;: &quot;songsong&quot;,</span><br><span class="line">    &quot;friends&quot;: [&quot;bingbing&quot; , &quot;lili&quot;] ,  	//列表Array, </span><br><span class="line">    &quot;children&quot;: &#123;                      		//键值Map,</span><br><span class="line">        &quot;xiao song&quot;: 18 ,</span><br><span class="line">        &quot;xiaoxiao song&quot;: 19</span><br><span class="line">    &#125;</span><br><span class="line">    &quot;address&quot;: &#123;                      		//结构Struct（通过对象来描述）,</span><br><span class="line">        &quot;street&quot;: &quot;hui long guan&quot; ,</span><br><span class="line">        &quot;city&quot;: &quot;beijing&quot; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">准备测试数据</span><br><span class="line">[kuyehen@hadoop180 test]$ pwd</span><br><span class="line">    /opt/module/hive-3.1.2/mydata/test</span><br><span class="line">[kuyehen@hadoop180 test]$ vim test01.txt</span><br><span class="line">    songsong,bingbing_lili,xiao song:18_xiaoxiao song:19,hui long guan_beijing</span><br><span class="line">    yangyang,caicai_susu,xiao yang:18_xiaoxiao yang:19,chao yang_beijing</span><br><span class="line"></span><br><span class="line">连接到hive，建test库，然后建表</span><br><span class="line">create table test01</span><br><span class="line">(</span><br><span class="line">    name            string</span><br><span class="line">    , friends       array&lt;string&gt;</span><br><span class="line">    , children      map&lt;string, int&gt;</span><br><span class="line">    , address       struct&lt;street:string, city:string&gt;</span><br><span class="line">)</span><br><span class="line">-- 这里的顺序要和上面的顺序一样</span><br><span class="line">row format delimited fields terminated by &#x27;,&#x27;       -- 列分隔符</span><br><span class="line">collection items terminated by &#x27;_&#x27;                  -- 结构体和数组的分隔符</span><br><span class="line">map keys terminated by &#x27;:&#x27;                          -- map集合的分隔符</span><br><span class="line">lines terminated by &#x27;\n&#x27;;                           -- 行分隔符，这个一般不指定</span><br><span class="line">-- 切记：这里在粘贴的时候，绝对不能含table！！！！！！table在sql里是提示符</span><br><span class="line"></span><br><span class="line">把数据导入hive，或者用hadoop fs -put也行</span><br><span class="line">0: jdbc:hive2://hadoop180:10000&gt; load data local inpath &#x27;/opt/module/hive-3.1.2/mydata/test/test01.txt&#x27; into table test01;</span><br><span class="line">0: jdbc:hive2://hadoop180:10000&gt; select friends[1],children[&#x27;xiao song&#x27;],address.city from test01;</span><br></pre></td></tr></table></figure>
+
+<p><strong>数据默认在hdfs上的储存路径：&#x2F;user&#x2F;hive&#x2F;warehouse，这个路径是在hive-site.xml配置过的，hive中要处理的表中的数据都要在这个目录下</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220307201954812.png" alt="image-20220307201954812"></p>
+<h2 id="3-类型转换"><a href="#3-类型转换" class="headerlink" title="3. 类型转换"></a>3. 类型转换</h2><p><strong>隐式转换：</strong></p>
+<ul>
+<li>小可以转大，大不可以转小</li>
+<li>所有整数类型、FLOAT和STRING类型都可以<strong>隐式地转换成DOUBLE</strong></li>
+<li>TINYINT、SMALLINT、INT都可以转换为FLOAT</li>
+<li>BOOLEAN类型不可以转换为任何其它的类型</li>
+</ul>
+<p><strong>cast强转：</strong>CAST(‘1’ AS INT)，如果强转失败，会返回空值null</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">注意下面分别发生了隐式转换和强转</span><br><span class="line">0: jdbc:hive2://hadoop180:10000&gt; select &#x27;1&#x27;+2, cast(&#x27;1&#x27;as int) + 2;</span><br><span class="line">+------+------+</span><br><span class="line">| _c0  | _c1  |</span><br><span class="line">+------+------+</span><br><span class="line">| 3.0  | 3    |</span><br><span class="line">+------+------+</span><br></pre></td></tr></table></figure>
+
+<h1 id="六、DDL数据定义"><a href="#六、DDL数据定义" class="headerlink" title="六、DDL数据定义"></a>六、DDL数据定义</h1><p>建库建表，库表的修改删除</p>
+<h2 id="1-建库"><a href="#1-建库" class="headerlink" title="1. 建库"></a>1. 建库</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE DATABASE [IF NOT EXISTS] database_name   -- 指定库名</span><br><span class="line">[COMMENT database_comment]                      -- 指定库的描述信息</span><br><span class="line">[LOCATION hdfs_path] -- 这是hive的库而不是MySQL的，所以它需要在HDFS上有个目录，不指定的话会放默认位置</span><br><span class="line">[WITH DBPROPERTIES (property_name=property_value, ...)]; -- 指定库的属性信息，这个用的极少</span><br><span class="line"></span><br><span class="line">create database if not exists hivetest</span><br><span class="line">comment &#x27;this is my first database&#x27;</span><br><span class="line">location &#x27;/hivetest&#x27;</span><br><span class="line">with dbproperties(&#x27;createtime&#x27;=&#x27;20220308&#x27;) ;</span><br></pre></td></tr></table></figure>
+
+<p>首先这是个hive的库，所以它的数据要存在HDFS，它的元数据要存在MySQL，在HDFS上的位置上面看过了，下面看在MySQL里的位置，metastore的DBS表，当我们在hive里show databases的时候，库名就是在这里查到的，通过metastore那个服务与MySQL做交互，把结果查出来展示。hive不存任何东西，表里的数据存HDFS，元数据存MySQL，一定要屡清楚了！！！</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220308191513205.png" alt="image-20220308191513205"></p>
+<p>默认的话会给加个.db方便阅读，自己指定的话，指定啥名字就是啥名字。</p>
+<p>注意上图test库的位置和dafault库的位置，default库的目录就是warehouse，test库的目录是warehouse目录下的一个目录，它俩并不是库与子库的关系。表以后就会往库的目录下放。</p>
+<p><strong>数据默认在hdfs上的储存路径：&#x2F;user&#x2F;hive&#x2F;warehouse，这个路径是在hive-site.xml配置过的，hive中要处理的表中的数据都要在这个目录下</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220307201954812.png" alt="image-20220307201954812"></p>
+<h2 id="2-查库"><a href="#2-查库" class="headerlink" title="2. 查库"></a>2. 查库</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">use hivetest;</span><br><span class="line">show databases;</span><br><span class="line">show databases like &#x27;hive*&#x27;;</span><br><span class="line">desc databases hivetest;</span><br><span class="line">// 显示详细信息</span><br><span class="line">desc database extended hivetest;</span><br></pre></td></tr></table></figure>
+
+<p>如何查询自己在哪个库里呢？？？这个无法看，hive可以，beeline不行，建表的时候如果不知道自己在哪个库里就用库名.表名的方式建</p>
+<h2 id="3-改库"><a href="#3-改库" class="headerlink" title="3. 改库"></a>3. 改库</h2><p>只能改dbproperties里的描述信息，没有意义。数据库的其他元数据信息都是不可更改的，包括数据库名和数据库所在的目录位置。</p>
+<h2 id="4-删库"><a href="#4-删库" class="headerlink" title="4. 删库"></a>4. 删库</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">drop database if exists hivetest;</span><br><span class="line">如果库里面有表是不能直接删除的，可以采用cascade命令，强制删除(MySQL可以直接删)</span><br><span class="line">drop database hivetest cascade;</span><br></pre></td></tr></table></figure>
+
+<p>对于库来讲，删库后HDFS上的目录也一并删除了，MySQL里的元数据也删除了，但是表不一样。实际上，对库和表的DDL操作，就是对MySQL的metastore库的操作。</p>
+<h2 id="5-建表"><a href="#5-建表" class="headerlink" title="5. 建表"></a>5. 建表</h2><ul>
+<li><p>建表的时候，可以指定在HDFS上的存储位置，或者存默认位置，但是不管存哪儿，在哪个库下创建的它就属于哪个库</p>
+</li>
+<li><p>要擅用tab键补全</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">建表语法：</span><br><span class="line">CREATE [EXTERNAL] TABLE [IF NOT EXISTS] table_name	        -- 默认创建内部表，加 EXTERNAL 表示创建外部表</span><br><span class="line">[(col_name data_type [COMMENT col_comment], ...)] 	        -- 指定字段名，字段类型，字段描述信息</span><br><span class="line">[COMMENT table_comment] 		                            -- 指定表的描述信息</span><br><span class="line">[PARTITIONED BY (col_name data_type [COMMENT col_comment], ...)]    -- 指定分区字段信息，分区是分目录，这个跟mr里的分区器没有半毛钱关系</span><br><span class="line">[CLUSTERED BY (col_name, col_name, ...) 	                -- 指定分桶字段名，分桶是分数据，这个和上面那个有点小区别</span><br><span class="line">[SORTED BY (col_name [ASC|DESC], ...)] INTO num_buckets BUCKETS]    -- 指定排序列(几乎不用)，分多少个桶</span><br><span class="line">[ROW FORMAT delimited fields terminated by 分隔符]		    -- 指定每行数据中每个元素的分隔符</span><br><span class="line">[collection items terminated by  分隔符]	                -- 指定结构体和集合的元素分隔符</span><br><span class="line">[map keys terminated by 分隔符]		                        -- 指定map的kv的分隔符</span><br><span class="line">[lines terminated by 分隔符]		                        -- 指定行分隔符</span><br><span class="line">[STORED AS file_format] 		                            -- 指定表数据的存储格式(默认textfile,orc,parquet)</span><br><span class="line">[LOCATION hdfs_path]		                                -- 指定表对应的hdfs的目录</span><br><span class="line">[TBLPROPERTIES (property_name=property_value, ...)]		    -- 指定表的属性信息</span><br><span class="line"></span><br><span class="line">AS select约等于复制表结构和数据，like只复制表结构</span><br><span class="line"></span><br><span class="line">示范：</span><br><span class="line">CREATE TABLE IF NOT EXISTS student</span><br><span class="line">(</span><br><span class="line">    stu_id      INT     COMMENT &#x27;student_id&#x27;</span><br><span class="line">    , stu_name  STRING  COMMENT &#x27;student_name&#x27;</span><br><span class="line">)</span><br><span class="line">COMMENT &#x27;student_table&#x27;</span><br><span class="line">ROW FORMAT delimited FIELDS TERMINATED BY &#x27;\t&#x27;</span><br><span class="line">-- 其实一般只写到这里，后面的全不写，建表的时候如果不写row format，数据会全是null值，因为它不知道该怎么解析</span><br><span class="line">LINES TERMINATED BY &#x27;\n&#x27;</span><br><span class="line">stored AS textfile </span><br><span class="line">location &#x27;/student&#x27;</span><br><span class="line">tblproperties(&#x27;tablename&#x27;=&#x27;student&#x27;);</span><br><span class="line"></span><br><span class="line">根据查询结果创建表，查询的结果会添加到新创建的表中</span><br><span class="line">create table if not exists student2 as select stu_id, stu_name from student;</span><br><span class="line">复制表结构</span><br><span class="line">create table if not exists student3 like student;</span><br><span class="line">查询表的详细信息，表加formatted，数据库加extended</span><br><span class="line">desc formatted student2;</span><br><span class="line"></span><br><span class="line">表的元数据信息在这里，存表的映射关系的表老师忘记了</span><br><span class="line">mysql&gt; select * from TBLS;</span><br><span class="line">mysql&gt; select * from TBLS\G;</span><br></pre></td></tr></table></figure>
+
+<p><strong>内部表：</strong>又叫管理表，删除表时，会删元数据和表在HDFS中的数据，内部表不适合和其他工具共享数据。</p>
+<p><strong>外部表：</strong>删除表时，只会删除MySQL中的元数据信息，不会删除表在HDFS中的数据。</p>
+<p><strong>分区和分桶：</strong>分区要指定字段名和字段类型，说明这个字段表不认识，说明这是个新字段，分桶只需要指定字段名，说明表认识这个字段，说明这个字段在上面声明过。</p>
+<p><strong>管理表和外部表的使用场景：</strong>每天将收集到的网站日志定期流入HDFS文本文件，在外部表（原始日志表）的基础上做大量的统计分析，用到的中间表、结果表使用内部表存储，数据通过SELECT+INSERT进入内部表。</p>
+<p>用户在建表的时候可以自定义SerDe或者使用自带的SerDe。如果没有指定ROW FORMAT 或者ROW FORMAT DELIMITED，将会使用自带的SerDe。在建表的时候，用户还需要为表指定列，用户在指定表的列的同时也会指定自定义的SerDe，Hive通过SerDe确定表的具体的列的数据，SerDe是Serialize&#x2F;Deserilize的简称， hive使用Serde进行行对象的序列与反序列化。</p>
+<h2 id="6-查表"><a href="#6-查表" class="headerlink" title="6. 查表"></a>6. 查表</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">show tables;</span><br><span class="line">desc formatted student;</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-改表"><a href="#7-改表" class="headerlink" title="7. 改表"></a>7. 改表</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">改表名</span><br><span class="line">alter table student rename to student4 ;</span><br><span class="line"></span><br><span class="line">改列</span><br><span class="line">alter table student change [column] stu_name gender string [comment &#x27;性别&#x27;] [first|after age]</span><br><span class="line"></span><br><span class="line">加列和替换列，ADD是代表新增一字段，字段位置在所有列后面(partition列前)，REPLACE则是表示替换表中所有字段。替换的时候，原来有5个列现在替换成3个列是可以的，大不了后面两个字段不解析了，但是如果把字段的类型改小了，那数据就装不下了，所以字段类型只能往大了改</span><br><span class="line">alter table student add|replace columns (address string [comment &#x27;住址&#x27;], ...) </span><br><span class="line"></span><br><span class="line">Hive不能直接删除列，不然底层系列化就乱了，我们可以通过replace语句来替换整张表的字段，达到同样的效果</span><br></pre></td></tr></table></figure>
+
+<p>内部表和外部表之间的转换，对所有元数据的修改一定要经过hive。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">查询表的详细信息</span><br><span class="line">desc formatted student;</span><br><span class="line"></span><br><span class="line">内部表转外部表</span><br><span class="line">alter table student set tblproperties(&#x27;EXTERNAL&#x27;=&#x27;TRUE&#x27;);</span><br><span class="line">desc formatted student2;</span><br><span class="line"></span><br><span class="line">外部表转内部表</span><br><span class="line">alter table student set tblproperties(&#x27;EXTERNAL&#x27;=&#x27;FALSE&#x27;);</span><br><span class="line">desc formatted student;</span><br><span class="line"></span><br><span class="line">注意：(&#x27;EXTERNAL&#x27;=&#x27;TRUE&#x27;)和(&#x27;EXTERNAL&#x27;=&#x27;FALSE&#x27;)为固定写法，区分大小写！</span><br></pre></td></tr></table></figure>
+
+<h2 id="8-删表"><a href="#8-删表" class="headerlink" title="8. 删表"></a>8. 删表</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">drop table if exists student;</span><br><span class="line"></span><br><span class="line">只能清空内部表</span><br><span class="line">truncate table student</span><br></pre></td></tr></table></figure>
+
+<h1 id="七、DML数据操作"><a href="#七、DML数据操作" class="headerlink" title="七、DML数据操作"></a>七、DML数据操作</h1><h2 id="1-数据导入"><a href="#1-数据导入" class="headerlink" title="1. 数据导入"></a>1. 数据导入</h2><p>总结起来就两种，第一种是数据去找表，第二种是表去找数据。</p>
+<h3 id="1-1-load"><a href="#1-1-load" class="headerlink" title="1.1 load"></a>1.1 load</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">load data local inpath &#x27;/opt/module/hive-3.1.2/mydata/test/test01.txt&#x27; [overwrite] into table test01;</span><br><span class="line">local代表从Linux本地导入，否则从HDFS导入，从本地导入数据源还在，从HDFS导入数据源就不在了，直接剪切到表的映射目录下了</span><br><span class="line">overwrite代表覆盖，不写代表追加，追加其实也不准确，因为数据可能在原来的数据前面，取决于表在HDFS里的映射目录下文件的顺序</span><br></pre></td></tr></table></figure>
+
+<p>生产环境下，数据一般通过各种技术直接就存在HDFS了，创建表的时候直接就location指向数据文件就行了，这个表应该是外部表，防止删除的时候把源数据删没了，这张表的下游才应该是内部表。</p>
+<h3 id="1-2-insert"><a href="#1-2-insert" class="headerlink" title="1.2 insert"></a>1.2 insert</h3><p>insert会跑MR，基本不用，但是测试用还是很可以的。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">insert [overwrite] into table test01 values (1,&#x27;wangwu&#x27;),(2,&#x27;zhaoliu&#x27;);</span><br><span class="line"></span><br><span class="line">insert overwrite table student1 </span><br><span class="line">select id, name from student where month=&#x27;201709&#x27;;</span><br><span class="line"></span><br><span class="line">多表查询插入？？？</span><br><span class="line">from student</span><br><span class="line">insert overwrite table student partition(month=&#x27;201707&#x27;)</span><br><span class="line">select id, name where month=&#x27;201709&#x27;</span><br><span class="line">insert overwrite table student partition(month=&#x27;201706&#x27;)</span><br><span class="line">select id, name where month=&#x27;201709&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p>通过insert导入的话，会生成一个000000_0的结果文件，这个文件里存的就是有没有执行成功和执行了哪些数据，通过load方式导入的话，表目录下会有test01.txt文件，这是两者的区别</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220309120541704.png" alt="image-20220309120541704"></p>
+<h3 id="1-3-as-select"><a href="#1-3-as-select" class="headerlink" title="1.3 as select"></a>1.3 as select</h3><p>这个也要执行MR</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">create table if not exists student3</span><br><span class="line">as select id, name from student; </span><br><span class="line"></span><br><span class="line">desc student3，会发现表结构和student一样</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-4-location"><a href="#1-4-location" class="headerlink" title="1.4 location"></a>1.4 location</h3><p>如果数据已经在HDFS上了，直接在建表的时候，把表的目录指向文件的目录即可，跟load不同，load的方式会把文件位置改变，而且这种方式不跑MapReduce</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS student</span><br><span class="line">(</span><br><span class="line">    stu_id      INT     COMMENT &#x27;student_id&#x27;</span><br><span class="line">    , stu_name  STRING  COMMENT &#x27;student_name&#x27;</span><br><span class="line">)</span><br><span class="line">COMMENT &#x27;student_table&#x27;</span><br><span class="line">ROW FORMAT delimited FIELDS TERMINATED BY &#x27;\t&#x27;</span><br><span class="line">location &#x27;/student&#x27; ;	-- 这是hdfs上的目录</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-5-import"><a href="#1-5-import" class="headerlink" title="1.5 import"></a>1.5 import</h3><p>import需要export的结果文件，语法是  import table 表名 from ‘hdfs路径’ ，讲完导出再回头说这个</p>
+<h2 id="2-数据导出"><a href="#2-数据导出" class="headerlink" title="2. 数据导出"></a>2. 数据导出</h2><p>数据需要导出的场景很少。</p>
+<h3 id="2-1-insert"><a href="#2-1-insert" class="headerlink" title="2.1 insert"></a>2.1 insert</h3><p>带insert就得跑MR</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">INSERT overwrite LOCAL DIRECTORY &#x27;/opt/module/hive/datas/export/student1&#x27;</span><br><span class="line">ROW FORMAT DELIMITED FIELDS TERMINATED BY &#x27;\t&#x27;             </span><br><span class="line">SELECT * FROM student ;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-hadoop-方式导出"><a href="#2-2-hadoop-方式导出" class="headerlink" title="2.2 hadoop 方式导出"></a>2.2 hadoop 方式导出</h3><p>这种方式，就是直接下载</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hadoop fs -get </span><br><span class="line">dfs -get (hive窗口中)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-hive命令方式"><a href="#2-3-hive命令方式" class="headerlink" title="2.3 hive命令方式"></a>2.3 hive命令方式</h3><p>这里要在SQL里指定是哪个数据库里的哪张表，比如select * from default.student ;</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hive -e  &quot;sql&quot; &gt; 文件</span><br><span class="line">hive -f  文件  &gt; 文件</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-Export"><a href="#2-4-Export" class="headerlink" title="2.4 Export"></a>2.4 Export</h3><p>这个命令会把元数据和数据信息都导出，只能导到hdfs上，然后就可以通过import导入了。export + import经常用于两个hadoop集群之间的数据迁移。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">export table 表名 to &#x27;hdfs路径&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-Sqoop"><a href="#2-5-Sqoop" class="headerlink" title="2.5 Sqoop"></a>2.5 Sqoop</h3><p>专门的导出框架，后续会讲。</p>
+<h1 id="八、查询"><a href="#八、查询" class="headerlink" title="八、查询"></a>八、查询</h1><p>SQL语言大小写不敏感，注意不要用关键字做别名。</p>
+<p><strong>分组：</strong>group by，分组以后，在select后面只能跟分组字段和聚合函数</p>
+<p><strong>连接：</strong>join，内连接就是join，别的都是外连接，分为left join，right join，full join，连接的时候，把小表写左边，小表驱动大表优化器可以进行优化，写左边是因为当逻辑过于复杂时，优化器无法自动优化。目前hive也<strong>支持非等值连接</strong>。注意MySQL不支持full join，可以用a left join b union b left join a解决，注意不能用union all</p>
+<p><strong>limit 2, 3：</strong>从第2条数据开始取，取3条数据</p>
+<p><strong>where与having：</strong>分组之前的过滤用where，分组之后的过滤用having</p>
+<p><strong>order by：</strong>后面能不能用字段别名的问题，视数据库类型而定</p>
+<p>like后面不一定要写百分号，like ‘%飞帆’和like’_飞帆’是不一样的，_代表1个字符，或者用rlike写正则</p>
+<p><strong>为什么要小表驱动大表？</strong></p>
+<p>10条数据和100条关联，左连接左边是主表，小表放左边的话，从左边拿10次就可以了，大表放左边要从左边拿100次，所以小表放左边会快一点。现在不管hive还是MySQL，它的优化器会自动将小表放左边，但是逻辑复杂的时候它就无法解析了，所以还是最好写的时候就放到左边。其实如果没有索引，不管哪个放左边，都是要扫描10*100次的，但是如果右边的表有索引，那就可以根据索引直接定位到数据，这样小表放左边只需要扫描10次就可以了。</p>
+<p><strong>笛卡尔积：</strong>两张表里的每条数据都进行了关联，但是有时会故意不写关联条件，比如右边的表只有1条数据。hive里有个严格模式，打开后遇到笛卡尔积会报编译不通过的错误，最好打开预防低级错误。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">查询除了20部门和30部门以外的员工信息</span><br><span class="line">select * from emp where deptno not IN(30, 20);</span><br><span class="line"></span><br><span class="line">以A开头：LIKE &#x27;A%&#x27;，第二个字母为A：LIKE &#x27;_A%&#x27;，名字中带有A：RLIKE &#x27;[A]&#x27;</span><br><span class="line"></span><br><span class="line">is null，is not null，like，not like，in，not in，rlike，regexp，union，union all</span><br><span class="line"></span><br><span class="line">找出每个部门中每个岗位的最高薪水的那个人</span><br><span class="line">思路：开窗排序，或者用部门、岗位、最高薪水去join</span><br><span class="line"></span><br><span class="line">求每个部门除了CLERK岗之外的平均薪水大于2000的部门</span><br><span class="line">    avg长时间不用，都快忘记了</span><br><span class="line">    select </span><br><span class="line">        deptno</span><br><span class="line">        , avg(sal) as avg_sal </span><br><span class="line">    from emp </span><br><span class="line">    where job !=&#x27;CLERK&#x27; </span><br><span class="line">    group by deptno </span><br><span class="line">    having avg_sal &gt; 2000;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>大多数情况下，Hive会对每对JOIN连接对象启动一个MapReduce任务。本例中会首先启动一个MapReduce job对表 a 和表 b 进行连接操作，然后会再启动一个MapReduce job将第一个MapReduce job的输出和表 c 进行连接操作</p>
+<p>注意：为什么不是表b和表c先进行连接操作呢？这是因为Hive总是按照从左到右的顺序执行的。</p>
+<p>优化：当对3个或者更多表进行join连接时，如果每个on子句都使用相同的连接键的话？？？？，那么只会产生一个MapReduce ?</p>
+<p>下面是4个排序：</p>
+<p><strong>order by：</strong> 全局排序，只有一个reducer(一个分区)；distribute by 分区，sort by 区内排序，这俩基本一起用；如果distribute by 和 sort by使用的是同一个字段，且排序是升序，可以直接通过cluster by替换，distribute by user_id sort by empno 等价于 cluster by empno。想一下MR代码中是怎么实现多字段排序的呢？要时刻记住hive就是把SQL转成了MR，它底层有封装好的MR模板。</p>
+<p><strong>Order By：</strong>全局排序，只有一个Reducer，每个reducer都对应一个分区，所以就只有一个分区</p>
+<p><strong>Sort By：</strong>对于大规模的数据集order by的效率非常低。在很多情况下，并不需要全局排序，此时可以使用<strong>sort by</strong>。Sort by为每个reducer产生一个排序文件。每个Reducer内部进行排序，对全局结果集来说不是排序。每个reducer内部这句话，就要想到MR里的分区器，默认hashpartitioner。在hive里是随机分的(官网有写)，程序写出来的都是伪随机，但是我们一般都用distribute指定分区字段。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">设置reduce个数</span><br><span class="line">set mapreduce.job.reduces=3;</span><br><span class="line">查看设置reduce个数</span><br><span class="line">set mapreduce.job.reduces;</span><br><span class="line">根据部门编号降序查看员工信息</span><br><span class="line">select * from emp sort by deptno desc;</span><br><span class="line">将查询结果导入到文件中（按照部门编号降序排序）这里没必要研究是怎么分的，随机，一般都指定分区段</span><br><span class="line">insert overwrite local directory &#x27;/opt/module/hive/datas/sortby-result&#x27;</span><br><span class="line">select * from emp sort by deptno desc;</span><br><span class="line">三个reduce，三个分区，写出来后是三个文件</span><br></pre></td></tr></table></figure>
+
+<p><strong>Distribute By：</strong> 指定分区字段，类似MR中的分区器，结合sort by使用。对于distribute by进行测试的话，一定要分配多reduce进行处理，否则无法看到distribute by的效果。Hive要求DISTRIBUTE BY语句要写在SORT BY语句之前，它的<strong>分区规则</strong>是根据分区字段的hash码与reduce的个数进行模除后，余数相同的分到一个区。</p>
+<p><strong>cluster by：</strong>distribute by empno sort by empno 等价于 cluster by empno，但是只能升序</p>
+<p>注意建表语句的分区分桶和这4个排序关键字有重复的。</p>
+<h1 id="九、分区表和分桶表"><a href="#九、分区表和分桶表" class="headerlink" title="九、分区表和分桶表"></a>九、分区表和分桶表</h1><p>注意这里的分区和查询里的分区完全没有半毛钱关系！</p>
+<h2 id="1-分区表"><a href="#1-分区表" class="headerlink" title="1. 分区表"></a>1. 分区表</h2><p>分区表实际上就是对应一个HDFS文件系统上的独立的文件夹，该文件夹下是该分区所有的数据文件。<strong>Hive中的分区就是分目录</strong>(这里和查询里的分区完全不是一个东西，凑巧名字一样了)，把一个大的数据集根据业务需要分割成小的数据集。在查询时通过WHERE子句中的表达式选择查询所需要的指定的分区，这样的查询效率会提高很多。</p>
+<h3 id="1-1-常规分区表"><a href="#1-1-常规分区表" class="headerlink" title="1.1 常规分区表"></a>1.1 常规分区表</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">创建分区表</span><br><span class="line">create table test00</span><br><span class="line">(</span><br><span class="line">    deptno int</span><br><span class="line">    , dname string</span><br><span class="line">    , loc string</span><br><span class="line">)</span><br><span class="line">partitioned by (day string)</span><br><span class="line">row format delimited fields terminated by &#x27;\t&#x27;;</span><br><span class="line">注意：分区字段不能是表中已经存在的数据，可以将分区字段看作表的伪列，并且分区表加载数据时，必须指定分区</span><br><span class="line"></span><br><span class="line">desc test00 ;</span><br><span class="line">show partitions test00 ;</span><br><span class="line"></span><br><span class="line">往分区表load数据</span><br><span class="line">load data local inpath &#x27;/opt/module/hive-3.1.2/datas/dept_20200401.log&#x27; </span><br><span class="line">into table test00 partition(day=&#x27;20200401&#x27;)</span><br><span class="line">load data local inpath &#x27;/opt/module/hive-3.1.2/datas/dept_20200402.log&#x27; </span><br><span class="line">into table test00 partition(day=&#x27;20200402&#x27;)</span><br><span class="line"></span><br><span class="line">这里和dataphin不一样的是，查询的时候可以不加分区，dataphin强制加分区实际是避免了全表扫描</span><br><span class="line">select * from test00 ;</span><br></pre></td></tr></table></figure>
+
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220311001337592.png" alt="image-20220311001337592"></p>
+<p>分区字段就相当于加了索引，因为分区就是目录，指定了目录，那别的目录就可以不用查了。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">增加分区</span><br><span class="line">alter table test00 add partition(day=&#x27;20200404&#x27;);</span><br><span class="line">alter table test00 add partition(day=&#x27;20200405&#x27;) partition(day=&#x27;20200406&#x27;);</span><br><span class="line">删除分区</span><br><span class="line">alter table test00 drop partition(day=&#x27;20200404&#x27;);</span><br><span class="line">注意删除多个分区的时候，要写逗号，但是增加多分区的时候就不用写</span><br><span class="line">alter table test00 drop partition(day=&#x27;20200405&#x27;),partition(day=&#x27;20200406&#x27;);</span><br><span class="line">查看表的分区</span><br><span class="line">show partitions test00 ;</span><br><span class="line">desc formatted test00 ;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-二级分区表"><a href="#1-2-二级分区表" class="headerlink" title="1.2 二级分区表"></a>1.2 二级分区表</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">create table dept_partition2</span><br><span class="line">(</span><br><span class="line">    deptno  int </span><br><span class="line">    ,dname  string</span><br><span class="line">    , loc   int</span><br><span class="line">)</span><br><span class="line">partitioned by(dt string, ht string)</span><br><span class="line">row format delimited fields terminated by &#x27;\t&#x27; ;</span><br><span class="line"></span><br><span class="line">load data local inpath &#x27;/opt/module/hive-3.1.2/datas/dept_20200401.log&#x27; into table dept_partition2 partition(day=&#x27;20200801&#x27;,hour=&#x27;09&#x27;);</span><br><span class="line">load data local inpath &#x27;/opt/module/hive-3.1.2/datas/dept_20200402.log&#x27; into table dept_partition2 partition(day=&#x27;20200801&#x27;,hour=&#x27;10&#x27;);</span><br></pre></td></tr></table></figure>
+
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220311184716556.png" alt="image-20220311184716556"></p>
+<h3 id="1-3-hive的表分区与分区目录"><a href="#1-3-hive的表分区与分区目录" class="headerlink" title="1.3 hive的表分区与分区目录"></a>1.3 hive的表分区与分区目录</h3><p>HDFS上的只是目录，如果按照分区表的目录格式新建几个目录，hive能识别为表的分区吗？不可以，因为表的元数据信息在MySQL的metastore存着呢，通过手动建的目录，它没有元数据信息，就识别不了。有没有办法让它被识别为表的分区呢？有。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">新建目录</span><br><span class="line">hadoop fs -mkdir -p /user/hive/warehouse/mydb.db/dept_partition/day=20200803</span><br><span class="line"></span><br><span class="line">方式一：修复分区</span><br><span class="line">msck repair table dept_partition ;</span><br><span class="line"></span><br><span class="line">方式二：手动添加分区，正常添加分区会新建目录，它一看目录已经有了就不用新建了</span><br><span class="line">alter table dept_partition add partition(day=&#x27;20200803&#x27;)</span><br><span class="line"></span><br><span class="line">方式三：load数据到对应分区，这种其实就是普通的往分区表里导数据</span><br><span class="line">load data local inpath &#x27;/...&#x27; into table dept_partition partition(day=&#x27;20200803&#x27;)</span><br></pre></td></tr></table></figure>
+
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220311211727546.png" alt="image-20220311211727546"></p>
+<h3 id="1-4-动态分区"><a href="#1-4-动态分区" class="headerlink" title="1.4 动态分区"></a>1.4 动态分区</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">创建动态分区表</span><br><span class="line">create table test03 </span><br><span class="line">(</span><br><span class="line">    deptno      int </span><br><span class="line">    , dname     string</span><br><span class="line">)</span><br><span class="line">partitioned by (loc int)</span><br><span class="line">row format delimited fields terminated by &#x27;\t&#x27;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">方式一：以前不支持这种方式，现在支持了，以前load数据是不会跑MR了，它本质上就是一个上传数据的过程，往动态分区load的话要跑MR，它要挨个儿看每条数据应该分到哪个分区里面，需要计算。</span><br><span class="line">load data inpath &#x27;/dept.txt&#x27; into table test03 ;</span><br><span class="line">方式二：</span><br><span class="line">insert into table test03 partition(loc) </span><br><span class="line">select deptno ,dname, loc from dept; </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>往动态分区load的方式有个小坑，因为跑MR是在yarn上跑，当这个job被指定到了hadoop181上时，会报文件不存在的错误，因为你要load的数据在hadoop180。以前不会报错是因为，上面的load都不需要跑MR，所以load的话就不要在本地load，在HDFS上load更合适，就是不要加local</li>
+<li>往分区表放数据，为什么第一种方式不需要指定partition而第二种方式需要指定呢？第一种方式会默认把row terminated后的最后一列作为分区字段，第二种方式也是？</li>
+<li>目标分区表是如何匹配到数据中的分区字段的？来一条数据，去看看有没有对应的分区，有就放里面，没有就新建个分区然后放里面</li>
+<li>演示的时候报了个错，statstask，这个错不影响任务执行，不用管它，一般在insert的时候发生</li>
+</ul>
+<p>用之前要提前开启几个参数</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">开启动态分区功能（默认true，开启）</span><br><span class="line">    set hive.exec.dynamic.partition=true</span><br><span class="line">设置为非严格模式（动态分区的模式，默认strict，表示必须指定至少一个分区为静态分区，nonstrict模式表示允许所有的分区字段都可以使用动态分区）</span><br><span class="line">    set hive.exec.dynamic.partition.mode=nonstrict</span><br><span class="line">在所有执行MR的节点上，最大一共可以创建多少个动态分区。默认1000</span><br><span class="line">    set hive.exec.max.dynamic.partitions=1000</span><br><span class="line">在每个执行MR的节点上，最大可以创建多少个动态分区。该参数需要根据实际的数据来设定。比如：源数据中包含了一年的数据，即day字段有365个值，那么该参数就需要设置成大于365，如果使用默认值100，则会报错</span><br><span class="line">    set hive.exec.max.dynamic.partitions.pernode=100</span><br><span class="line">整个MR Job中，最大可以创建多少个HDFS文件。默认100000</span><br><span class="line">    set hive.exec.max.created.files=100000</span><br><span class="line">当有空分区生成时，是否抛出异常。一般不需要设置。默认false</span><br><span class="line">    set hive.error.on.empty.partition=false</span><br></pre></td></tr></table></figure>
+
+<p>使用动态分区的时候，要注意小文件的问题，假设第一次往20220101分区里写数据，有10000条，如果不超过切片大小的话该分区目录下只有1个文件，再假设第二次还往20220101分区里写数据，只有1条，问该分区目录下一共有几个文件呢？2个，即便是通过分区，每insert一次就会生成一个文件。</p>
+<h2 id="2-分桶表"><a href="#2-分桶表" class="headerlink" title="2. 分桶表"></a>2. 分桶表</h2><p>比如一天24小时的数据，数据量加起来比较大，如何设置分区呢？按小时分的话，晚上凌晨两点和下午两点的数据量差异是很大的，因为凌晨两点都在睡觉。这个时候就可以考虑用分桶，<strong>分区针对的是存储目录，而分桶是真的拆分数据</strong>，分4个桶就会把一天的文件拆分为4个文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">创建分桶表</span><br><span class="line">create table test_bucket </span><br><span class="line">(</span><br><span class="line">    id      int</span><br><span class="line">    , name  string</span><br><span class="line">)</span><br><span class="line">-- 分桶没有指定数据类型，说明用的是表中已有的字段</span><br><span class="line">-- 分4个桶，说明表的目录下有4个文件</span><br><span class="line">-- 分桶规则：分4个桶就对4取余</span><br><span class="line">clustered by(id) into 4 buckets  </span><br><span class="line">row format delimited fields terminated by &#x27;\t&#x27;;</span><br><span class="line"></span><br><span class="line">放数据，这里也要计算每条数据要放进哪个桶，也要跑MR，每个桶1个reduce，所以最好还是在HDFS上load</span><br><span class="line">load data inpath &#x27;/student.txt&#x27; into table test_bucket; </span><br><span class="line">insert into table test_bucket select * from student3; </span><br><span class="line"></span><br><span class="line">分区表和分桶表结合：分桶是可以和分区一起使用的</span><br><span class="line">create table dept_partition_bucket </span><br><span class="line">(</span><br><span class="line">    deptno int </span><br><span class="line">    , dname string</span><br><span class="line">    , loc int</span><br><span class="line">)</span><br><span class="line">partitioned by (day string)</span><br><span class="line">clustered by (deptno) into 4 buckets</span><br><span class="line">row format delimited fields terminated by &#x27;\t&#x27;;</span><br></pre></td></tr></table></figure>
+
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220311195503414.png" alt="image-20220311195503414" style="zoom:50%;" />
+
+<p>分区可以避免全表扫描，那分桶的好处是什么呢？当select分桶字段的时候，它能直接计算出该字段被分到了哪个桶，然后只扫描那个桶里的数据就行了，也相当于1个变相的索引。</p>
+<p>分桶的规则：<strong>哈希取余</strong>，Hive的分桶采用对分桶字段的值进行哈希，然后除以桶的个数求余的方 式决定该条记录存放在哪个桶当中。</p>
+<p>注意事项：</p>
+<ul>
+<li>reduce的个数设置为-1,不要自己设置，让Job自行决定需要用多少个reduce或者将reduce的个数设置为大于等于分桶表的桶数</li>
+<li>从hdfs中load数据到分桶表中，避免本地文件找不到问题</li>
+<li>不要使用本地模式(本地模式？)</li>
+</ul>
+<p>先分区再分桶长这样：</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220311201042433.png" alt="image-20220311201042433" style="zoom:50%;" />
+
+<h2 id="3-抽样查询"><a href="#3-抽样查询" class="headerlink" title="3. 抽样查询"></a>3. 抽样查询</h2><p>tablesample，没有分桶也能抽样？能，随便一个表都可以，虽然有bucket，但是和上面的分桶并无关系。基本上公司也不用。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">select * from stu_buck tablesample(bucket 1 out of 4 on id);//把数据放4个桶里，取一个桶</span><br></pre></td></tr></table></figure>
+
+<h1 id="十、函数"><a href="#十、函数" class="headerlink" title="十、函数"></a>十、函数</h1><h2 id="1-系统内置函数"><a href="#1-系统内置函数" class="headerlink" title="1. 系统内置函数"></a>1. 系统内置函数</h2><p>一共289个，不用记也记不住</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">查看系统自带的函数</span><br><span class="line">show functions;</span><br><span class="line"></span><br><span class="line">显示自带的函数的用法</span><br><span class="line">desc function upper;</span><br><span class="line"></span><br><span class="line">详细显示自带的函数的用法</span><br><span class="line">desc function extended upper;</span><br><span class="line"></span><br><span class="line">函数的用法最好还是百度，函数的底层也是jar包中封装好的类</span><br></pre></td></tr></table></figure>
+
+<p>常用函数介绍：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">常用日期函数</span><br><span class="line">    unix_timestamp:返回当前或指定时间的时间戳</span><br><span class="line">    	默认获取0时区的时间戳，比实际慢了8个小时，这个函数已经过时了，可以用current_timestamp代替</span><br><span class="line">    from_unixtime：将时间戳转为日期格式</span><br><span class="line">    current_date：当前日期</span><br><span class="line">    current_timestamp：当前的日期加时间</span><br><span class="line">    to_date：抽取日期部分</span><br><span class="line">    year：获取年	month：获取月	day：获取日</span><br><span class="line">    hour：获取时	minute：获取分		second：获取秒</span><br><span class="line">    weekofyear：当前时间是一年中的第几周</span><br><span class="line">    dayofmonth：当前时间是一个月中的第几天</span><br><span class="line">    months_between： 两个日期间的月份差，比如1.9032，这个是比较精确的</span><br><span class="line">    add_months：日期加减月</span><br><span class="line">    datediff：两个日期相差的天数</span><br><span class="line">    date_add：日期加天数</span><br><span class="line">    date_sub：日期减天数</span><br><span class="line">    last_day：日期的当月的最后一天</span><br><span class="line">    date_format(): 格式化日期</span><br><span class="line"></span><br><span class="line">常用取整函数</span><br><span class="line">    round：四舍五入	ceil： 向上取整	floor：向下取整</span><br><span class="line"></span><br><span class="line">常用字符串操作函数</span><br><span class="line">    upper：转大写      lower：转小写             length：长度</span><br><span class="line">    trim：前后去空格    lpad：向左补齐，到指定长度  rpad：向右补齐，到指定长度</span><br><span class="line">    regexp_replace：</span><br><span class="line">    	-- 后面的转义符，时刻想着hql的底层是java代码，要用java的正则转义符</span><br><span class="line">    	SELECT regexp_replace(&#x27;100-200&#x27;, &#x27;(\\d+)&#x27;, &#x27;num&#x27;) ;</span><br><span class="line">        使用正则表达式匹配目标字符串，匹配成功后替换！</span><br><span class="line">        这个可以把2020/08/08转换成2020-08-08</span><br><span class="line">        select regexp_replace(&#x27;2020/08/03&#x27;, &#x27;/&#x27;, &#x27;-&#x27;);</span><br><span class="line"></span><br><span class="line">集合操作，这个用的少</span><br><span class="line">    size：集合中元素的个数</span><br><span class="line">    map_keys：返回map中的key</span><br><span class="line">    map_values：返回map中的value</span><br><span class="line">    array_contains：判断array中是否包含某个元素</span><br><span class="line">    sort_array：将array中的元素排序</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-常用内置函数"><a href="#2-常用内置函数" class="headerlink" title="2. 常用内置函数"></a>2. 常用内置函数</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CONCAT：支持任意个输入字符串，遇NULL值返回NULL</span><br><span class="line">CONCAT_WS：它是一个特殊形式的CONCAT，它会跳过NULL和空字符串，注意它的参数必须是string或者array</span><br><span class="line">	如果非要拼的话，可以用cast转为string，这个函数经常用，而且参数一般是array</span><br><span class="line">COLLECT_SET：去重汇总，产生array</span><br><span class="line">COLLECT_LIST：不去重汇总，产生array</span><br><span class="line">wm_concat：这个是oracle里的函数，等同于CONCAT_WS(&#x27;,&#x27;, collect_set(user_name))的效果，MySQL有个group_concat，极其好用，里面可以加distinct</span><br><span class="line"></span><br><span class="line">SPLIT：分割</span><br><span class="line">EXPLODE：炸裂，将一行拆分成多行，注意参数一定是array或者map</span><br><span class="line">LATERAL VIEW：侧写，把炸裂后的字段与同行字段进行聚合，常与split, explode等UDTF一起使用，比如把(&#x27;王五&#x27;,&#x27;80,85,90&#x27;)这行数据的成绩字段进行炸裂，会得到三行，而姓名是一行，三行与一行无法对应，侧写的作用就是把姓名字段变成多行然后跟炸裂后的成绩字段对应起来。那么问题来了，侧写之后这个逻辑一共有多少字段？三个字段，原来的姓名和成绩字段还在，在后面又侧写了个虚拟字段，所以虚拟字段名不能和原字段名一样。</span><br><span class="line"></span><br><span class="line">RANK() 排序相同时会重复，总数不会变：1 2 2 4 5</span><br><span class="line">DENSE_RANK() 排序相同时会重复，总数会减少：1 2 2 3 4</span><br><span class="line">ROW_NUMBER() 会根据顺序计算：1 2 3 4 5</span><br></pre></td></tr></table></figure>
+
+<p><strong>求出每个部门男女各多少人</strong></p>
+<details>
+  <summary>建表语句</summary>
+  <pre><blockcode> 
+    CREATE TABLE test02
+    (
+        user_name       STRING
+        , dept_id       STRING
+        , sex           STRING
+    ) ;
+    INSERT overwrite TABLE test02 VALUES
+        ('悟空','A','男')
+        , ('大海','A','男')
+        , ('宋宋','B','男')
+        , ('凤姐','A','女')
+        , ('婷姐','B','女')
+        , ('婷婷','B','女') ;
+    SELECT * FROM test02 ;
+  </blockcode></pre>
+</details>
+
+<details>
+  <summary>期望效果</summary>
+  <pre><blockcode> 
+    +----------+------+--------+
+    | dept_id  | man  | women  |
+    +----------+------+--------+
+    | A        | 2    | 1      |
+    | B        | 1    | 2      |
+    +----------+------+--------+
+  </blockcode></pre>
+</details>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">    参考逻辑：注意这里的SQL就不做折叠了</span><br><span class="line">    SELECT  </span><br><span class="line">        dept_id</span><br><span class="line">        , SUM(IF(sex = &#x27;男&#x27;, 1, 0)) AS man</span><br><span class="line">        , SUM(IF(sex = &#x27;女&#x27;, 1, 0)) AS women </span><br><span class="line">    FROM test02</span><br><span class="line">    GROUP BY dept_id ;</span><br><span class="line">    -- 注意这样写和上面效果是不一样的</span><br><span class="line">    SELECT  </span><br><span class="line">        dept_id</span><br><span class="line">        , sex</span><br><span class="line">        , COUNT(sex) AS user_number</span><br><span class="line">    FROM test02</span><br><span class="line">    GROUP BY dept_id, sex ;</span><br></pre></td></tr></table></figure>
+
+<p><strong>列转行(默写，在这里栽跟头了)</strong></p>
+<details>
+  <summary>建表语句</summary>
+  <pre><blockcode> 
+    CREATE TABLE test03
+    (
+        user_name           STRING
+        , constellation     STRING
+        , blood_type        STRING
+    ) ;
+    INSERT overwrite TABLE test03 VALUES
+        ('悟空','白羊座','A')
+        , ('大海','射手座','A')
+        , ('宋宋','白羊座','B')
+        , ('八戒','白羊座','A')
+        , ('凤姐','射手座','A')
+        , ('苍苍','白羊座','B') ;
+    SELECT * FROM test03 ;
+  </blockcode></pre>
+</details>
+
+<details>
+  <summary>期望效果</summary>
+  <pre><blockcode> 
+    +----------------+------------+
+    | constellation  | user_name  |
+    +----------------+------------+
+    | 射手座,A       | 大海|凤姐   |
+    | 白羊座,A       | 悟空|八戒   |
+    | 白羊座,B       | 宋宋|苍苍   |
+    +----------------+------------+
+  </blockcode></pre>
+</details>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">    SELECT </span><br><span class="line">        -- 注意与concat的区别</span><br><span class="line">        CONCAT_WS(&#x27;,&#x27;, constellation, blood_type)   AS constellation</span><br><span class="line">        , CONCAT_WS(&#x27;|&#x27;, collect_set(user_name))    AS user_name</span><br><span class="line">    FROM test03</span><br><span class="line">    GROUP BY CONCAT_WS(&#x27;,&#x27;, constellation, blood_type) ;</span><br></pre></td></tr></table></figure>
+
+<p><strong>列转行(默写)</strong></p>
+<details>
+  <summary>建表语句</summary>
+  <pre><blockcode> 
+    CREATE TABLE test04
+    (
+        movie           STRING
+        , category      STRING
+    ) ;
+    INSERT overwrite TABLE test04 VALUES
+        ('《疑犯追踪》','悬疑,动作,科幻,剧情')
+        , ('《Lietome》','悬疑,警匪,动作,心理,剧情')
+        , ('《战狼2》','战争,动作,灾难') ;
+    SELECT * FROM test04 ;
+  </blockcode></pre>
+</details>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">    SELECT</span><br><span class="line">        movie</span><br><span class="line">        , explode_category</span><br><span class="line">    FROM test04</span><br><span class="line">    -- 注意这里as后面的别名不能再是category了，laterval view甚至不用跑MR</span><br><span class="line">    -- category里面是字符串，但是explode参数要求数组，所以要用split切开</span><br><span class="line">    lateral VIEW explode(split(category,&#x27;,&#x27;)) tmp AS explode_category ;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-窗口函数"><a href="#3-窗口函数" class="headerlink" title="3. 窗口函数"></a>3. 窗口函数</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">over(PARTITION BY ... ORDER BY ... ROWS BETWEEN ... AND ...) </span><br><span class="line">UNBOUNDED PRECEDING、current ROW、UNBOUNDED FOLLOWING</span><br><span class="line"></span><br><span class="line">可用的聚合函数有：sum、avg、count、lag、lead、first_value、last_value、rank、dense_rank、row_number</span><br></pre></td></tr></table></figure>
+
+<details>
+  <summary>建表语句</summary>
+  <pre><blockcode> 
+    CREATE TABLE test05
+    (
+        user_name           STRING
+        , order_time        STRING
+        , total_payment     DOUBLE
+    ) ;
+    INSERT overwrite TABLE test05 VALUES
+        ('张三','2017-01-01','10')
+        , ('李四','2017-01-02','15')
+        , ('李四','2017-01-04','29')
+        , ('张三','2017-01-05','46')
+        , ('李四','2017-01-07','50')
+        , ('张三','2017-01-08','55')
+        , ('张三','2017-02-03','23')
+        , ('张三','2017-04-06','42')
+        , ('王五','2017-04-08','62')
+        , ('王五','2017-04-09','68')
+        , ('王五','2017-04-11','75')
+        , ('王五','2017-04-13','94')
+        , ('麻子','2017-05-10','12')
+        , ('麻子','2017-06-12','80') ;
+    SELECT * FROM test05 ;
+  </blockcode></pre>
+</details>
+
+<p><strong>a. 查询在2017年4月份购买过的顾客及总人数</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    user_name</span><br><span class="line">    , COUNT(user_name) over() AS cnt</span><br><span class="line">FROM</span><br><span class="line">(</span><br><span class="line">    SELECT DISTINCT</span><br><span class="line">        user_name</span><br><span class="line">    FROM test05</span><br><span class="line">    -- 如果是MySQL有索引的话，这样写就用不到索引，那该怎样用到索引呢</span><br><span class="line">    -- 这里2017年4月份求法有很多种，比如还可以substr(order_time,1,7)、like &#x27;2017-04%&#x27;等等</span><br><span class="line">    WHERE DATE_FORMAT(order_time,&#x27;yyyy-MM&#x27;) = &#x27;2017-04&#x27;</span><br><span class="line">) t1 ;</span><br></pre></td></tr></table></figure>
+
+<p><strong>b. 查询每个顾客的日购买总额和月购买总额</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    user_name</span><br><span class="line">    , order_time</span><br><span class="line">    , total_payment</span><br><span class="line">    , SUM(total_payment) over(PARTITION BY user_name, order_month) AS sum_total_payment</span><br><span class="line">FROM</span><br><span class="line">(</span><br><span class="line">    SELECT</span><br><span class="line">        user_name</span><br><span class="line">        , order_time</span><br><span class="line">        , DATE_FORMAT(order_time,&#x27;yyyy-MM&#x27;) AS order_month</span><br><span class="line">        , SUM(total_payment)                AS total_payment</span><br><span class="line">    FROM test05</span><br><span class="line">    GROUP BY user_name, order_time</span><br><span class="line">) t1 ;</span><br></pre></td></tr></table></figure>
+
+<p><strong>c. 将每个顾客的实付金额按照日期进行累加</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SELECT </span><br><span class="line">    user_name</span><br><span class="line">    , order_time</span><br><span class="line">    -- 全局开窗</span><br><span class="line">    , SUM(total_payment) over() AS sample1</span><br><span class="line">    -- 按user_name分组开窗</span><br><span class="line">    , SUM(total_payment) over(PARTITION BY user_name) AS sample2</span><br><span class="line">    -- 按user_name分组开窗，order by 有默认的开窗规则，即sample4中rows后面的部分，这就是本题的答案</span><br><span class="line">    , SUM(total_payment) over(PARTITION BY user_name ORDER BY order_time) AS sample3  </span><br><span class="line">    -- 和sample3一样,由起点到当前行的聚合，rows定义开窗范围</span><br><span class="line">    , SUM(total_payment) over(PARTITION BY user_name ORDER BY order_time ROWS BETWEEN UNBOUNDED PRECEDING AND current ROW ) AS sample4    </span><br><span class="line">    -- 当前行和前面一行做聚合 </span><br><span class="line">    , SUM(total_payment) over(PARTITION BY user_name ORDER BY order_time ROWS BETWEEN 1 PRECEDING AND current ROW) AS sample5   </span><br><span class="line">    -- 当前行和前边一行及后面一行   </span><br><span class="line">    , SUM(total_payment) over(PARTITION BY user_name ORDER BY order_time ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING ) AS sample6    </span><br><span class="line">    -- 当前行及后面所有行 </span><br><span class="line">    , SUM(total_payment) over(PARTITION BY user_name ORDER BY order_time ROWS BETWEEN current ROW AND UNBOUNDED FOLLOWING ) AS sample7 </span><br><span class="line">FROM</span><br><span class="line">(</span><br><span class="line">    SELECT</span><br><span class="line">        user_name</span><br><span class="line">        , order_time</span><br><span class="line">        , SUM(total_payment)                AS total_payment</span><br><span class="line">    FROM test05</span><br><span class="line">    GROUP BY user_name, order_time</span><br><span class="line">) t1 ;</span><br></pre></td></tr></table></figure>
+
+<p><strong>d. 查询每个顾客最近一次的购买时间</strong></p>
+<p>为什么上面那个SQL起了4个job而下面这个SQL只起了1个job呢？下下面那个也是只起了1个job</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    user_name</span><br><span class="line">    , order_time</span><br><span class="line">FROM</span><br><span class="line">(</span><br><span class="line">    SELECT</span><br><span class="line">        user_name</span><br><span class="line">        , order_time</span><br><span class="line">        , row_number() over(PARTITION BY user_name ORDER BY order_time DESC) AS rnk</span><br><span class="line">    FROM test05</span><br><span class="line">    GROUP BY user_name, order_time</span><br><span class="line">) t1</span><br><span class="line">WHERE rnk = 1 ;</span><br></pre></td></tr></table></figure>
+
+<p><strong>e. 查询每个顾客每一单的购买时间和上一单的购买时间</strong></p>
+<p>注意这里遇到个报错信息，但是检查SQL并没有发现错，排查发现别名用了current_date，而它是个关键字或者函数，起名需谨慎。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    user_name</span><br><span class="line">    , order_time</span><br><span class="line">    , lag(order_time, 1, &#x27;1970-01-01&#x27;) over(PARTITION BY user_name ORDER BY order_time) AS lag_order_time</span><br><span class="line">FROM test05</span><br></pre></td></tr></table></figure>
+
+<p><strong>f. 查询前20%时间的订单信息</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    user_name</span><br><span class="line">    , order_time</span><br><span class="line">FROM</span><br><span class="line">(</span><br><span class="line">	-- 这个子查询可以单独看看结果</span><br><span class="line">    SELECT</span><br><span class="line">        user_name</span><br><span class="line">        , order_time</span><br><span class="line">        , ntile(5) over(ORDER BY order_time) tile</span><br><span class="line">    FROM test05</span><br><span class="line">) t1</span><br><span class="line">WHERE tile = 1 ;</span><br></pre></td></tr></table></figure>
+
+<p>这个需求也可以先查下总数看看多少条是前20%，然后limit条数就行了。</p>
+<h2 id="4-自定义函数"><a href="#4-自定义函数" class="headerlink" title="4. 自定义函数"></a>4. 自定义函数</h2><blockquote>
+<p>官网：<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/HivePlugins">https://cwiki.apache.org/confluence/display/Hive/HivePlugins</a></p>
+</blockquote>
+<p>hive提供的函数本身就很强大了，如果实在还是满足不了业务需求，可以尝试自定义函数或者直接去写MR。</p>
+<ul>
+<li>UDF：User-Defined-Function，一进一出</li>
+<li>UDAF：User-Defined Aggregation Function，聚合函数，多进一出，比如max&#x2F;min</li>
+<li>UDTF：User-Defined Table-Generating Functions，一进多出，比如lateral view explode()</li>
+</ul>
+<h3 id="4-1-自定义UDF"><a href="#4-1-自定义UDF" class="headerlink" title="4.1 自定义UDF"></a>4.1 自定义UDF</h3><p>代码见idea， 把代码写好后，要告诉hive这个类的存在，创建个函数，让函数底层调用这个类，先打包，放到hive的lib目录里</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">语法：</span><br><span class="line">    添加jar</span><br><span class="line">    add jar linux_jar_path</span><br><span class="line">    创建function</span><br><span class="line">    create [temporary] function [dbname.]function_name AS class_name;</span><br><span class="line">    在hive的命令行窗口删除函数</span><br><span class="line">    drop [temporary] function [if exists] [dbname.]function_name;</span><br><span class="line"></span><br><span class="line">实战：</span><br><span class="line">    -- add jar 这种方式就是临时的</span><br><span class="line">    0: jdbc:hive2://hadoop180:10000&gt; add jar /opt/module/hive-3.1.2/lib/601_hive_study-1.0.0.jar ;</span><br><span class="line">    -- 创建函数，后面跟全类名，temporary也代表临时</span><br><span class="line">    0: jdbc:hive2://hadoop180:10000&gt; create temporary function mylen as &#x27;com.study.udf.StringLengthUDF&#x27; ;</span><br><span class="line">    -- 好了，后面就可以用了</span><br><span class="line">    0: jdbc:hive2://hadoop180:10000&gt; show functions like &#x27;mylen&#x27; ;</span><br><span class="line">    0: jdbc:hive2://hadoop180:10000&gt; select mylen(&#x27;abcd&#x27;) ; </span><br><span class="line">    0: jdbc:hive2://hadoop180:10000&gt; select mylen(movie),movie from test04 ; </span><br><span class="line"></span><br><span class="line">注意这里有个坑，每次传进去的包名字不要相同，函数名也不要相同，要不然新的可能不生效</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-自定义UDTF"><a href="#4-2-自定义UDTF" class="headerlink" title="4.2 自定义UDTF"></a>4.2 自定义UDTF</h3><p>像这种UDTF类，能不能在java里测好再往hive里放呢？</p>
+<p>插件类型的开发，不需要知道底层原理，只需要知道你需要继承什么类实现什么接口重写哪些方法，然后把需要的功能写出来即可，不用管太底层的东西。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">select myexplode2(&#x27;太海-小时候,木海-长大后,大海-泰国一日游&#x27;,&#x27;,&#x27;,&#x27;-&#x27;) ;</span><br></pre></td></tr></table></figure>
+
+<h1 id="十一、压缩与存储"><a href="#十一、压缩与存储" class="headerlink" title="十一、压缩与存储"></a>十一、压缩与存储</h1><h2 id="1-压缩"><a href="#1-压缩" class="headerlink" title="1. 压缩"></a>1. 压缩</h2><p>压缩的话，默认的MR引擎压缩格式跟hadoop一样，这里就不说了。**压缩的后块大小设置最好和map切片的块大小一致(参数orc.compress.size)**。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">开启Map输出阶段压缩(MR引擎)</span><br><span class="line">    开启hive中间传输数据压缩功能(default:false)</span><br><span class="line">    hive (default)&gt;set hive.exec.compress.intermediate=true;</span><br><span class="line">    开启mapreduce中map输出压缩功能(default:false)</span><br><span class="line">    hive (default)&gt;set mapreduce.map.output.compress=true;</span><br><span class="line">    设置mapreduce中map输出数据的压缩方式</span><br><span class="line">    hive (default)&gt;set mapreduce.map.output.compress.code</span><br><span class="line">    	= org.apache.hadoop.io.compress.SnappyCodec;</span><br><span class="line">    执行查询语句</span><br><span class="line">    hive (default)&gt; select count(ename) name from emp;</span><br><span class="line"></span><br><span class="line">开启Reduce输出阶段压缩(MR引擎)</span><br><span class="line">    开启hive最终输出数据压缩功能</span><br><span class="line">    hive (default)&gt;set hive.exec.compress.output=true;</span><br><span class="line">    开启mapreduce最终输出数据压缩</span><br><span class="line">    hive (default)&gt;set mapreduce.output.fileoutputformat.compress=true;</span><br><span class="line">    设置mapreduce最终数据输出压缩方式</span><br><span class="line">    hive (default)&gt; set mapreduce.output.fileoutputformat.compress.codec =</span><br><span class="line">		org.apache.hadoop.io.compress.SnappyCodec;</span><br><span class="line">    设置mapreduce最终数据输出压缩为块压缩，这里主要针对sequencefile文件，一般不用设置</span><br><span class="line">    hive (default)&gt; set mapreduce.output.fileoutputformat.compress.type=BLOCK;</span><br><span class="line">    测试一下输出结果是否是压缩文件，想看效果的话要把结果输出到本地，以前select * 是不需要跑job的，现在需要跑了</span><br><span class="line">    hive (default)&gt; insert overwrite local directory &#x27;/opt/module/hive/datas/distribute-result&#x27; </span><br><span class="line">		select * from emp distribute by deptno sort by empno desc;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-文件存储格式"><a href="#2-文件存储格式" class="headerlink" title="2. 文件存储格式"></a>2. 文件存储格式</h2><p>Hive支持的存储数据的格式主要有：TEXTFILE 、SEQUENCEFILE、ORC、PARQUET。</p>
+<h3 id="2-1-列式存储和行式存储"><a href="#2-1-列式存储和行式存储" class="headerlink" title="2.1 列式存储和行式存储"></a>2.1 列式存储和行式存储</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220316212000167.png" alt="image-20220316212000167"></p>
+<p><strong>行存储的特点：</strong>查询满足条件的一整行数据的时候，列存储则需要去每个聚集的字段找到对应的每个列的值，行存储只需要找到其中一个值，其余的值都在相邻地方，所以此时行存储查询的速度更快。</p>
+<p><strong>列存储的特点：</strong>因为每个字段的数据聚集存储，在查询只需要少数几个字段的时候，能大大减少读取的数据量；每个字段的数据类型一定是相同的，列式存储可以针对性的设计更好的设计压缩算法。</p>
+<p>TEXTFILE和SEQUENCEFILE的存储格式都是基于行存储的；ORC和PARQUET是基于列式存储的。</p>
+<h3 id="2-2-主流的存储格式"><a href="#2-2-主流的存储格式" class="headerlink" title="2.2 主流的存储格式"></a>2.2 主流的存储格式</h3><p>了解即可</p>
+<p><strong>TextFile：</strong>默认格式，数据不做压缩，磁盘开销大，数据解析开销大。可结合Gzip、Bzip2使用，但使用Gzip这种方式，hive不会对数据进行切分，从而无法对数据进行并行操作。建表的时候有个stored as textfile，写不写都默认这个</p>
+<p><strong>Orc：</strong>Orc(Optimized Row Columnar)是Hive 0.11版里引入的新的存储格式</p>
+<p><strong>Parquet：</strong>Parquet文件是以二进制方式存储的，所以是不可以直接读取的，文件中包括该文件的数据和元数据，因此Parquet格式文件是自解析的。了解到这里即可，什么行组、列块、页就不要知道了</p>
+<h3 id="2-3-主流文件存储格式对比"><a href="#2-3-主流文件存储格式对比" class="headerlink" title="2.3 主流文件存储格式对比"></a>2.3 主流文件存储格式对比</h3><p><strong>TextFile</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">建表</span><br><span class="line">create table log_text (</span><br><span class="line">    track_time string,</span><br><span class="line">    url string,</span><br><span class="line">    session_id string,</span><br><span class="line">    referer string,</span><br><span class="line">    ip string,</span><br><span class="line">    end_user_id string,</span><br><span class="line">    city_id string</span><br><span class="line">)</span><br><span class="line">row format delimited fields terminated by &#x27;\t&#x27;</span><br><span class="line">stored as textfile;</span><br><span class="line">查入数据</span><br><span class="line">load data local inpath &#x27;/opt/module/hive/datas/log.data&#x27; into table log_text ;</span><br><span class="line">查看表中数据大小</span><br><span class="line">hive (default)&gt; dfs -du -h /user/hive/warehouse/log_text;</span><br></pre></td></tr></table></figure>
+
+<p><strong>ORC</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">本身自带压缩，列存count(*)时不跑MR，这里设置不使用压缩看看列式存储的数据大小</span><br><span class="line"></span><br><span class="line">create table log_orc(</span><br><span class="line">    track_time string,</span><br><span class="line">    url string,</span><br><span class="line">    session_id string,</span><br><span class="line">    referer string,</span><br><span class="line">    ip string,</span><br><span class="line">    end_user_id string,</span><br><span class="line">    city_id string</span><br><span class="line">)</span><br><span class="line">row format delimited fields terminated by &#x27;\t&#x27;</span><br><span class="line">stored as orc</span><br><span class="line">tblproperties(&quot;orc.compress&quot;=&quot;NONE&quot;); -- 设置orc存储不使用压缩</span><br><span class="line"></span><br><span class="line">向表中加载数据，这里不能直接load，因为源文件是行存，而orc是列存</span><br><span class="line">hive (default)&gt; insert into table log_orc select * from log_text ;</span><br><span class="line"></span><br><span class="line">查看表中数据大小，格式不一样大小就不一样</span><br><span class="line">hive (default)&gt; dfs -du -h /user/hive/warehouse/log_orc/ ;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Parquet</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">创建表，存储数据格式为parquet</span><br><span class="line">create table log_parquet(</span><br><span class="line">    track_time string,</span><br><span class="line">    url string,</span><br><span class="line">    session_id string,</span><br><span class="line">    referer string,</span><br><span class="line">    ip string,</span><br><span class="line">    end_user_id string,</span><br><span class="line">    city_id string</span><br><span class="line">)</span><br><span class="line">row format delimited fields terminated by &#x27;\t&#x27;</span><br><span class="line">stored as parquet ;</span><br><span class="line"></span><br><span class="line">向表中加载数据，也不能直接load</span><br><span class="line">hive (default)&gt; insert into table log_parquet select * from log_text ;</span><br><span class="line"></span><br><span class="line">查看表中数据大小</span><br><span class="line">hive (default)&gt; dfs -du -h /user/hive/warehouse/log_parquet/ ;</span><br></pre></td></tr></table></figure>
+
+<p>总结：不考虑任何压缩的情况下，文件大小ORC &lt; Parquet &lt; textFile，查询速度相近，整体在大数据里面，列存更占优势，一个表100个字段，很少有人一下子把100个字段全看完，都是只取几个字段做数据分析</p>
+<h3 id="2-4-存储和压缩结合"><a href="#2-4-存储和压缩结合" class="headerlink" title="2.4 存储和压缩结合"></a>2.4 存储和压缩结合</h3><ul>
+<li><p>ORC存储ZLIB压缩</p>
+</li>
+<li><p>ORC存储SNAPPY压缩</p>
+</li>
+<li><p>PARQUET存储SNAPPY压缩</p>
+</li>
+<li><p>sgg的课程里，基本都是ORC，parquet基本不用</p>
+</li>
+</ul>
+<p><strong>ORC常用参数：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Key								Default			Notes</span><br><span class="line"></span><br><span class="line">orc.compress					ZLIB				high level compression (one of NONE, ZLIB, SNAPPY)</span><br><span class="line">orc.compress.size				262,144			number of bytes in each compression chunk</span><br><span class="line">orc.stripe.size				268,435,456		number of bytes in each stripe</span><br><span class="line">orc.row.index.stride			10,000				number of rows between index entries (must be &gt;= 1000)</span><br><span class="line">orc.create.index				true				whether to create row indexes</span><br><span class="line">orc.bloom.filter.columns		&quot;&quot;					comma separated list of column names for which bloom filter should be created</span><br><span class="line">orc.bloom.filter.fpp			0.05				false positive probability for bloom filter (must &gt;0.0 and &lt;1.0)</span><br><span class="line">注意：所有关于ORCFile的参数都是在HQL语句的TBLPROPERTIES字段里面出现</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">create table test_compress(</span><br><span class="line">	member_id</span><br><span class="line">	, age</span><br><span class="line">	, gender</span><br><span class="line">	, create_time</span><br><span class="line">	, update_time</span><br><span class="line">)</span><br><span class="line">row format delimited fields terminated by &#x27;\t&#x27;</span><br><span class="line">stored as orc</span><br><span class="line">tblproperties(&quot;orc.compress&quot;=&quot;ZLIB&quot;);    -- ORC存储ZLIB压缩，ORC默认的就是这个 2.78M</span><br><span class="line">tblproperties(&quot;orc.compress&quot;=&quot;SNAPPY&quot;);  -- ORC存储SNAPPY压缩，每一种压缩的配置参数都不一样 3.75M</span><br><span class="line"></span><br><span class="line">stored as parquet</span><br><span class="line">tblproperties(&quot;parquet.compression&quot;=&quot;SNAPPY&quot;);  -- PARQUET存储SNAPPY压缩 6.39M</span><br><span class="line"></span><br><span class="line">插入数据</span><br><span class="line">insert into test_compress select * from log_text;</span><br><span class="line">查看大小</span><br><span class="line">dfs -du -h /user/hive/warehouse/test_compress/;</span><br></pre></td></tr></table></figure>
+
+<p>ZLIB比Snappy压缩的还小，原因是ZLIB采用的是deflate压缩算法。比snappy压缩的压缩率高，但是压缩速度不够快。</p>
+<p>结论：通常情况下使用ORC存储，结合SNAPPY压缩，注意<strong>ORC的默认块大小是256MB</strong>，而且好像不能改</p>
+<h1 id="十二、Hive优化"><a href="#十二、Hive优化" class="headerlink" title="十二、Hive优化"></a>十二、Hive优化</h1><h2 id="1-两个参数"><a href="#1-两个参数" class="headerlink" title="1. 两个参数"></a>1. 两个参数</h2><p><strong>Fetch抓取：</strong>Hive中对某些情况的查询可以不必使用MapReduce计算。</p>
+<p>在hive-default.xml.template文件中hive.fetch.task.conversion默认是more，老版本hive默认是minimal，该属性修改为more以后，在全局查找、字段查找、limit查找等都不走mapreduce。如果设为none的话，代表任何SQL都要跑MR</p>
+<p><strong>本地模式：</strong>当hive输入的数据量非常小，此时触发任务执行的时间比任务执行的时间都要长，这时就不用再往yarn上提交任务了，在本地跑更快。生产环境用不到就不设置了，本地模式可能会内存溢出，hive-env.sh有个参数默认是256M，可以改大点</p>
+<h2 id="2-SQL的优化"><a href="#2-SQL的优化" class="headerlink" title="2. SQL的优化"></a>2. SQL的优化</h2><h3 id="2-1-小表join大表"><a href="#2-1-小表join大表" class="headerlink" title="2.1 小表join大表"></a>2.1 小表join大表</h3><p>将key相对分散，并且数据量小的表放在join的左边，这样可以有效减少内存溢出错误发生的几率；再进一步，可以使用map join让小的维度表（1000条以下的记录条数）先进内存，在map端完成join。</p>
+<p>实际测试发现：新版的hive已经对小表JOIN大表和大表JOIN小表进行了优化，小表放在左边和右边已经没有明显区别。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">打开mapjoin功能（默认就是打开的）</span><br><span class="line">set hive.auto.convert.join = true;</span><br><span class="line">大表小表的阈值设置（默认25M以下认为是小表）</span><br><span class="line">set hive.mapjoin.smalltable.filesize=25000000;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-大表join大表"><a href="#2-2-大表join大表" class="headerlink" title="2.2 大表join大表"></a>2.2 大表join大表</h3><p>如果关联条件选不好，可能会出现内存溢出或者计算时间过长。</p>
+<p><strong>空KEY过滤</strong></p>
+<p>有时join超时是因为某些key对应的数据太多(比如key为null)，而相同key对应的数据都会发送到相同的reducer上，从而导致内存不够。此时我们应该仔细分析这些异常的key，很多情况下，这些key对应的数据是异常数据，我们需要在SQL语句中进行过滤。</p>
+<p><strong>空KEY转换</strong></p>
+<p>有时虽然某个key为空对应的数据很多，但是相应的数据不是异常数据，必须要包含在join的结果中，此时我们可以把表a中key为空的字段赋一个随机的值，使得数据随机均匀地分不到不同的reducer上。<strong>某些reducer的资源消耗远大于其他reducer，就是出现了数据倾斜</strong>。反正空值本来就不该关联上，随机赋个值也关联不上，但是能把数据均匀的分到不同的reducer上，没有资源浪费就快很多。</p>
+<h3 id="2-3-MapJoin"><a href="#2-3-MapJoin" class="headerlink" title="2.3 MapJoin"></a>2.3 MapJoin</h3><p>如果不指定MapJoin或者不符合MapJoin的条件，那么Hive解析器会将Join操作转换成Common Join，即：在Reduce阶段完成join。容易发生数据倾斜。可以用MapJoin把小表全部加载到内存在map端进行join，避免reducer处理。</p>
+<h3 id="2-4-Group-By"><a href="#2-4-Group-By" class="headerlink" title="2.4 Group By"></a>2.4 Group By</h3><p>默认情况下，Map阶段同一Key数据分发给一个reduce，当一个key数据过大时就倾斜了。并不是所有的聚合操作都需要在Reduce端完成，很多聚合操作都可以先在Map端进行部分聚合，最后在Reduce端得出最终结果。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">是否在Map端进行聚合，默认为True</span><br><span class="line">set hive.map.aggr = true</span><br><span class="line">在Map端进行聚合操作的条目数目</span><br><span class="line">set hive.groupby.mapaggr.checkinterval = 100000</span><br><span class="line">有数据倾斜的时候进行负载均衡（默认是false）</span><br><span class="line">set hive.groupby.skewindata = true</span><br></pre></td></tr></table></figure>
+
+<p>当负载均衡选项设定为 true，生成的查询计划会有两个MR Job。第一个MR Job中，Map的输出结果会随机分布到Reduce中，每个Reduce做部分聚合操作，并输出结果，这样处理的结果是相同的Group By Key有可能被分发到不同的Reduce中，从而达到负载均衡的目的；第二个MR Job再根据预处理的数据结果按照Group By Key分布到Reduce中（这个过程可以保证相同的Group By Key被分布到同一个Reduce中），最后完成最终的聚合操作。<strong>相当于多起了一个MR job，但是解决了数据倾斜的问题。</strong></p>
+<h3 id="2-5-Count-Distinct-去重统计"><a href="#2-5-Count-Distinct-去重统计" class="headerlink" title="2.5 Count(Distinct)去重统计"></a>2.5 Count(Distinct)去重统计</h3><p>数据量小的时候无所谓，数据量大的情况下，由于<strong>COUNT DISTINCT操作只由一个Reduce Task来完成</strong>，这一个Reduce需要处理的数据量太大，就会导致整个Job很难完成，一般COUNT DISTINCT使用先GROUP BY再COUNT的方式替换,但是需要注意group by造成的数据倾斜问题。虽然会多用一个Job来完成，但在数据量大的情况下(超过50W)，这个绝对是值得的。</p>
+<h3 id="2-6-笛卡尔积"><a href="#2-6-笛卡尔积" class="headerlink" title="2.6 笛卡尔积"></a>2.6 笛卡尔积</h3><p>尽量避免笛卡尔积，join的时候不加on条件，或者无效的on条件，Hive只能使用1个reducer来完成笛卡尔积。</p>
+<h3 id="2-7-行列过滤"><a href="#2-7-行列过滤" class="headerlink" title="2.7 行列过滤"></a>2.7 行列过滤</h3><p>列处理：在SELECT中，只拿需要的列，如果有，尽量使用分区过滤，少用SELECT *。</p>
+<p>行处理：在分区剪裁中，当使用外关联时，如果将副表的过滤条件写在Where后面，那么就会先全表关联，之后再过滤</p>
+<h3 id="2-8-分区分桶"><a href="#2-8-分区分桶" class="headerlink" title="2.8 分区分桶"></a>2.8 分区分桶</h3><p>分区是一定的，分桶几乎不用？略过</p>
+<h2 id="3-合理设置Map及Reduce数"><a href="#3-合理设置Map及Reduce数" class="headerlink" title="3. 合理设置Map及Reduce数"></a>3. 合理设置Map及Reduce数</h2><p>通常情况下，作业会通过input的目录产生一个或者多个map任务。</p>
+<p>主要的决定因素有：input的文件总个数，input的文件大小，集群设置的文件块大小。</p>
+<p><strong>是不是map数越多越好？</strong></p>
+<p>答案是否定的。如果一个任务有很多小文件（远远小于块大小128m），则每个小文件也会被当做一个块，用一个map任务来完成，而一个map任务启动和初始化的时间远远大于逻辑处理的时间，就会造成很大的资源浪费。而且，同时可执行的map数是受限的。</p>
+<p><strong>是不是保证每个map处理接近128m的文件块，就高枕无忧了？</strong></p>
+<p>答案也是不一定。比如有一个127m的文件，正常会用一个map去完成，但这个文件只有一个或者两个小字段，却有几千万行的记录，如果map处理的逻辑比较复杂，用一个map任务去做，肯定也比较耗时。</p>
+<p>针对上面的问题2和3，我们需要采取两种方式来解决：即减少map数和增加map数；合理设置很难，但是也没办法，合理就意味着没有统一的标注，只能根据实际情况来判断。</p>
+<h3 id="3-1-复杂文件增加Map数"><a href="#3-1-复杂文件增加Map数" class="headerlink" title="3.1 复杂文件增加Map数"></a>3.1 复杂文件增加Map数</h3><p>当input的文件都很大，任务逻辑复杂，map执行非常慢的时候，可以考虑增加Map数，来使得每个map处理的数据量减少，从而提高任务的执行效率。</p>
+<p>增加map的方法为：根据computeSliteSize(Math.max(minSize,Math.min(maxSize,blocksize))) &#x3D; blocksize&#x3D;128M公式，调整map的个数。</p>
+<h3 id="3-2-小文件进行合并"><a href="#3-2-小文件进行合并" class="headerlink" title="3.2 小文件进行合并"></a>3.2 小文件进行合并</h3><p>在map执行前合并小文件，减少map数：CombineHiveInputFormat具有对小文件进行合并的功能(<strong>系统默认的格式</strong>)，HiveInputFormat没有对小文件合并功能。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">设置为CombineHiveInputFormat：</span><br><span class="line">	set hive.input.format= org.apache.hadoop.hive.ql.io.CombineHiveInputFormat;</span><br><span class="line"></span><br><span class="line">在Map-Reduce的任务结束时合并小文件的设置：</span><br><span class="line">    在map-only任务结束时合并小文件，默认true，map-only指只有map没有reduce</span><br><span class="line">    SET hive.merge.mapfiles = true;</span><br><span class="line">    在map-reduce任务结束时合并小文件，默认false</span><br><span class="line">    SET hive.merge.mapredfiles = true;</span><br><span class="line">    合并文件的大小，默认256M</span><br><span class="line">    SET hive.merge.size.per.task = 268435456;</span><br><span class="line">    当输出文件的平均大小小于该值时，启动一个独立的map-reduce任务进行文件merge</span><br><span class="line">    SET hive.merge.smallfiles.avgsize = 16777216;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-合理设置Reduce数"><a href="#3-3-合理设置Reduce数" class="headerlink" title="3.3 合理设置Reduce数"></a>3.3 合理设置Reduce数</h3><p><strong>调整reduce个数方法一</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">每个Reduce处理的数据量默认是256MB</span><br><span class="line">	hive.exec.reducers.bytes.per.reducer=256000000</span><br><span class="line">每个任务最大的reduce数，默认为1009</span><br><span class="line">	hive.exec.reducers.max=1009</span><br><span class="line">计算reducer数的公式</span><br><span class="line">	N=min(参数2，总输入数据量/参数1)</span><br></pre></td></tr></table></figure>
+
+<p><strong>调整reduce个数方法二</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在hadoop的mapred-default.xml文件中修改</span><br><span class="line">设置每个job的Reduce个数</span><br><span class="line">	set mapreduce.job.reduces = 15;</span><br></pre></td></tr></table></figure>
+
+<p><strong>reduce个数并不是越多越好</strong></p>
+<ul>
+<li>过多的启动和初始化reduce也会消耗时间和资源；</li>
+<li>另外，有多少个reduce，就会有多少个输出文件，如果生成了很多个小文件，那么如果这些小文件作为下一个任务的输入，则也会出现小文件过多的问题；</li>
+</ul>
+<p>在设置reduce个数的时候也需要考虑这两个原则：处理大数据量利用合适的reduce数；使单个reduce任务处理数据量大小要合适；</p>
+<h3 id="3-4-并行执行"><a href="#3-4-并行执行" class="headerlink" title="3.4 并行执行"></a>3.4 并行执行</h3><p>Hive会将一个查询转化成一个或者多个阶段。这样的阶段可以是MapReduce阶段、抽样阶段、合并阶段、limit阶段。或者Hive执行过程中可能需要的其他阶段。默认情况下，Hive一次只会执行一个阶段。不过，某个特定的job可能包含众多的阶段，而这些阶段可能并非完全互相依赖的，也就是说有些阶段是可以并行执行的，这样可能使得整个job的执行时间缩短。不过，如果有更多的阶段可以并行执行，那么job可能就越快完成。</p>
+<p>通过设置参数hive.exec.parallel值为true，就可以开启并发执行。不过，在共享集群中，需要注意下，如果job中并行阶段增多，那么集群利用率就会增加。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">set hive.exec.parallel=true;       //打开任务并行执行</span><br><span class="line">set hive.exec.parallel.thread.number=16; //同一个sql允许最大并行度，默认为8。</span><br></pre></td></tr></table></figure>
+
+<p>当然，得是在系统资源比较空闲的时候才有优势，否则，没资源，并行也起不来。</p>
+<h3 id="3-5-严格模式"><a href="#3-5-严格模式" class="headerlink" title="3.5 严格模式"></a>3.5 严格模式</h3><p>最好打开，用来防小白</p>
+<ul>
+<li>分区表不使用分区过滤</li>
+</ul>
+<p> 将hive.strict.checks.no.partition.filter设置为true，通常分区表都拥有非常大的数据集，而且数据增加迅速。<strong>没有进行分区限制的查询可能会消耗令人不可接受的巨大资源来处理这个表。</strong></p>
+<ul>
+<li>使用order by没有limit过滤</li>
+</ul>
+<p> 将hive.strict.checks.orderby.no.limit设置为true时，对于使用了order by语句的查询，要求必须使用limit语句。因为order by为了执行排序过程会将所有的结果数据分发到同一个Reducer中进行处理，强制要求用户增加这个LIMIT语句可以防止Reducer额外执行很长一段时间。</p>
+<ul>
+<li>笛卡尔积</li>
+</ul>
+<p> 将hive.strict.checks.cartesian.product设置为true时，会限制笛卡尔积的查询。对关系型数据库非常了解的用户可能期望在 执行JOIN查询的时候不使用ON语句而是使用where语句，这样关系数据库的执行优化器就可以高效地将WHERE语句转化成那个ON语句。不幸的是，Hive并不会执行这种优化，因此，如果表足够大，那么这个查询就会出现不可控的情况。</p>
+<h3 id="3-6-JVM重用和压缩"><a href="#3-6-JVM重用和压缩" class="headerlink" title="3.6 JVM重用和压缩"></a>3.6 JVM重用和压缩</h3><h3 id="3-7-执行计划（Explain）"><a href="#3-7-执行计划（Explain）" class="headerlink" title="3.7 执行计划（Explain）"></a>3.7 执行计划（Explain）</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">语法：EXPLAIN [EXTENDED | DEPENDENCY | AUTHORIZATION] query</span><br><span class="line">当sql执行太慢时，sql_boy还是会看一看的，所有涉及到优化的东西，都不是小白能掌握的，需要经验的积累</span><br></pre></td></tr></table></figure>
+
+<h1 id="十三、hive实战"><a href="#十三、hive实战" class="headerlink" title="十三、hive实战"></a>十三、hive实战</h1><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220321211457753.png" alt="image-20220321211457753"></p>
+<h2 id="1-ETL和建表"><a href="#1-ETL和建表" class="headerlink" title="1. ETL和建表"></a>1. ETL和建表</h2><p>原始数据有3个地方需要处理：</p>
+<ul>
+<li>视频类别&amp;前后有空格</li>
+<li>相关视频是个array，array的分隔符是\t，而字段的分隔符也是\t</li>
+<li>相关视频可以没有，前面还有9个字段，如果数据的字段数小于9说明是脏数据</li>
+</ul>
+<p>处理方式：首先进行数据重组清洗操作，即：将所有的类别用“&amp;”分割，同时去掉两边空格，多个相关视频id也使用“&amp;”进行分割。</p>
+<p>数据清洗有map就行了，不需要reduce</p>
+<p>ETL的话就是走个没有reduce的MR，代码写好后打包，和源数据一起上传到hive_training目录下，然后上传到HDFS，最后执行命令进行清洗</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[kuyehen@hadoop180 hive_training]$ ll</span><br><span class="line">-rw-r--r--. 1 kuyehen kuyehen 8582 3月  21 21:52 myetl.jar</span><br><span class="line">drwxrwxr-x. 2 kuyehen kuyehen 4096 3月  21 21:55 user</span><br><span class="line">drwxrwxr-x. 2 kuyehen kuyehen 4096 3月  21 21:55 video</span><br><span class="line"></span><br><span class="line">[kuyehen@hadoop180 hive_training]$ hadoop fs -mkdir -p /hive_training/user</span><br><span class="line">[kuyehen@hadoop180 hive_training]$ hadoop fs -mkdir -p /hive_training/video</span><br><span class="line">[kuyehen@hadoop180 hive_training]$ hadoop fs -put ./user/* /hive_training/user</span><br><span class="line">[kuyehen@hadoop180 hive_training]$ hadoop fs -put ./video/* /hive_training/video</span><br><span class="line"></span><br><span class="line">[kuyehen@hadoop180 hive_training]$ hadoop jar myetl.jar com.study.myetl.EtlDriver /hive_training/video /hive_training/etl_video</span><br></pre></td></tr></table></figure>
+
+<p>然后建表，这里我们用ORC + SNAPPY的方式进行存储，orc是个列存，而原始数据是行存，所以我们需要一个中间表，然后把中间表里的数据insert overwrite进结果表</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">建库</span><br><span class="line">CREATE DATABASE IF NOT EXISTS hive_training ;</span><br><span class="line"></span><br><span class="line">建两个中间表</span><br><span class="line">CREATE TABLE guli_video_middle</span><br><span class="line">(</span><br><span class="line">    videoId         STRING</span><br><span class="line">    , uploader      STRING</span><br><span class="line">    , age           INT</span><br><span class="line">    , category      array&lt;STRING&gt;</span><br><span class="line">    , LENGTH        INT</span><br><span class="line">    , views         INT</span><br><span class="line">    , rate          DOUBLE</span><br><span class="line">    , ratings       INT</span><br><span class="line">    , comments      INT</span><br><span class="line">    , relatedId     array&lt;STRING&gt;</span><br><span class="line">)</span><br><span class="line">ROW FORMAT delimited FIELDS TERMINATED BY &quot;\t&quot;</span><br><span class="line">collection items TERMINATED BY &quot;&amp;&quot;</span><br><span class="line">stored AS textfile</span><br><span class="line">-- 直接通过location加载数据</span><br><span class="line">location &#x27;/hive_training/etl_video&#x27; ;</span><br><span class="line"></span><br><span class="line">CREATE TABLE guli_user_middle</span><br><span class="line">(</span><br><span class="line">    uploader        STRING</span><br><span class="line">    , videos        INT</span><br><span class="line">    , friends       INT</span><br><span class="line">)</span><br><span class="line">ROW FORMAT delimited </span><br><span class="line">FIELDS TERMINATED BY &quot;\t&quot; </span><br><span class="line">stored AS textfile</span><br><span class="line">location &#x27;/hive_training/user&#x27; ;</span><br><span class="line"></span><br><span class="line">建两个结果表</span><br><span class="line">CREATE TABLE guli_video</span><br><span class="line">(</span><br><span class="line">    videoId         STRING</span><br><span class="line">    , uploader      STRING</span><br><span class="line">    , age           INT</span><br><span class="line">    , category      array&lt;STRING&gt;</span><br><span class="line">    , LENGTH        INT</span><br><span class="line">    , views         INT</span><br><span class="line">    , rate          DOUBLE</span><br><span class="line">    , ratings       INT</span><br><span class="line">    , comments      INT</span><br><span class="line">    , relatedId array&lt;STRING&gt;</span><br><span class="line">)</span><br><span class="line">stored AS orc</span><br><span class="line">tblproperties(&quot;orc.compress&quot;=&quot;SNAPPY&quot;);</span><br><span class="line"></span><br><span class="line">CREATE TABLE guli_user</span><br><span class="line">(</span><br><span class="line">    uploader        STRING</span><br><span class="line">    , videos        INT</span><br><span class="line">    , friends       INT</span><br><span class="line">)</span><br><span class="line">ROW FORMAT delimited </span><br><span class="line">FIELDS TERMINATED BY &quot;\t&quot; </span><br><span class="line">stored AS orc</span><br><span class="line">tblproperties(&quot;orc.compress&quot;=&quot;SNAPPY&quot;);</span><br><span class="line"></span><br><span class="line">加载数据:</span><br><span class="line">INSERT overwrite TABLE guli_video SELECT * FROM guli_video_middle ;</span><br><span class="line">INSERT overwrite TABLE guli_user SELECT * FROM guli_user_middle ;</span><br><span class="line">-- 列式存储的count不走MR，老快了</span><br><span class="line">SELECT COUNT(*) FROM guli_video ; </span><br><span class="line">SELECT COUNT(*) FROM guli_user ; </span><br></pre></td></tr></table></figure>
+
+<p>数据准备完毕。</p>
+<h2 id="2-写需求"><a href="#2-写需求" class="headerlink" title="2. 写需求"></a>2. 写需求</h2><p>这是表结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">字段			备注						详细描述</span><br><span class="line">videoId		视频唯一id（String）			11位字符串</span><br><span class="line">uploader	视频上传者（String）			上传视频的用户名String</span><br><span class="line">age			视频年龄（int）				视频在平台上的整数天</span><br><span class="line">category	视频类别（Array&lt;String&gt;）		上传视频指定的视频分类</span><br><span class="line">length		视频长度（Int）				整形数字标识的视频长度</span><br><span class="line">views		观看次数（Int）				视频被浏览的次数</span><br><span class="line">rate		视频评分（Double）			满分5分</span><br><span class="line">Ratings		流量（Int）					 视频的流量，整型数字</span><br><span class="line">conments	评论数（Int）				一个视频的整数评论数</span><br><span class="line">relatedId	相关视频id（Array&lt;String&gt;）	相关视频的id，最多20个</span><br><span class="line"></span><br><span class="line">字段			备注			字段类型</span><br><span class="line">uploader	上传者用户名		string</span><br><span class="line">videos		上传视频数		int</span><br><span class="line">friends		朋友数量		 int</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>统计视频观看数Top10，直接排序limit就行</li>
+<li>统计视频类别热度Top10，视频类别是array，需要炸开</li>
+<li>统计出视频观看数最高的20个视频的所属类别以及类别包含Top20视频的个数</li>
+<li>统计视频观看数Top50所关联视频的所属类别Rank</li>
+<li>统计每个类别中的视频热度Top10,以Music为例</li>
+<li>统计每个类别视频观看数Top10</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-- 统计视频类别热度Top10</span><br><span class="line">SELECT</span><br><span class="line">    video_category</span><br><span class="line">    , SUM(views)        AS views</span><br><span class="line">FROM guli_video</span><br><span class="line">-- 这里直接炸就行</span><br><span class="line">lateral VIEW explode(category) temp AS video_category</span><br><span class="line">GROUP BY video_category</span><br><span class="line">ORDER BY views DESC</span><br><span class="line">LIMIT 10 ;</span><br><span class="line"></span><br><span class="line">-- 统计出视频观看数最高的20个视频的所属类别以及类别包含Top20视频的个数</span><br><span class="line">SELECT</span><br><span class="line">    video_category</span><br><span class="line">    , COUNT(1) AS cnt</span><br><span class="line">FROM</span><br><span class="line">(</span><br><span class="line">    SELECT</span><br><span class="line">        category</span><br><span class="line">        -- 在hive中，order by是在select之后执行的，所以这里一定要写上views，不然order by的时候会报找不到字段</span><br><span class="line">        , views</span><br><span class="line">    FROM guli_video</span><br><span class="line">    ORDER BY views DESC</span><br><span class="line">    LIMIT 20</span><br><span class="line">) b1</span><br><span class="line">lateral VIEW explode(category) temp AS video_category</span><br><span class="line">GROUP BY video_category</span><br><span class="line">ORDER BY cnt DESC</span><br><span class="line"></span><br><span class="line">-- 统计视频观看数Top50所关联视频的所属类别Rank</span><br><span class="line">SELECT</span><br><span class="line">    video_category</span><br><span class="line">    , COUNT(1) AS cnt</span><br><span class="line">    , rank() over(ORDER BY COUNT(1) DESC) AS rnk</span><br><span class="line">FROM</span><br><span class="line">(</span><br><span class="line">    SELECT</span><br><span class="line">        c2.category</span><br><span class="line">    FROM</span><br><span class="line">    (</span><br><span class="line">        SELECT</span><br><span class="line">            video_id</span><br><span class="line">        FROM</span><br><span class="line">        (</span><br><span class="line">            SELECT</span><br><span class="line">                relatedid</span><br><span class="line">                , views </span><br><span class="line">            FROM guli_video</span><br><span class="line">            ORDER BY views DESC</span><br><span class="line">            LIMIT 50</span><br><span class="line">        ) b1</span><br><span class="line">        lateral VIEW explode(relatedid) temp AS video_id</span><br><span class="line">    ) c1</span><br><span class="line">    JOIN guli_video c2</span><br><span class="line">    ON video_id = videoid</span><br><span class="line">) d1</span><br><span class="line">lateral VIEW explode(category) temp AS video_category</span><br><span class="line">GROUP BY video_category ;</span><br><span class="line"></span><br><span class="line">-- 统计每个类别中的视频热度Top10,以Music为例</span><br><span class="line">SELECT</span><br><span class="line">    videoid</span><br><span class="line">    , views</span><br><span class="line">FROM guli_video</span><br><span class="line">lateral VIEW explode(category) temp AS video_category</span><br><span class="line">WHERE video_category = &#x27;Music&#x27;</span><br><span class="line">ORDER BY views DESC</span><br><span class="line">LIMIT 10 ;</span><br><span class="line"></span><br><span class="line">-- 统计每个类别视频观看数Top10</span><br><span class="line">SELECT</span><br><span class="line">    video_category</span><br><span class="line">    , videoid</span><br><span class="line">    , views</span><br><span class="line">    , rnk</span><br><span class="line">FROM</span><br><span class="line">(</span><br><span class="line">    SELECT</span><br><span class="line">        video_category</span><br><span class="line">        , videoid</span><br><span class="line">        , views</span><br><span class="line">        , row_number() over(PARTITION BY video_category ORDER BY views DESC) AS rnk</span><br><span class="line">    FROM guli_video</span><br><span class="line">    lateral VIEW explode(category) temp AS video_category</span><br><span class="line">) t1</span><br><span class="line">WHERE rnk &lt;= 10</span><br><span class="line">ORDER BY video_category,rnk</span><br></pre></td></tr></table></figure>
+
+<p>Tiz和spark这种基于内存的引擎，在数据量很大时是怎么运行的，比如会员表全表扫描5个T，难道要占5T的内存吗？</p>
+<h1 id="常见错误"><a href="#常见错误" class="headerlink" title="常见错误"></a>常见错误</h1><p>hadoop job卡死，一直出现不了map执行多少reduce执行多少的情况，这个一般是因为内存不足，任务提交后申请不下来资源，AM启动不了</p>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><p>通过脚本获取hive的最大分区</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hive -e &quot;show partitions &quot;&quot;&quot; + table_name + &quot;&quot;&quot;&quot; | sort -n -r | awk &#x27;&#123;print $1&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/Hadoop%E5%9F%BA%E7%A1%804%E4%B9%8BYARN/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/bored.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Hadoop基础4之YARN</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E7%A6%BB%E7%BA%BF%E6%95%B0%E4%BB%93/%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8Ehadoop%E7%9A%84%E6%96%87%E7%AB%A0/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/explosion.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">一些关于hadoop的文章</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81Hive%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">一、Hive基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFHive"><span class="toc-text">1. 什么是Hive</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Hive%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-text">2. Hive的优缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Hive%E6%9E%B6%E6%9E%84%E5%8E%9F%E7%90%86"><span class="toc-text">3. Hive架构原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Hive%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E6%AF%94%E8%BE%83"><span class="toc-text">4. Hive和数据库比较</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Hive%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E5%90%AF%E5%8A%A8"><span class="toc-text">二、Hive的安装和启动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81Hive%E5%B8%B8%E7%94%A8%E4%BA%A4%E4%BA%92%E5%91%BD%E4%BB%A4"><span class="toc-text">三、Hive常用交互命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F"><span class="toc-text">四、参数配置方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81Hive%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">五、Hive数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">1. 基本数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E9%9B%86%E5%90%88%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">2. 集合数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-text">3. 类型转换</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81DDL%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89"><span class="toc-text">六、DDL数据定义</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%BB%BA%E5%BA%93"><span class="toc-text">1. 建库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%9F%A5%E5%BA%93"><span class="toc-text">2. 查库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%94%B9%E5%BA%93"><span class="toc-text">3. 改库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%88%A0%E5%BA%93"><span class="toc-text">4. 删库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%BB%BA%E8%A1%A8"><span class="toc-text">5. 建表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%9F%A5%E8%A1%A8"><span class="toc-text">6. 查表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%94%B9%E8%A1%A8"><span class="toc-text">7. 改表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%88%A0%E8%A1%A8"><span class="toc-text">8. 删表</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%83%E3%80%81DML%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C"><span class="toc-text">七、DML数据操作</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5"><span class="toc-text">1. 数据导入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-load"><span class="toc-text">1.1 load</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-insert"><span class="toc-text">1.2 insert</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-as-select"><span class="toc-text">1.3 as select</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-location"><span class="toc-text">1.4 location</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-import"><span class="toc-text">1.5 import</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BA"><span class="toc-text">2. 数据导出</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-insert"><span class="toc-text">2.1 insert</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-hadoop-%E6%96%B9%E5%BC%8F%E5%AF%BC%E5%87%BA"><span class="toc-text">2.2 hadoop 方式导出</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-hive%E5%91%BD%E4%BB%A4%E6%96%B9%E5%BC%8F"><span class="toc-text">2.3 hive命令方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-Export"><span class="toc-text">2.4 Export</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-Sqoop"><span class="toc-text">2.5 Sqoop</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%9F%A5%E8%AF%A2"><span class="toc-text">八、查询</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E5%88%86%E5%8C%BA%E8%A1%A8%E5%92%8C%E5%88%86%E6%A1%B6%E8%A1%A8"><span class="toc-text">九、分区表和分桶表</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%88%86%E5%8C%BA%E8%A1%A8"><span class="toc-text">1. 分区表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%B8%B8%E8%A7%84%E5%88%86%E5%8C%BA%E8%A1%A8"><span class="toc-text">1.1 常规分区表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E4%BA%8C%E7%BA%A7%E5%88%86%E5%8C%BA%E8%A1%A8"><span class="toc-text">1.2 二级分区表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-hive%E7%9A%84%E8%A1%A8%E5%88%86%E5%8C%BA%E4%B8%8E%E5%88%86%E5%8C%BA%E7%9B%AE%E5%BD%95"><span class="toc-text">1.3 hive的表分区与分区目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-%E5%8A%A8%E6%80%81%E5%88%86%E5%8C%BA"><span class="toc-text">1.4 动态分区</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%88%86%E6%A1%B6%E8%A1%A8"><span class="toc-text">2. 分桶表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%8A%BD%E6%A0%B7%E6%9F%A5%E8%AF%A2"><span class="toc-text">3. 抽样查询</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E5%87%BD%E6%95%B0"><span class="toc-text">十、函数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%B3%BB%E7%BB%9F%E5%86%85%E7%BD%AE%E5%87%BD%E6%95%B0"><span class="toc-text">1. 系统内置函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%B8%B8%E7%94%A8%E5%86%85%E7%BD%AE%E5%87%BD%E6%95%B0"><span class="toc-text">2. 常用内置函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0"><span class="toc-text">3. 窗口函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0"><span class="toc-text">4. 自定义函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E8%87%AA%E5%AE%9A%E4%B9%89UDF"><span class="toc-text">4.1 自定义UDF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E8%87%AA%E5%AE%9A%E4%B9%89UDTF"><span class="toc-text">4.2 自定义UDTF</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%8E%8B%E7%BC%A9%E4%B8%8E%E5%AD%98%E5%82%A8"><span class="toc-text">十一、压缩与存储</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%8E%8B%E7%BC%A9"><span class="toc-text">1. 压缩</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F"><span class="toc-text">2. 文件存储格式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%88%97%E5%BC%8F%E5%AD%98%E5%82%A8%E5%92%8C%E8%A1%8C%E5%BC%8F%E5%AD%98%E5%82%A8"><span class="toc-text">2.1 列式存储和行式存储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E4%B8%BB%E6%B5%81%E7%9A%84%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F"><span class="toc-text">2.2 主流的存储格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E4%B8%BB%E6%B5%81%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="toc-text">2.3 主流文件存储格式对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E5%AD%98%E5%82%A8%E5%92%8C%E5%8E%8B%E7%BC%A9%E7%BB%93%E5%90%88"><span class="toc-text">2.4 存储和压缩结合</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81Hive%E4%BC%98%E5%8C%96"><span class="toc-text">十二、Hive优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%A4%E4%B8%AA%E5%8F%82%E6%95%B0"><span class="toc-text">1. 两个参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-SQL%E7%9A%84%E4%BC%98%E5%8C%96"><span class="toc-text">2. SQL的优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%B0%8F%E8%A1%A8join%E5%A4%A7%E8%A1%A8"><span class="toc-text">2.1 小表join大表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%A4%A7%E8%A1%A8join%E5%A4%A7%E8%A1%A8"><span class="toc-text">2.2 大表join大表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-MapJoin"><span class="toc-text">2.3 MapJoin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-Group-By"><span class="toc-text">2.4 Group By</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-Count-Distinct-%E5%8E%BB%E9%87%8D%E7%BB%9F%E8%AE%A1"><span class="toc-text">2.5 Count(Distinct)去重统计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-%E7%AC%9B%E5%8D%A1%E5%B0%94%E7%A7%AF"><span class="toc-text">2.6 笛卡尔积</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-7-%E8%A1%8C%E5%88%97%E8%BF%87%E6%BB%A4"><span class="toc-text">2.7 行列过滤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-8-%E5%88%86%E5%8C%BA%E5%88%86%E6%A1%B6"><span class="toc-text">2.8 分区分桶</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%90%88%E7%90%86%E8%AE%BE%E7%BD%AEMap%E5%8F%8AReduce%E6%95%B0"><span class="toc-text">3. 合理设置Map及Reduce数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%A4%8D%E6%9D%82%E6%96%87%E4%BB%B6%E5%A2%9E%E5%8A%A0Map%E6%95%B0"><span class="toc-text">3.1 复杂文件增加Map数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%B0%8F%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8C%E5%90%88%E5%B9%B6"><span class="toc-text">3.2 小文件进行合并</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%90%88%E7%90%86%E8%AE%BE%E7%BD%AEReduce%E6%95%B0"><span class="toc-text">3.3 合理设置Reduce数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E5%B9%B6%E8%A1%8C%E6%89%A7%E8%A1%8C"><span class="toc-text">3.4 并行执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F"><span class="toc-text">3.5 严格模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-JVM%E9%87%8D%E7%94%A8%E5%92%8C%E5%8E%8B%E7%BC%A9"><span class="toc-text">3.6 JVM重用和压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-7-%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%EF%BC%88Explain%EF%BC%89"><span class="toc-text">3.7 执行计划（Explain）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%81%E4%B8%89%E3%80%81hive%E5%AE%9E%E6%88%98"><span class="toc-text">十三、hive实战</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-ETL%E5%92%8C%E5%BB%BA%E8%A1%A8"><span class="toc-text">1. ETL和建表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%86%99%E9%9C%80%E6%B1%82"><span class="toc-text">2. 写需求</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF"><span class="toc-text">常见错误</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-text">其他</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

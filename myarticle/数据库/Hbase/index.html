@@ -1,0 +1,545 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Hbase | 枯叶痕の博客</title><meta name="author" content="枯叶痕"><meta name="copyright" content="枯叶痕"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="初版看的是海波老师的视频，感觉讲的不太详细，有时间可以听听202206版的那个猛老师的视频。 HBase是Hadoop项目中的数据库。它用于需要对大量的数据进行随机、实时的读写操作的场景中。HBase的目标就是处理数据量非常庞大的表，可以用普通的计算机处理超过10亿行数据，还可处理有数百万列元素的数据表。 一、HBase的产生1. 谷歌的三篇论文谷歌的三篇论文恰好对应了大数据体系的3个模块  GF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hbase">
+<meta property="og:url" content="https://he-tengfei.github.io/myarticle/%E6%95%B0%E6%8D%AE%E5%BA%93/Hbase/index.html">
+<meta property="og:site_name" content="枯叶痕の博客">
+<meta property="og:description" content="初版看的是海波老师的视频，感觉讲的不太详细，有时间可以听听202206版的那个猛老师的视频。 HBase是Hadoop项目中的数据库。它用于需要对大量的数据进行随机、实时的读写操作的场景中。HBase的目标就是处理数据量非常庞大的表，可以用普通的计算机处理超过10亿行数据，还可处理有数百万列元素的数据表。 一、HBase的产生1. 谷歌的三篇论文谷歌的三篇论文恰好对应了大数据体系的3个模块  GF">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/quest.png">
+<meta property="article:published_time" content="2022-10-26T11:00:34.761Z">
+<meta property="article:modified_time" content="2022-10-26T10:08:02.000Z">
+<meta property="article:author" content="枯叶痕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/quest.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://he-tengfei.github.io/myarticle/%E6%95%B0%E6%8D%AE%E5%BA%93/Hbase/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":370},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Hbase',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-26 18:08:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/trees-4741364_1920.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/christmas-4701783.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">枯叶痕の博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Hbase</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-26T11:00:34.761Z" title="发表于 2022-10-26 19:00:34">2022-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-26T10:08:02.000Z" title="更新于 2022-10-26 18:08:02">2022-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">10.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>34分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Hbase"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>初版看的是海波老师的视频，感觉讲的不太详细，有时间可以听听202206版的那个猛老师的视频。</p>
+<p>HBase是Hadoop项目中的数据库。它用于需要对大量的数据进行随机、实时的读写操作的场景中。HBase的目标就是处理数据量非常庞大的表，可以用普通的计算机处理超过<strong>10亿行</strong>数据，还可处理有数百万列元素的数据表。</p>
+<h1 id="一、HBase的产生"><a href="#一、HBase的产生" class="headerlink" title="一、HBase的产生"></a>一、HBase的产生</h1><h2 id="1-谷歌的三篇论文"><a href="#1-谷歌的三篇论文" class="headerlink" title="1. 谷歌的三篇论文"></a>1. 谷歌的三篇论文</h2><p>谷歌的三篇论文恰好对应了大数据体系的3个模块</p>
+<ul>
+<li>GFS，goole file system 2003年发布，HDFS基于它</li>
+<li>MapReduce 2004年发布，一个编程模型，用来处理和产生大规模数据集</li>
+<li>BigTable 2006年发布，存储结构化数据，构建于GFS之上，它不是一个关系型数据库，不支持类SQL查询，可以通过键值访问，Hbase基于它，表的数据在GFS当中，表的管理比如元数据什么的在BigTable当中</li>
+</ul>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220505121830689.png" alt="image-20220505121830689" style="zoom:50%;" />
+
+<p>小知识</p>
+<ul>
+<li><p>java与.net：java是2001年开始流行的，它可以在网页里嵌入一些东西，所以之后游戏就流行了，之后c语言模仿java做了.net，也很火，后来分布式出来后，.net就不适用了。</p>
+</li>
+<li><p>事务：把多个对数据库的操作当成一个整体，要么同时成功要么同时失败，一般说的事务是指单点事务，多个数据库之间的事务叫分布式事务。</p>
+</li>
+<li><p>MySQL一张表的最大列数是4096</p>
+</li>
+</ul>
+<p>为什么有了MySQL还需要hbase呢？</p>
+<h2 id="2-MySQL的问题"><a href="#2-MySQL的问题" class="headerlink" title="2. MySQL的问题"></a>2. MySQL的问题</h2><h3 id="2-1-查询慢"><a href="#2-1-查询慢" class="headerlink" title="2.1 查询慢"></a>2.1 查询慢</h3><p><strong>查询列太多，会影响性能</strong></p>
+<p>当表的列很多的情况下，一般称之为<strong>宽表</strong>，会影响查询性能，一般会 采用<strong>垂直拆分</strong>的方式将表进行切分</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220505123055632.png" alt="image-20220505123055632" style="zoom:50%;" />
+
+<p><strong>数据行太多，会影响性能</strong></p>
+<p>数据文件太大，MySQL单表是有极限值：4G<br>数据行数一般在500万到2000万之间，会导致数据库阻塞</p>
+<p>当表的行很多的情况下，一般称之为<strong>高表</strong>，会影响查询性能，一般会采用<strong>水平拆分</strong>的方式将表进行切分，一般会存在切分的规则</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220505123243704.png" alt="image-20220505123243704" style="zoom:50%;" />
+
+<p><strong>表随着业务发生变化，增加新的列(动态列)</strong></p>
+<p>比如加个微信号的列，MySQL的话，会给没有微信号的id，也分配内存空间</p>
+<p>char和varchar的区别：char会用空格补到指定长度，varchar可变长，为什么一般是varchar(255)呢？MySQL会用1个字节来保存数据的真实长度，如果大于255它会用两个字节来保存数据的真实长度。比如varchar(3)，存了个ab，MySQL会用1个字节来保存数据的真实长度2。早期的MySQL只能当关系型数据库用，8.0之后可以当nosql数据库用，因为它支持了新的数据类型：JSON。</p>
+<p>动态列：就是类似JSON的列，有数据就分配空间，没数据就不分配空间</p>
+<h3 id="2-2-插入慢"><a href="#2-2-插入慢" class="headerlink" title="2.2 插入慢"></a>2.2 插入慢</h3><p>查询慢，可以通过上面的拆表来解决，那么拆表后插入慢该怎么办呢？把一行数据拆成了两张表，那么当一条数据过来要往表里插入的时候，就有个事务的问题。可以先把数据插入内存+顺写日志的方式解决插入慢的问题。</p>
+<p>现在MySQL查询慢和插入慢的问题都解决了，那为什么还要有hbase呢？</p>
+<h3 id="2-3-MySQL的极限值"><a href="#2-3-MySQL的极限值" class="headerlink" title="2.3 MySQL的极限值"></a>2.3 MySQL的极限值</h3><p>MySQL本身的存储有极限值</p>
+<ul>
+<li><p>myism : 65535T</p>
+</li>
+<li><p>innodb : 64T，现在都用这个引擎</p>
+</li>
+</ul>
+<p>64T远远不满足大数据的需求，所以才有了Hbase，Hbase就是根据上面说的方式存储数据的。</p>
+<h1 id="二、HBase简介"><a href="#二、HBase简介" class="headerlink" title="二、HBase简介"></a>二、HBase简介</h1><h2 id="1-什么是hbase"><a href="#1-什么是hbase" class="headerlink" title="1. 什么是hbase"></a>1. 什么是hbase</h2><blockquote>
+<p>官网：<a target="_blank" rel="noopener" href="http://hbase.apache.org/">http://hbase.apache.org</a></p>
+</blockquote>
+<p>Apache HBase是一个分布式，可伸缩，存储海量数据的Hadoop<strong>数据库</strong>，注意它基于hadoop。</p>
+<p>HBase受到了Google的BigTable论文思想的启发，目前作为Hadoop的子项目来开发维护，用于支持<strong>非结构化</strong>的数据存储。</p>
+<p>从功能上看，HBase是一个高可靠性、高性能、<strong>面向列</strong>、<strong>可伸缩</strong>的<strong>分布式</strong>存储系统，利用HBase技术可在廉价PC Server上搭建起大规模结构化存储集群。HBase的目标是存储并处理大型的数据，更具体来说是仅需使用普通的硬件配置，就能够处理由成千上万的行和列所组成的大型数据。</p>
+<ul>
+<li><strong>行式存储：</strong>查询效率高，它能根据主键快速定位数据，但是统计效率低</li>
+<li><strong>列式存储：</strong>查询效率低，统计效率高，所以HBase不是让你快速查询的。hbase的列存储插入快，所以所谓的修改其实也是插入，将旧的数据遮挡住，查询的时候只能查询最新的数据，就好像修改了一样。删除数据其实也可以以插入的方式进行操作，将旧的数据遮挡住，查询的时候无法查询到，并且它是通过时间戳实现遮挡的，直到compact的时候，才会真正删除</li>
+<li>列式存储的查询也降低了网络IO，加载表时不会把全部字段加载过来</li>
+</ul>
+<p><strong>关于hbase增删改查的效率</strong></p>
+<p><strong>增加：</strong>使用put指令，时间戳是由Hbase自动生成的，而且存储的是数据的单元格信息，而不是一行数据信息。Hbase本身就是用于存储海量数据的数据库，所以对插入操作进行了优化，性能非常的快，而且Hbase本身就是基于HDFS文件系统，所以数据量增加不是很大的问题。数据插入后，读取数据时，其实依赖于时间戳，hbase会把最新版本的数据查询出来。</p>
+<p><strong>修改：</strong>修改数据时，逻辑上需要先查询数据，再进行修改，对于Hbase来讲，性能非常低，所以不能采用这种方式来实现修改操作。Hbase采用了新增数据的方式来覆盖旧的数据，达到修改的目的。</p>
+<p><strong>删除：</strong>Hbase中的删除，其实也是增加新的数据，只不过进行了特殊处理，不让hbase可以查询出来，在合并的时候会真正删除</p>
+<p><strong>查询：</strong>全表扫描或范围查询用scan，查询单条数据用get</p>
+<p>hbase只说了海量数据的存储，可没查询什么事儿。存储就是插入，它的插入很快，但是查询比较慢。修改一般来说也是先查到目标数据然后再修改，但是hbase不查，直接通过插入的方式实现修改</p>
+<p>如果要把张三的年龄由30改成40，需要把(张三，30)这条数据查出来，然后再改吗？不需要，HBase一查就慢了，直接用(张三，40)进行插入覆盖，那怎么避免把旧的数据查出来呢？加个<strong>时间戳</strong>。</p>
+<h2 id="2-hbase和mysql的区别"><a href="#2-hbase和mysql的区别" class="headerlink" title="2. hbase和mysql的区别"></a>2. hbase和mysql的区别</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/clip_image002.jpg" alt="img" style="zoom:50%;" />
+
+<p>HBase作为一NoSQL数据库，不支持完整的事务性，而且仅仅支持基于RowKey的索引，在性能上不如memcached和redis。但是在海量数据，持久化存储方便比内存类型的NoSQL强的多，作为文档型NoSQL在分布式存储上比mongoDB做切分和MapReduce分析也简单方便的多。这一切都源于HBase本身基于Hadoop，可以简单的通过增加廉价节点的方式进行扩展，对于数据本身就可以很好的进行水平切分，同时和HDFS，MapReduce，Spark等结合的很好。不仅可以方便的进行存储同时可以更加方便的对数据进行处理和运算，这才是HBase最核心的特性。这些都是常见的关系型数据库无法比拟的。比其他常见的NoSQL也要强出不少。</p>
+<p>当然，HBase并不能解决所有的问题，所以才会有那么多的NoSQL和SQL，HBase典型的应用场景就是不断的插入新的信息。对于持续的大量的插入可以达到每秒百万的吞吐量。对于已有的数据修改的频率是很小的。Google用自己的BigTable存储互联网上新生成的网页，Facebook的messenger也是基于HBase实现的。</p>
+<h2 id="3-hbase的数据结构和概念"><a href="#3-hbase的数据结构和概念" class="headerlink" title="3. hbase的数据结构和概念"></a>3. hbase的数据结构和概念</h2><p>nosql数据库基本都是存键值对，后面学的redis也是键值对，所以看起来像一个多维的map</p>
+<p>row key相当于主键，用来定位数据，它就是kv键值对的k，水平切分后的数据叫region，类似于hive里的分区，region垂直切分后的每个列族叫store，真正存储时是以列族的方式来存</p>
+<p>逻辑上，HBase的数据模型同关系型数据库很类似，数据存储在一张表中，有行有列。但从HBase的底层物理存储结构（K-V）来看，HBase更像是一个multi-dimensional map(多维映射的map)。</p>
+<p>region server，分区服务器，布置在几个节点上就有几个region server</p>
+<p>master与region server不直接关联，而是通过zookeeper进行关联，region server主要是对数据做操作，master主要是对表做操作。所以一定要先启动zk后启动hbase</p>
+<p>region体现了水平拆分</p>
+<p>hbase是以kv对的形式存储的，rowkey相当于k，后面的数据相当于v</p>
+<p>rowkey不能太简单也不能太复杂，设计rowkey是个技术活</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220609120458342.png" alt="image-20220609120458342"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220609121108763.png" alt="image-20220609121108763"></p>
+<p><strong>Namespace：</strong>命名空间，类似于关系型数据库的database概念，每个命名空间下有多个表。HBase有两个自带的命名空间，分别是hbase和default，hbase中存放的是HBase内置的表，刚开始有两张，meta表和namespace表，default表示用户默认使用的命名空间。</p>
+<p><strong>Table：</strong>类似于关系型数据库的表概念。不同的是，HBase定义表时只需要声明列族即可，不需要声明具体的列，所以又有动态列的说法。但是一定要声明列族，非结构化数据库，可以没有某些列，所以列族是表的一部分，列不是。所以对于hbase来说，难点在于表该怎么去设计。</p>
+<p><strong>Rowkey：</strong>行键，类似于关系型数据的主键，所以不能重复，HBase表中的每行数据都由一个RowKey和多个Column（列）组成，数据是按照RowKey的字典顺序升序存储的，并且查询数据时只能根据RowKey进行检索，所以RowKey的设计十分重要。</p>
+<p><strong>Column：</strong>动态列，HBase中的每个列都由列族和列名进行限定，例如info：name，info：age。建表时，只需指明列族，而列限定符无需预先定义。不同列族里面可以有相同的列名，列族体现了垂直拆分。</p>
+<p><strong>Region：</strong>类似于分区的概念，需要考虑数据的水平切分，相同key的数据一定在同一个region</p>
+<p><strong>ColumnFamily：</strong>列族是表结构的一部分，所以创建表时列族应该是确定的，但是列是不确定的，随着业务的发展，可能会增加列。列族可以通过修改表结构的方式添加，不可以动态添加。</p>
+<p><strong>Store：</strong>存储，Hbase将一个列族的数据存储在一起，一个表存在多个列族，那么就会存储在不同的store里，底层都是以字节码存的</p>
+<p><strong>Timestamp：</strong>用于标识数据的不同版本（version），每条数据写入时，系统会自动为其加上该字段，其<strong>值为写入HBase的时间</strong>。被删除的数据只是被隐藏了，在合并的时候才会被真正删除。</p>
+<ul>
+<li><p>hbase中的版本号就是类似于加锁的概念，是一种乐观锁，它不通过事务来完成，有事务就慢了</p>
+</li>
+<li><p>比如有条数据(1, lisi, 40, v1)。现在两个人同时对这条数据做更改，各改各的，A同学改完放回去，数据变成了(1, lisi, 30, v2)。B同学改完放回去的时候发现，他取数据的时候版本号是v1，放回去时版本号已经变了，说明他当时拿的数据就不是最新的了，于是修改失败，所以这样就可以不通过事务实现加锁</p>
+</li>
+</ul>
+<p><strong>Cell：</strong>由{rowkey, column Family：column Qualifier, time Stamp} 唯一确定的单元。cell中的数据是没有类型的，全部是字节码形式存储，<strong>都是字节码便于压缩</strong>。</p>
+<h1 id="三、HBase入门"><a href="#三、HBase入门" class="headerlink" title="三、HBase入门"></a>三、HBase入门</h1><h2 id="1-HBase安装部署"><a href="#1-HBase安装部署" class="headerlink" title="1. HBase安装部署"></a>1. HBase安装部署</h2><p> 见大数据框架安装篇，hbase的安装如果出现错误，大概率是以前的节点没有删干净，具体操作见大数据框架安装篇</p>
+<p>如果启动后发现它自己断掉了，可以看下几台机器的时间是不是不同步。</p>
+<h2 id="2-HBase-Shell"><a href="#2-HBase-Shell" class="headerlink" title="2. HBase Shell"></a>2. HBase Shell</h2><p>注意hbase的所有命令参数都要加<strong>单引号和命名空间</strong></p>
+<h3 id="2-1-命令空间的操作"><a href="#2-1-命令空间的操作" class="headerlink" title="2.1 命令空间的操作"></a>2.1 命令空间的操作</h3><p>HBase系统默认定义了两个缺省的namespace ：</p>
+<ul>
+<li>hbase：系统内建表，包括namespace和meta表</li>
+<li>default：用户建表时未指定namespace的表都创建在此</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 进入命令行</span><br><span class="line">bin/hbase shell</span><br><span class="line">#查看所有命令，hbase的命令可以用tab键补全</span><br><span class="line">hbase(main):001:0&gt; help</span><br><span class="line">#查看所有命名空间</span><br><span class="line">hbase(main):002:0&gt; list_namespace</span><br><span class="line">#查看某个命名空间下的所有表                                                                                     </span><br><span class="line">hbase(main):003:0&gt; list_namespace_tables &#x27;hbase&#x27;</span><br><span class="line">#创建命名空间，创建完hdfs上就多了个目录，见下图</span><br><span class="line">hbase(main):007:0&gt; create_namespace &#x27;test&#x27;</span><br><span class="line">#查看命名空间</span><br><span class="line">hbase(main):009:0&gt; describe_namespace &#x27;test&#x27;</span><br><span class="line">#删除命名空间</span><br><span class="line">hbase(main):010:0&gt; drop_namespace &#x27;test&#x27; </span><br></pre></td></tr></table></figure>
+
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220613234548165.png" alt="image-20220613234548165"></p>
+<h3 id="2-2-表的操作"><a href="#2-2-表的操作" class="headerlink" title="2.2 表的操作"></a>2.2 表的操作</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#创建表，要加上表名和列族名，可以没有列，列族才是表结构的一部分</span><br><span class="line">hbase(main):012:0&gt; create &#x27;test01&#x27;,&#x27;info&#x27;</span><br><span class="line">    Created table test01</span><br><span class="line">    Took 0.7790 seconds</span><br><span class="line">    =&gt; Hbase::Table - test01</span><br><span class="line">#创建表时，默认会存储到default命名空间中，路径/hbase/data/default，如果想要改变默认命名空间，需要在创建时指定</span><br><span class="line">#create &#x27;命名空间:表名&#x27;,&#x27;列族名&#x27;</span><br><span class="line">hbase(main):013:0&gt; create &#x27;test:test01&#x27;,&#x27;info&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220614000005661.png" alt="image-20220614000005661"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220616011144443.png" alt="image-20220616011144443"></p>
+<p>rowkey在region中的排序是有序的，这里是当前region的rowkey范围，没写就是正无穷和负无穷，说明rowkey在哪个范围都会放到这个region中。那么问题来了，如果这个region放了1001-1005的数据，后来一下子来了好多1003的数据，该怎么办呢？好像不存在这个问题，一个rowkey相当于一条数据，一条数据列再多能有多大。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#插入数据 put &#x27;命名空间:表名&#x27;,&#x27;RowKey&#x27;,&#x27;列族:列名&#x27;,&#x27;列值&#x27;</span><br><span class="line">#这里的列族一定要存在，那列族在建表的时候必须指定好？能后来加吗？</span><br><span class="line">#别看写了5行，实际上这是插入了两行数据</span><br><span class="line">hbase(main):014:0&gt; put &#x27;test:test01&#x27;,&#x27;1001&#x27;,&#x27;info:sex&#x27;,&#x27;male&#x27;</span><br><span class="line">hbase(main):015:0&gt; put &#x27;test:test01&#x27;,&#x27;1001&#x27;,&#x27;info:age&#x27;,&#x27;18&#x27; </span><br><span class="line">hbase(main):016:0&gt; put &#x27;test:test01&#x27;,&#x27;1002&#x27;,&#x27;info:name&#x27;,&#x27;Janna&#x27;               </span><br><span class="line">hbase(main):017:0&gt; put &#x27;test:test01&#x27;,&#x27;1002&#x27;,&#x27;info:sex&#x27;,&#x27;female&#x27;                    </span><br><span class="line">hbase(main):018:0&gt; put &#x27;test:test01&#x27;,&#x27;1002&#x27;,&#x27;info:age&#x27;,&#x27;20&#x27;</span><br><span class="line"></span><br><span class="line">#全表扫描</span><br><span class="line">hbase(main):019:0&gt; scan &#x27;test:test01&#x27;</span><br><span class="line">#扫描范围数据，左闭右开，注意这里的排序，hbase底层存储的都是字节码，都按字典顺序排序</span><br><span class="line">hbase(main):020:0&gt; scan &#x27;test:test01&#x27;,&#123;STARTROW =&gt; &#x27;1001&#x27;, STOPROW  =&gt; &#x27;1001&#x27;&#125;</span><br><span class="line">hbase(main):021:0&gt; scan &#x27;test:test01&#x27;,&#123;STARTROW =&gt; &#x27;1001&#x27;&#125;</span><br><span class="line">#查看表结构，对命名空间用desc好像啥都看不了</span><br><span class="line">hbase(main):022:0&gt; describe &#x27;test:test01&#x27;</span><br><span class="line"></span><br><span class="line">#更新字段的值(就是修改)，也是追加，注意修改后这条数据的timestamp已经发生改变了</span><br><span class="line">hbase(main):023:0&gt; put &#x27;test:test01&#x27;,&#x27;1002&#x27;,&#x27;info:name&#x27;,&#x27;lisi&#x27;</span><br><span class="line"></span><br><span class="line">#查看数据用get，注意表头是column还是cell还是column+cell</span><br><span class="line">hbase(main):025:0&gt; get &#x27;test:test01&#x27;,&#x27;1001&#x27;</span><br><span class="line">hbase(main):026:0&gt; get &#x27;test:test01&#x27;,&#x27;1001&#x27;,&#x27;info:name&#x27;</span><br><span class="line"></span><br><span class="line">#查看行数</span><br><span class="line">hbase(main):027:0&gt; count &#x27;test:test01&#x27;</span><br><span class="line"></span><br><span class="line">#删除原理上也是追加，但是用的命令不一样</span><br><span class="line">#删除某rowkey的全部数据</span><br><span class="line">hbase(main):028:0&gt; deleteall &#x27;test:test01&#x27;,&#x27;1001&#x27;</span><br><span class="line">#删除某rowkey的某一列数据</span><br><span class="line">hbase(main):029:0&gt; delete &#x27;test:test01&#x27;,&#x27;1002&#x27;,&#x27;info:sex&#x27;</span><br><span class="line">执行完其实没删，只是看不见，属于逻辑删除，hbase会在某个时机一起把数据真正删除</span><br><span class="line"></span><br><span class="line">#清空表，清空表的操作顺序为先disable，然后再truncate，此操作过程由HBase自动完成，无需人工参与</span><br><span class="line">hbase(main):040:0&gt; truncate &#x27;test:test01&#x27;</span><br><span class="line"></span><br><span class="line">#删除表，先disable才能drop</span><br><span class="line">hbase(main):042:0&gt; disable &#x27;test:test01&#x27;</span><br><span class="line">hbase(main):043:0&gt; drop &#x27;test:test01&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-变更表信息"><a href="#2-3-变更表信息" class="headerlink" title="2.3 变更表信息"></a>2.3 变更表信息</h3><p>这节是后来补上的</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hbase(main):020:0&gt; desc &#x27;test:test01&#x27;</span><br><span class="line">发现结果里有个 VERSIONS =&gt; &#x27;1&#x27;，这个意思就是只存最新1个版本的数据</span><br><span class="line">将info列族中的数据改为存放3个版本</span><br><span class="line">hbase(main):021:0&gt; alter &#x27;test:test01&#x27;,&#123;NAME=&gt;&#x27;info&#x27;,VERSIONS=&gt;3&#125;</span><br><span class="line">插入两条数</span><br><span class="line">hbase(main):022:0&gt; put &#x27;test:test01&#x27;,&#x27;1002&#x27;,&#x27;info:name&#x27;,&#x27;lisi&#x27;</span><br><span class="line">hbase(main):023:0&gt; put &#x27;test:test01&#x27;,&#x27;1002&#x27;,&#x27;info:name&#x27;,&#x27;wangwu&#x27;</span><br><span class="line">如果此时全表扫描，发现只有1个wangwu，但实际在info:name这个单元格里存了3条数据，只是时间戳不一样</span><br><span class="line">hbase(main):024:0&gt; scan &#x27;test:test01&#x27;</span><br><span class="line">带上版本号去查，就能查到这3条数据了</span><br><span class="line">hbase(main):025:0&gt; get &#x27;test:test01&#x27;,&#x27;1002&#x27;,&#123;COLUMN=&gt;&#x27;info:name&#x27;,VERSIONS=&gt;3&#125;</span><br><span class="line">这个时候如果你删除一条数据</span><br><span class="line">hbase(main):026:0&gt; delete &#x27;test:test01&#x27;,&#x27;1002&#x27;,&#x27;info:name&#x27;</span><br><span class="line">再查询</span><br><span class="line">hbase(main):027:0&gt; scan &#x27;test:test01&#x27;</span><br><span class="line">发现lisi补上来了，再scan下版本</span><br><span class="line">hbase(main):034:0&gt; scan &#x27;test:test01&#x27;,&#123;RAW =&gt; true,VERSIONS=&gt;3&#125;</span><br><span class="line">    1002  column=info:name, timestamp=1655297849485, type=Delete</span><br><span class="line">    1002  column=info:name, timestamp=1655297849485, value=wangwu</span><br><span class="line">    1002  column=info:name, timestamp=1655297848544, value=lisi   </span><br><span class="line">发现就是在wangwu上面打了个delete的标签，让lisi显现出来，而且它俩时间戳是一样的</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、HBase-API"><a href="#四、HBase-API" class="headerlink" title="四、HBase API"></a>四、HBase API</h1><p>见idea</p>
+<h1 id="五、HBase进阶"><a href="#五、HBase进阶" class="headerlink" title="五、HBase进阶"></a>五、HBase进阶</h1><h2 id="1-HBase架构"><a href="#1-HBase架构" class="headerlink" title="1. HBase架构"></a>1. HBase架构</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220615235117461.png" alt="image-20220615235117461" style="zoom: 67%;" />
+
+<h2 id="2-HBase核心组件和概念"><a href="#2-HBase核心组件和概念" class="headerlink" title="2. HBase核心组件和概念"></a>2. HBase核心组件和概念</h2><p><strong>HMaster：</strong>Master是所有Region Server的管理者</p>
+<ul>
+<li>对于表的操作：create, delete, alter</li>
+<li>对于RegionServer的操作：分配regions到每个RegionServer(就是决定Region放哪个RegionServer里)，监控每个RegionServer的状态，负载均衡和故障转移</li>
+<li>原则上HMaster挂了后集群还能正常运行一段时间，因为只查数据的话HRegionServer就够了，直到发生对表的操作集群才会崩溃。那么插入数据行不行呢？不一定行，比如刚好该切分region的时候，如果再插入数据，就涉及到对region的切分，这个时候就要用到master了</li>
+</ul>
+<p><strong>HRegionServer：</strong>是一个java进程，其实现类为HRegionServer，Hbase中用于管理内部存放的Region</p>
+<ul>
+<li>对于数据的操作：get, put, delete</li>
+<li>对于Region的操作：splitRegion, compactRegion</li>
+<li>里面可以有多个region，多个store，多个WAL和1个读缓存</li>
+<li>进程都是有main方法的，关于进程和线程的区别？</li>
+</ul>
+<p><strong>HRegion：</strong>类似于水平拆分的表（表的一段数据），类似于Kafka中的分区的概念，分区的rowkey是有序的。如果一张表数据量比较小，那一张表就是一个region</p>
+<p><strong>HStore：</strong>用于管理Table的列族，每个store对应1个列族，包括写缓存和storefile，一个Region中可能有多个Store</p>
+<p><strong>HStoreFile：</strong>保存实际数据的物理文件，StoreFile以Hfile的形式存储在HDFS上，是个有序的K-V的文件。每个Store会有一个或多个StoreFile，数据在每个StoreFile中都是有序的。</p>
+<p><strong>BlockCache：</strong>读缓存，每次新查询的数据会缓存在BlockCache中，用于提高查询效率</p>
+<p><strong>MemStore：</strong>写缓存，由于HFile中的数据要求是有序的，所以数据是先存储在MemStore中，排好序后，等到达刷写时机才会刷写到HFile(也是为了memory中数据太多占用过多内存)，每次刷写都会形成一个新的HFile。另一方面也是为了提高效率，插入数据时，如果直接和Hbase底层文件交互，那么效率比较低，所以可以将数据直接写入到内存中然后返回，等攒够一批数据再刷写。MemStore有溢写功能，如果溢写太频繁性能也会降低，所以有个优化点就是提高写缓存的容量。</p>
+<p><strong>WAL：</strong>Write Ahead Log，预写日志，由于数据要经MemStore排序后才能刷写到HFile，但把数据保存在内存中会有很高的概率导致数据丢失，为了解决这个问题，数据会<strong>先写</strong>在一个日志文件中，<strong>然后再写</strong>入MemStore中。所以在系统出现故障的时候，数据可以通过这个日志文件重建。课件的图上是每个regionserver有1个WAL，实际是不对的，应该是每个region有1个WAL。刷写的时候，把memstore里的数据刷写到磁盘，然后通过事务编号去预写日志里删除对应的日志数据。</p>
+<p><strong>Zookeeper：</strong>HBase通过Zookeeper来做master的高可用、RegionServer的监控、元数据的入口以及集群配置的维护等工作。连接就是在连接zookeeper。HBase默认有内置的ZK，但是一般不用</p>
+<p><strong>HDFS：</strong>HDFS为Hbase提供最终的底层数据存储服务，同时为HBase提供高可用的支持。hbase基于hdfs，数据最终在hdfs上存着。</p>
+<p><strong>hbase会丢数据吗？</strong>一般不会，除了写缓存里的数据，hbase只是个应用程序，它不存数据，数据在hadoop上存着，所以hbase不管怎么宕机都不会丢数据，重启就完事儿了</p>
+<h2 id="3-HBase写流程"><a href="#3-HBase写流程" class="headerlink" title="3. HBase写流程"></a>3. HBase写流程</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220616004225132.png" alt="image-20220616004225132"></p>
+<p><strong>写流程：</strong></p>
+<ul>
+<li>为了能够确定增加数据时，数据在哪一个机器的region中，所以首先客户端查询hbase：meta表信息，但是由于meta也是一张表，这张表在哪里不确定。所以必须先访问zookeeper，获取meta的表位置。Client先访问zookeeper，目的是获取要访问的表在哪个region server的region里，hbase:meta表位于哪个Region Server(可以用scan ‘hbase:meta’看看这个表里都有啥，也可以在zookeeper里通过get &#x2F;hbase&#x2F;meta-region-server查看meta表在哪个regionserver里)</li>
+<li>访问对应的Region Server，获取hbase:meta表，根据读请求的namespace:table&#x2F;rowkey，查询出目标数据位于哪个Region Server中的哪个Region中。并将该table的region信息以及meta表的位置信息缓存在客户端的meta cache，方便下次访问</li>
+<li>与目标Region Server进行通讯，将数据顺序写入（追加）到WAL</li>
+<li>将数据写入对应的MemStore，数据会在MemStore进行排序</li>
+<li>向客户端发送ack</li>
+<li>等达到MemStore的刷写时机后，将数据刷写到HStoreFile</li>
+</ul>
+<p>问题1：为什么MySQL找表不需要先访问zookeeper？meta表的数据如果放在3台机器上，那么zookeeper怎么知道该访问的meta表位于哪个regionserver上呢？</p>
+<p>MySQL是单点的，一般分布式的才需要去找zookeeper，因为同张表的数据可能在3个不同的机器上。而meta表只会有1个region，不可能位于多台机器上。</p>
+<p>问题2：为什么要有写缓存和WAL？</p>
+<p>为了写的快，直接跟底层文件进行交互很慢，所以写到缓存，但是又怕缓存里的数据丢失，所以先写到WAL，往WAL写是顺写，很快。</p>
+<h2 id="4-Hbase读流程"><a href="#4-Hbase读流程" class="headerlink" title="4. Hbase读流程"></a>4. Hbase读流程</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220616012720039.png" alt="image-20220616012720039" style="zoom:80%;" />
+
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220616013318314.png" alt="image-20220616013318314"></p>
+<ul>
+<li>Client先访问zookeeper，获取hbase:meta表位于哪个Region Server</li>
+<li>访问对应的Region Server，获取hbase:meta表，根据读请求的namespace:table&#x2F;rowkey，查询出目标数据位于哪个Region Server中的哪个Region中。并将该table的region信息以及meta表的位置信息缓存在客户端的meta cache，方便下次访问</li>
+<li>与目标Region Server进行通讯，分别在读缓存、写缓存和Store File（HFile）中查询目标数据，并将查到的所有数据进行合并(此处所有数据是指同一条数据的不同版本（time stamp）或者不同的类型（Put&#x2F;Delete）)，但是有HStoreFile可能很多，所以为了避免查询效率低，需要对文件进行过滤，先采用布隆过滤器进行过滤，然后使用rowkey和时间对文件进行筛选，最终找到我们需要的文件。</li>
+<li>将查询到的新的数据块（Block，HFile数据存储单元，默认大小为64KB）缓存到Block Cache</li>
+<li>将合并后的最终结果返回给客户端</li>
+</ul>
+<p>读为什么比写慢，因为它读的地方多，先在读缓存里读，没有再往写缓存里读(因为刚刚写的东西被读取的概率大)，没有再去storefile里读，读到的话往读缓存里放一份然后返回，怕的是读的时候，有部分数据在读缓存里，有部分数据在写缓存里，有部分数据在storefile里，这样读到后还需要merge合并。从文件中读数据的时候，也不会把这个region里的数据全读，而是先通过时间范围、rowkey范围、布隆过滤器等判断肯定不在哪个文件里，然后再去可能在的文件里读。这样整个流程下来，读的速度就慢了。所以hbase设计的初衷不是为了快速查询，而是快速写入。</p>
+<h2 id="5-布隆过滤器"><a href="#5-布隆过滤器" class="headerlink" title="5. 布隆过滤器"></a>5. 布隆过滤器</h2><p>原理跟hashmap很像，zhangsan在不在里面我不知道，但是他不在里面我肯定知道，hbase读文件的时候就用到了这个原理。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220616121125703.png" alt="image-20220616121125703"></p>
+<p>布隆过滤器只能校验数据不存在我们的环境中，可以设置多级过滤。比如zhangsan第一次访问过我们的网站，hash后被分到了一级过滤的1号位，发现是个白色，代表没人来过，我们就知道”zhangsan以前从来没访问过”，然后把1号位标记成蓝色，当zhangsan再访问的时候，hash一下又到了1号位，发现是蓝色，于是我们知道”zhangsan可能访问过”，然后”wangwu”来了，hash后也被分到了1号位，于是我们知道”wangwu可能访问过”，继续hash走二级过滤，发现是白色，于是我们知道”wangwu以前从来没访问过”，再把二级过滤的1号位标记成红色，代表有人访问过。注意这里记录的不是个人信息，而是这个位置也没有人访问，存个人信息的话数据量就太大了。</p>
+<p>redis的位图bitmap也跟布隆过滤器有关，可以用0和1标记这个位置也没有人访问过，这样1个字节能保存8个用户的访问状态，1M就能保存8*1024*1024&#x3D;8千万个用户的访问状态。</p>
+<h2 id="6-flush刷写"><a href="#6-flush刷写" class="headerlink" title="6. flush刷写"></a>6. flush刷写</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220616192639547.png" alt="image-20220616192639547" style="zoom:33%;" />
+
+<p>关于flush，不管是达到阈值还是人工刷写，只要执行一次flush，hdfs上就会生成1个文件，哪怕只有1条数据</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220616011952759.png" alt="image-20220616011952759" style="zoom:50%;" />
+
+<p>再执行major_compact ‘test:emp’压缩后，会生成第3个合并后的文件，过一段时间后，前2个小文件会自动删除</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220616012130640.png" alt="image-20220616012130640" style="zoom:50%;" />
+
+<p>如果合并后的文件过大，还会涉及到切分，刷写、合并和切分会在以下三节来讲，而且这三个过程的实现方式比较复杂，大概了解下流程即可。</p>
+<p><strong>MemStore刷写时机：</strong></p>
+<ul>
+<li>当Region中所有的memstore的大小超过了hbase.hregion.memstore.flush.size(默认值128M)，其所在region的可能所有memstore都会刷写，或者选择部分的memstore进行刷写。当Region中所有的memstore的大小达到了128M * 4时，会阻止继续往该memstore写数据</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hbase.hregion.memstore.flush.size(128M) * hbase.hregion.memstore.block.multiplier(4)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当region server中memstore的总大小达到 java_heapsize * 0.4 * 0.95，region会按照其所有memstore的大小顺序(由大到小)依次进行刷写。直到region server  中所有memstore的总大小减小到上述值以下。当region server中memstore的总大小达到java_heapsize * 0.4时，会阻止继续往所有的memstore写数据</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">java_heapsize * hbase.regionserver.global.memstore.size(0.4) * hbase.regionserver.global.memstore.size.lower.limit(0.95)</span><br><span class="line"></span><br><span class="line">java_heapsize * hbase.regionserver.global.memstore.size(0.4) </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>到达自动刷写的时间，也会触发memstore flush。自动刷新的时间间隔由该属性进行配置hbase.regionserver.optionalcacheflushinterval(默认1小时)</p>
+</li>
+<li><p>当WAL文件的数量超过hbase.regionserver.max.logs，region会按照时间顺序依次进行刷写，直到WAL文件数量减小到hbase.regionserver.max.log以下  (该属性名已经废弃，现无需手动设置，最大值为32)</p>
+</li>
+</ul>
+<h2 id="7-Compaction合并"><a href="#7-Compaction合并" class="headerlink" title="7. Compaction合并"></a>7. Compaction合并</h2><p>由于memstore每次刷写都会生成一个新的HFile，且同一个字段的不同版本（timestamp）和不同类型（Put&#x2F;Delete）有可能会分布在不同的HFile中，因此查询时需要遍历所有的HFile。为了减少HFile的个数，以及清理掉过期和删除的数据，会进行StoreFile Compaction。</p>
+<p>Compaction分为两种，分别是Minor Compaction和Major Compaction。Minor Compaction会将临近的若干个较小的HFile合并成一个较大的HFile，并清理掉部分过期数据(实际不怎么清理)。Major Compaction会将一个Store下的所有的HFile合并成一个大HFile，并且会<strong>清理掉所有过期和删除的数据</strong>。最少要有3个hfile才能触发Major Compaction。</p>
+<p>生产环境中，大合并是要禁用的，太影响性能，由人工来做。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220616193200027.png" alt="image-20220616193200027" style="zoom:67%;" />
+
+<h2 id="8-split切分"><a href="#8-split切分" class="headerlink" title="8. split切分"></a>8. split切分</h2><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220616193605890.png" alt="image-20220616193605890" style="zoom:50%;" />
+
+<p>默认情况下，每个Table起初只有一个Region，随着数据的不断写入，Region会自动进行拆分。刚拆分时，两个子Region都位于当前的Region Server，但处于负载均衡的考虑，HMaster有可能会将某个Region转移给其他的Region Server。</p>
+<p><strong>Region Split时机：</strong></p>
+<p>具体的切分策略为：initialSize*tableRegionsCount*tableRegionsCount*tableRegionsCount，initialSize &#x3D; 256M</p>
+<p>第一次split：1^3 * 256 &#x3D; 256MB ，第二次split：2^3 * 256 &#x3D; 2048MB ，第三次split：3^3 * 256 &#x3D; 6912MB ，第四次split：4^3 * 256 &#x3D; 16384MB &gt; 10GB，因此取较小的值10GB ，后面每次split的size都是10GB了。</p>
+<p>Hbase 2.0引入了新的split策略：如果当前RegionServer上该表只有一个Region，按照2 * hbase.hregion.memstore.flush.size分裂，否则按照hbase.hregion.max.filesize分裂。</p>
+<p><strong>疑问：</strong>Hbase的region划分，每次划分大小都一样吗</p>
+<p>有可能不一样：因为hbase要保证同一个rowkey的数据要在一个store中</p>
+<h1 id="六、HBase优化"><a href="#六、HBase优化" class="headerlink" title="六、HBase优化"></a>六、HBase优化</h1><h2 id="1-预分区"><a href="#1-预分区" class="headerlink" title="1. 预分区"></a>1. 预分区</h2><p>每一个region维护着startRow与endRowKey，如果加入的数据符合某个region维护的rowKey范围，则该数据交给这个region维护。那么依照这个原则，我们可以将数据所要投放的<strong>分区提前规划好</strong>，以提高HBase性能。默认情况下，一个Table只有一个Region，所有的rowkey都应该放置在一个region里，只有一个region的话，它的默认rowkey的范围是 -∞, +∞。如果用默认的分区规则容易出现<strong>热点分区</strong>，比如第一次切分后有两个分区(负无穷,50)，(50,正无穷)，如果原数据用了自增键，后面过来的数据rowkey可能都大于50，数据就都会往第二个分区放，第二个分区就是热点分区。而且不做预分区的话，数据量不断增大，就会不断发生合并切分，也影响效率。所以一般进行分区规划时，以10G为单位，对数据进行评估。</p>
+<p>注意：同一个rowkey的数据不能放置在不同的region中</p>
+<p><strong>手动设定预分区</strong></p>
+<p>如果<strong>分区key</strong>如下设置的话，会分成5个分区，每个分区包含的范围是(负无穷,1000)，(1000,2000)，(2000,3000)，(3000,4000)，(4000,正无穷)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-- 后面分区key的顺序无所谓，底层用会按字典排个序再分区</span><br><span class="line">create &#x27;test:test02&#x27;,&#x27;info&#x27;,&#x27;member_id&#x27;,SPLITS =&gt; [&#x27;1000&#x27;,&#x27;2000&#x27;,&#x27;3000&#x27;,&#x27;4000&#x27;]</span><br></pre></td></tr></table></figure>
+
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220617115744194.png" alt="image-20220617115744194" style="zoom:33%;" />
+
+<p><strong>生成16进制序列预分区</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">create &#x27;test:test03&#x27;,&#x27;info&#x27;,&#x27;member_id&#x27;,&#123;NUMREGIONS =&gt; 15, SPLITALGO =&gt; &#x27;HexStringSplit&#x27;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>按照文件中设置的规则预分区</strong></p>
+<p>感觉这种可以被第一种方式取代，这里就不演示了。</p>
+<p><strong>使用Java API创建预分区</strong></p>
+<p>用的时候再翻文档。</p>
+<h2 id="2-RowKey设计"><a href="#2-RowKey设计" class="headerlink" title="2. RowKey设计"></a>2. RowKey设计</h2><p>一条数据的唯一标识就是rowkey，类似于关系型数据库的主键。在HBase中，rowkey是有序的。由于HBase存在分区的概念，所以当存储数据时，这条数据存储于哪个分区，就取决于rowkey处于哪一个预分区的区间内。设计rowkey的主要目的 ，就是让数据均匀的分布于所有的region中，在一定程度上<strong>防止数据倾斜</strong>。接下来我们就谈一谈rowkey常用的设计方案。</p>
+<p>rowkey的设计原则：唯一原则、长度原则、散列原则。</p>
+<ul>
+<li>唯一性原则</li>
+<li>长度原则，rowkey设计时不要太长，10~100Bytes</li>
+<li>散列原则，为了避免数据倾斜的问题，可以让rowkey分散一下放置在不同的region中</li>
+<li>归纳原则，为了查询的方便，一般会将有规律的rowkey数据存储在一起</li>
+</ul>
+<p><strong>生成随机数、hash、散列值</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">原本rowKey为1001的，SHA1后变成：dd01903921ea24941c26a48f2cec24e0bb0e8cc7</span><br><span class="line">原本rowKey为3001的，SHA1后变成：49042c54de64a1e9bf0b33e00245660ef92dc7bd</span><br><span class="line">原本rowKey为5001的，SHA1后变成：7b61dec07e02c188790670af43e717f0f46e8913</span><br></pre></td></tr></table></figure>
+
+<p>在做此操作之前，一般我们会选择从数据集中抽取样本，来决定什么样的rowKey来Hash后作为每个分区的临界值。注意这样就没法取范围数据了</p>
+<p><strong>字符串反转</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">20170524000001转成10000042507102</span><br><span class="line">20170524000002转成20000042507102</span><br></pre></td></tr></table></figure>
+
+<p><strong>字符串拼接，又叫加盐，在原数据后面加随机数</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">20170524000001_a12e</span><br><span class="line">20170524000001_93i7</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-内存优化"><a href="#3-内存优化" class="headerlink" title="3. 内存优化"></a>3. 内存优化</h2><p>HBase操作过程中需要大量的内存开销，毕竟Table是可以缓存在内存中的，但是不建议分配非常大的堆内存，因为GC过程持续太久会导致RegionServer处于长期不可用状态，一般16~36G内存就可以了，如果因为框架占用内存过高导致系统内存不足，框架一样会被系统服务拖死。</p>
+<h2 id="4-基础优化"><a href="#4-基础优化" class="headerlink" title="4. 基础优化"></a>4. 基础优化</h2><p>具体用到再去翻视频或课件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Zookeeper会话超时时间</span><br><span class="line">hbase-site.xml</span><br><span class="line">属性：zookeeper.session.timeout</span><br><span class="line">解释：默认值为90000毫秒。当某个RegionServer挂掉，90s之后Master才能察觉到。可适当减小此值，以加快Master响应，可调整至600000毫秒。</span><br><span class="line"></span><br><span class="line">手动控制Major Compaction</span><br><span class="line">hbase-site.xml</span><br><span class="line">属性：hbase.hregion.majorcompaction</span><br><span class="line">解释：默认值：604800000秒（7天）， Major Compaction的周期，若关闭自动Major Compaction，可将其设为0</span><br><span class="line"></span><br><span class="line">优化HStore文件大小</span><br><span class="line">hbase-site.xml</span><br><span class="line">属性：hbase.hregion.max.filesize</span><br><span class="line">解释：默认值10737418240（10GB），如果需要运行HBase的MR任务，可以减小此值，因为一个region对应一个map任务，如果单个region过大，会导致map任务执行时间过长。</span><br><span class="line">    该值的意思就是，如果HFile的大小达到这个数值，则这个region会被切分为两个Hfile。</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h1 id="七、HBase与Hive的对比"><a href="#七、HBase与Hive的对比" class="headerlink" title="七、HBase与Hive的对比"></a>七、HBase与Hive的对比</h1><h2 id="1-HBase与Hive的对比"><a href="#1-HBase与Hive的对比" class="headerlink" title="1. HBase与Hive的对比"></a>1. HBase与Hive的对比</h2><p><strong>Hive</strong></p>
+<ul>
+<li><strong>数据仓库：</strong>Hive的本质其实就相当于将HDFS中已经存储的文件在Mysql中做了一个双射关系，以方便使用HQL去管理查询</li>
+<li><strong>用于数据分析、清洗：</strong>Hive适用于离线的数据分析和清洗，延迟较高</li>
+<li><strong>基于HDFS、MapReduce：</strong>Hive存储的数据依旧在DataNode上，编写的HQL语句终将是转换为MapReduce代码执行</li>
+</ul>
+<p><strong>HBase</strong></p>
+<ul>
+<li><strong>数据库：</strong>是一种面向列族存储的非关系型数据库</li>
+<li><strong>用于存储结构化和非结构化的数据：</strong>适用于单表非关系型数据的存储，不适合做关联查询，类似JOIN等操作</li>
+<li><strong>基于HDFS：</strong>数据持久化存储的体现形式是HFile，存放于DataNode中，被ResionServer以region的形式进行管理</li>
+<li><strong>延迟较低，接入在线业务使用：</strong>面对大量的企业数据，HBase可以直线单表大量数据的存储，同时提供了高效的数据访问速度</li>
+</ul>
+<h2 id="2-HBase与Hive集成使用"><a href="#2-HBase与Hive集成使用" class="headerlink" title="2. HBase与Hive集成使用"></a>2. HBase与Hive集成使用</h2><p>课件用的两个案例都不合适，这里就不演示了。</p>
+<p>让hive能连上zookeeper的方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在hive-site.xml中添加zookeeper的属性，如下：</span><br><span class="line"></span><br><span class="line">&lt;property&gt;</span><br><span class="line">    &lt;name&gt;hive.zookeeper.quorum&lt;/name&gt;</span><br><span class="line">    &lt;value&gt;linux1,linux2,linux3&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line"></span><br><span class="line">&lt;property&gt;</span><br><span class="line">    &lt;name&gt;hive.zookeeper.client.port&lt;/name&gt;</span><br><span class="line">    &lt;value&gt;2181&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-几个面试题"><a href="#3-几个面试题" class="headerlink" title="3. 几个面试题"></a>3. 几个面试题</h2><p><strong>1. hbase热点问题</strong></p>
+<p>Hbase热点(数据倾斜)问题，读写请求会集中到某一个RegionServer上，如何处理？</p>
+<p>产生问题的原因</p>
+<ul>
+<li>Hbase中rowkey是按照字符串的字典顺序排列和存储的。所以当大量连续的rowkey数据集中写在个别的的region中，导致region数据不平衡</li>
+<li>创建表时，没有预分区。只有一个region</li>
+<li>存在预分区，设计的rowkey没有打散分布，可能放置在一个region</li>
+</ul>
+<p>解决方案</p>
+<ul>
+<li>Rowkey设计时，尽量不要采用时间戳，最好使用随机数+业务主键</li>
+<li>Rowkey设计时不要太长(10-100Byte)，太长的话会占内存，因为每条数据前面都有rowkey</li>
+<li>Rowkey设计时将同一批(查询)数据保存在一起，比如把2022年的数据放一起，其中又把每个月的数据放一起</li>
+<li>设计预分区</li>
+</ul>
+<p><strong>2. 关于查询</strong></p>
+<p>hbase查询一条记录的方法是什么？Hbase写入一条记录的方法是什么？</p>
+<p>Scan、Get、put</p>
+<p><strong>3. rowkey的设计原理</strong></p>
+<ul>
+<li>唯一性原则：保证rowkey不重复，最好将相关的rowkey保存在一起</li>
+<li>长度原则：rowkey不要太长，会导致有大量的内存冗余。不要太短，会导致查询不方便，推荐10~100Byte(最好是8的整数倍)</li>
+<li>散列原则：为了能够打散数据，让数据分布的更加均匀<ul>
+<li>哈希</li>
+<li>MD5</li>
+<li>字符串反转(时间戳反转)</li>
+</ul>
+</li>
+</ul>
+<p><strong>4. 关于合并compact</strong></p>
+<p>hbase中compact的用途是什么，什么时候触发，分为哪两种，有什么区别</p>
+<ul>
+<li>当hbase中memstore进行flush时，会产生很多的文件，如果文件过多，会导致性能下降，所以需要进行合并操作(Hbase自我调节)</li>
+<li>Minor Compact &amp; Major Compact，Major Compact在生产环境中应关闭，它会把所有的hfile合并成1个，时间很长造成阻塞</li>
+<li>触发的时机：Flush后，判断是否需要compact，内部线程周期轮询</li>
+</ul>
+<p><strong>5. Hbase的二级索引</strong></p>
+<p>一般会将rowkey作为一级索引，所谓的二级索引，其实就是将业务字段放置在rowkey中，形成数据冗余。</p>
+<p><strong>6. Hbase的优化</strong></p>
+<p>用到再翻课件</p>
+<p><strong>7. hbase的表设计</strong></p>
+<p>hbase表的设计有哪些注意点</p>
+<ul>
+<li>Rowkey: 如何设计</li>
+<li>Region：预分区</li>
+<li>Column family：包含哪些列族，最好不要太多，推荐2~3个</li>
+<li>Cell : 判断列族中有哪些列</li>
+<li>timestamp</li>
+</ul>
+<p><strong>8. HBase与mysql得区别</strong></p>
+<p>存储方式</p>
+<ul>
+<li>Mysql行存储，利于查询</li>
+<li>Hbase列存储，利于统计和压缩</li>
+</ul>
+<p>数据关系</p>
+<ul>
+<li>Mysql存储关系型数据，结构化数据</li>
+<li>Hbase存储的结构化数据和非结构化数据，非关系型数据</li>
+</ul>
+<p>事务处理</p>
+<ul>
+<li>Mysql存在事务</li>
+<li>Hbase侧重于海量数据的存储，所以没有事务，但是对于每条数据，是有事务的</li>
+</ul>
+<p>存储容量</p>
+<ul>
+<li>Mysql的存储容量取决于硬件</li>
+<li>Hbase基于hdfs，容量非常大</li>
+</ul>
+<p><strong>9. 批量插入数据</strong></p>
+<p>Hbase有put方法，那如何批量put数据进hbase里，用什么方法</p>
+<p>Put(List<Put>)</p>
+<p>有API可以调用</p>
+<h2 id="4-几个概念"><a href="#4-几个概念" class="headerlink" title="4. 几个概念"></a>4. 几个概念</h2><p><strong>去中心化</strong></p>
+<p>redis有个去中心化的概念，比如hbase，访问hbase时一般不是访问hbase本身，而是访问zookeeper，通过zookeeper去找hbase，hbase又通过master去找regionserver，比如kafka，通过leader去找follower，比如spark，通过driver去找executor，这个就是中心化，而redis，你可以访问任意一个节点，访问其中一个就等于访问整个集群，而且数据在整个集群中还只存一份。去中心化是一种特殊的分布式操作，主流的还是主从。</p>
+<p><strong>稀疏表和密集表</strong></p>
+<p>密集表比如MySQL，如果一个字段为空，实际上它也是占内存的，稀疏表比如hbase，一个列为空就不占内存。</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220615203544784.png" alt="image-20220615203544784" style="zoom:80%;" />
+
+<p>**new thread(this)**：这里的this指这个类，且这个类里一定有run方法</p>
+<p><strong>redis：</strong>c语言开发的一个内存数据库，性能很好</p>
+<p>hbase的视频，看下b站最新的或者刘波的那个，有phenoix的集成，老版视频还有个项目</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myarticle/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL%E5%9F%BA%E7%A1%80/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/creative-team.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">MySQL基础</div></div></a></div><div class="next-post pull-right"><a href="/myarticle/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL%E9%AB%98%E7%BA%A7/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/cover_img/mobile-app-2.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">MySQL高级</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81HBase%E7%9A%84%E4%BA%A7%E7%94%9F"><span class="toc-text">一、HBase的产生</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%B0%B7%E6%AD%8C%E7%9A%84%E4%B8%89%E7%AF%87%E8%AE%BA%E6%96%87"><span class="toc-text">1. 谷歌的三篇论文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-MySQL%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">2. MySQL的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%9F%A5%E8%AF%A2%E6%85%A2"><span class="toc-text">2.1 查询慢</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%8F%92%E5%85%A5%E6%85%A2"><span class="toc-text">2.2 插入慢</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-MySQL%E7%9A%84%E6%9E%81%E9%99%90%E5%80%BC"><span class="toc-text">2.3 MySQL的极限值</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81HBase%E7%AE%80%E4%BB%8B"><span class="toc-text">二、HBase简介</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFhbase"><span class="toc-text">1. 什么是hbase</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-hbase%E5%92%8Cmysql%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">2. hbase和mysql的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-hbase%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E6%A6%82%E5%BF%B5"><span class="toc-text">3. hbase的数据结构和概念</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81HBase%E5%85%A5%E9%97%A8"><span class="toc-text">三、HBase入门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-HBase%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2"><span class="toc-text">1. HBase安装部署</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-HBase-Shell"><span class="toc-text">2. HBase Shell</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%91%BD%E4%BB%A4%E7%A9%BA%E9%97%B4%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="toc-text">2.1 命令空间的操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E8%A1%A8%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="toc-text">2.2 表的操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%8F%98%E6%9B%B4%E8%A1%A8%E4%BF%A1%E6%81%AF"><span class="toc-text">2.3 变更表信息</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81HBase-API"><span class="toc-text">四、HBase API</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81HBase%E8%BF%9B%E9%98%B6"><span class="toc-text">五、HBase进阶</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-HBase%E6%9E%B6%E6%9E%84"><span class="toc-text">1. HBase架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-HBase%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E5%92%8C%E6%A6%82%E5%BF%B5"><span class="toc-text">2. HBase核心组件和概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-HBase%E5%86%99%E6%B5%81%E7%A8%8B"><span class="toc-text">3. HBase写流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Hbase%E8%AF%BB%E6%B5%81%E7%A8%8B"><span class="toc-text">4. Hbase读流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-text">5. 布隆过滤器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-flush%E5%88%B7%E5%86%99"><span class="toc-text">6. flush刷写</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-Compaction%E5%90%88%E5%B9%B6"><span class="toc-text">7. Compaction合并</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-split%E5%88%87%E5%88%86"><span class="toc-text">8. split切分</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81HBase%E4%BC%98%E5%8C%96"><span class="toc-text">六、HBase优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%A2%84%E5%88%86%E5%8C%BA"><span class="toc-text">1. 预分区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-RowKey%E8%AE%BE%E8%AE%A1"><span class="toc-text">2. RowKey设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96"><span class="toc-text">3. 内存优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%9F%BA%E7%A1%80%E4%BC%98%E5%8C%96"><span class="toc-text">4. 基础优化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%83%E3%80%81HBase%E4%B8%8EHive%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-text">七、HBase与Hive的对比</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-HBase%E4%B8%8EHive%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-text">1. HBase与Hive的对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-HBase%E4%B8%8EHive%E9%9B%86%E6%88%90%E4%BD%BF%E7%94%A8"><span class="toc-text">2. HBase与Hive集成使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%87%A0%E4%B8%AA%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-text">3. 几个面试题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5"><span class="toc-text">4. 几个概念</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 枯叶痕</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line hide" id="menu-copytext"><a class="rightMenu-item" href="javascript:rm.copySelect();"><i class="fa-solid fa-copy"></i><span>复制文本</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://my-twikoo-he-tengfei.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      countELement.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
