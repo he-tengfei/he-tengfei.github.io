@@ -8,7 +8,7 @@
       <link href="/myarticle/test/"/>
       <url>/myarticle/test/</url>
       
-        <content type="html"><![CDATA[<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">title: test</span><br></pre></td></tr></table></figure><p>1111</p><p>1111</p><p>1111</p><p>1111</p>]]></content>
+        <content type="html"><![CDATA[<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">title: test</span><br><span class="line">top_img: https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/christmas-4701783.png</span><br></pre></td></tr></table></figure><p>这是个测试文档。</p>]]></content>
       
       
       
