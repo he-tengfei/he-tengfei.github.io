@@ -4,24 +4,11 @@
   
     
     <entry>
-      <title>常见报错</title>
-      <link href="/myarticle/%E5%B8%B8%E8%A7%81%E6%8A%A5%E9%94%99/"/>
-      <url>/myarticle/%E5%B8%B8%E8%A7%81%E6%8A%A5%E9%94%99/</url>
-      
-        <content type="html"><![CDATA[<h1 id="Java相关"><a href="#Java相关" class="headerlink" title="Java相关"></a>Java相关</h1><h2 id="错误1："><a href="#错误1：" class="headerlink" title="错误1："></a>错误1：</h2><p>报错：找不到文件</p><p>解决：源文件名不存在或写错，或者当前路径错误。如果是包找不到，不要把scope设为provided</p><h2 id="错误2："><a href="#错误2：" class="headerlink" title="错误2："></a>错误2：</h2><p>报错：主类名和文件名不一致</p><p>解决：声明为public的主类应与文件名一致，否则编译失败</p><h1 id="MySQL相关"><a href="#MySQL相关" class="headerlink" title="MySQL相关"></a>MySQL相关</h1><h2 id="错误1：-1"><a href="#错误1：-1" class="headerlink" title="错误1："></a>错误1：</h2><p>报错：is not allowed to connect to this MySQL server</p><p>解决：原因是本地MySQL不允许远程登录，把<a href="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20220825175527592.png">这里</a>改成%即可。</p><h1 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h1><h2 id="错误1：-2"><a href="#错误1：-2" class="headerlink" title="错误1："></a>错误1：</h2><p>报错：Failed to connect to github.com port 443 after 21132 ms: Timed out</p><p>或者：OpenSSL SSL_read: Connection was reset, errno 10054</p><p>解决：网不好，多试几次</p><h1 id="Hive"><a href="#Hive" class="headerlink" title="Hive"></a>Hive</h1><p>报错：return code 3 from org.apache.hadoop.hive.ql.exec.spark.SparkTask</p><p>这种就直接去<a href="http://hadoop180:9870/spark-histor%E9%87%8C%E7%9C%8B%E6%97%A5%E5%BF%97%EF%BC%8C%E6%90%9Cdue">http://hadoop180:9870/spark-histor里看日志，搜due</a> to或者Caused by，比如这次的报错信息，意思就是CastLongToString函数找不到，这是spark引擎和hive的版本冲突问题，把cast函数去掉就可以了。</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Caused by: java.lang.NullPointerException\n\tat org.apache.hadoop.hive.ql.exec.vector.expressions.MathExpr.writeLongToUTF8(MathExpr.java:136)\n\tat org.apache.hadoop.hive.ql.exec.vector.expressions.CastLongToString.func(CastLongToString.java:52)\n\tat </span><br></pre></td></tr></table></figure><h1 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h1><h2 id="错误1：-3"><a href="#错误1：-3" class="headerlink" title="错误1："></a>错误1：</h2><p>报错：Unicode-objects must be encoded before hashing</p><p>解决：hashlib.sha256(data)函数中，data参数的类型应该是bytes，hash前必须把数据转换成bytes类型</p>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title></title>
+      <title>test</title>
       <link href="/myarticle/test/"/>
       <url>/myarticle/test/</url>
       
-        <content type="html"><![CDATA[<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">title: test</span><br><span class="line">top_img: https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/picture/christmas-4701783.png</span><br></pre></td></tr></table></figure><p>这是个测试文档。</p>]]></content>
+        <content type="html"><![CDATA[<p>这是个测试文档。</p>]]></content>
       
       
       
