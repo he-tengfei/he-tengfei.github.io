@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>test_禁删</title>
+      <link href="/myarticle/test_%E7%A6%81%E5%88%A0/"/>
+      <url>/myarticle/test_%E7%A6%81%E5%88%A0/</url>
+      
+        <content type="html"><![CDATA[<p>这是个测试文档，禁删！！！</p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>拍照入门</title>
+      <link href="/myarticle/%E6%8B%8D%E7%85%A7%E5%85%A5%E9%97%A8/"/>
+      <url>/myarticle/%E6%8B%8D%E7%85%A7%E5%85%A5%E9%97%A8/</url>
+      
+        <content type="html"><![CDATA[<h1 id="拍照入门"><a href="#拍照入门" class="headerlink" title="拍照入门"></a>拍照入门</h1><h2 id="参数介绍"><a href="#参数介绍" class="headerlink" title="参数介绍"></a>参数介绍</h2><p><strong>对焦：</strong>最好手动对焦，自动对焦太拉跨。</p><p><strong>变焦：</strong>把远处的物体拉到眼前来拍，镜头上的16-50代表焦段，16mm代表广角端，广角端适合拍大场景，比如风景照合照，50mm长焦端适合拍人物和特写，会有一种背景虚化的效果。</p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20241106184354032.png" alt="image-20241106184354032"></p><p><strong>光圈：</strong>用来控制镜头进光量多少，光圈越大，进光量就越多，注意F1.4才是大光圈。光圈可以影响背景虚化的程度，拍特写用大光圈，拍风景照合照用小光圈。 </p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20241106185144286.png" alt="image-20241106185144286" style="zoom:50%;" /><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20241106185354422.png" alt="image-20241106185354422" style="zoom:50%;" /></p><p><strong>快门：</strong>主要控制进光时间，进光时间越长，进光量就越多。</p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20241106190736215.png" alt="image-20241106190736215" style="zoom: 50%;" /><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20241106190848182.png" alt="image-20241106190848182" style="zoom: 50%;" /><p><strong>感光度ISO：</strong>相机对光线的敏感程度，效果如下，高感光度下会出现噪点。一般感光度低了会好点，但是夜景除外，夜里光线少，就算把光圈调到最大，光线还是不足，那就只能调大感光度，虽然牺牲了部分画质，但是换取了照片的正常曝光。这个参数平时设为自动就可以了。</p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20241106191030954.png" alt="image-20241106191030954" style="zoom:67%;" /><p><strong>测光模式：</strong>Fn里选，多重测光适合拍光线均匀的风景照，用的最多，适合绝大多数场景。但是拍逆光的时候，比如人背对太阳的时候，他的脸是暗的，四周是亮的，这个时候可以用点测光，对准人脸，但是这个时候好像背景就过曝了。</p><p><strong>白平衡：</strong>两个作用，可以理解为一种滤镜，也可以用来纠正光色。比如下面第一张是暖光拍出来的，如果想还原正常光照下的颜色，就可以使用白平衡纠正。设置为自动就行。当滤镜使用的时候，比如拍日落，想要暖色调，就可以调到阴影白平衡，比如拍大海，可以调到冷白色，这样拍出来就会更蓝。</p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/image-20241106192945830.png" alt="image-20241106192945830" style="zoom:50%;" /><h2 id="参数设置"><a href="#参数设置" class="headerlink" title="参数设置"></a>参数设置</h2><p>起因是我想去秀北山森林公园玩，结果发现那天拍的照片都太暗了，暗到不能看，于是总结出了这篇文章，也算对这几个参数有了更深刻的认识。</p><p><strong>ISO：</strong>大白天设置为100即可，ISO只影响噪点和亮度，不影响成像效果。但是ISO也不是越小越好，比如下面这两张图，我其实更想要第二张，因为第一张实在太暗了。</p><div class="fj-gallery"><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01054.jpg" alt="DSC01054"></p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01057.jpg" alt="DSC01057"></p>          </div><p><strong>光圈：</strong>都说狗头在F8时画质最好，但是实测下来，F8拍出的照片太暗了，没法直出。比如下面几张图全是F8拍出来的，但是其实效果很差，暗到没法看。</p><div class="fj-gallery"><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01016.jpg" alt="DSC01016"></p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01020.jpg" alt="DSC01020"></p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01025.jpg" alt="DSC01025"></p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01030.jpg" alt="DSC01030"></p>          </div><p>下面两张图是把光圈稍微调大之后的亮度，对比起来很明显，所以也不是非要F8，光线不好的时候调大光圈效果更好。</p><div class="fj-gallery"><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01049.jpg" alt="DSC01049"></p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01052.jpg" alt="DSC01052"></p>          </div><p><strong>快门时间：</strong>上面说F8拍出来的照片比较暗，但是下面这张图也是F8，亮度就还凑合，因为快门时间比较长，进光量多。所以如果非想要F8，要么光线十分充足，要么快门时间长。</p><div class="fj-gallery"><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01014.jpg" alt="DSC01014"></p>          </div><p>如果要拍运动的物体，快门时间就必须短，不然拍出来是糊的，下面这几张是在风很大的时候拍的，但是拍的很清，因为快门时间很短。平时如果拍静止的物体，快门时间1&#x2F;100就不会糊，但是如果拍运动的物体，要1&#x2F;500左右才不会糊。</p><div class="fj-gallery"><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01046.jpg" alt="DSC01046"></p>          </div><p>然后是拍月亮，拍月亮的时候，下面是低ISO拍的，能把月亮拍的更清晰，但是低ISO下周围的建筑什么的就拍不清了，我更想要的是把看到的实景拍下来，类似第三张图，而不是只拍月亮。</p><div class="fj-gallery"><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01004.jpg" alt="DSC01004"></p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01074.jpg" alt="DSC01074"></p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/mmexport1688394234046.jpg" alt="mmexport1688394234046"></p>          </div><p>然后我把ISO调大，把快门时间调长，发现周围的景色是拍出来了，但是又太亮了，不是我看到的实景。</p><div class="fj-gallery"><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01062.jpg" alt="DSC01062"></p>          </div><p>下面分别是在F8、ISO3200的情况下，不同快门时间拍到的月亮。这几张图就比较接近看到的实景了，但是还不够。</p><div class="fj-gallery"><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01083.jpg" alt="DSC01083"></p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01086.jpg" alt="DSC01086"></p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01080.jpg" alt="DSC01080"></p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01081.jpg" alt="DSC01081"></p>          </div><p>下面这两张图片，第一张颜色失真，因为进光量太大，过曝了，把光圈调小就可以了。</p><div class="fj-gallery"><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01136.JPG" alt="DSC01136"></p><p><img src="https://oss-markdown666.oss-cn-zhangjiakou.aliyuncs.com/typora/DSC01137.JPG" alt="DSC01137"></p>          </div>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+  
+  
+</search>
